@@ -1,0 +1,163 @@
+<div class="popupParent">
+    <h4 mat-dialog-title class="modal-header text-center">
+        <span class="header_text">
+           Preview Resource 
+        </span>
+        <mat-icon class="close" matTooltip="close" (click)="closeDialog()" matDialogClose>close</mat-icon>
+    </h4>
+    <mat-tab-group (selectedTabChange)="tabChange($event)" [(selectedIndex)]="preSelectedTabIndex">
+        <mat-tab label="Personal Details"> 
+            <div class="container preDetail">
+                <div class="row">
+                    <div class="col-md-3 col-xs-12 imgBox">
+                            <img [src]="userData && userData.imageUrl ? baseUrl+userData.imageUrl :  'assets/images/profile-circle.png'" alt="" class="userImg">
+                    </div>
+                    <div class="col-md-9 col-xs-12">
+                        <div class="row">
+                            <div *ngIf="userData.usrFirstname" class="col-md-4 col-sm-6 pb-3 px-0">
+                                <div class="label">First Name</div>
+                                <div class="text ">{{userData.usrFirstname}}</div>
+                            </div>
+                            <div *ngIf="userData.usrLastname" class="col-md-4 col-sm-6 pb-3 px-0">
+                                <div class="label">Last Name</div>
+                                <div class="text">{{userData.usrLastname}}</div>
+                            </div>
+                            <div *ngIf="userData.usrEmail" class="col-md-4 col-sm-6 pb-3 px-0">
+                                <div class="label">Email</div>
+                                <div class="text">{{userData.usrEmail}}</div>
+                            </div>
+                            <div *ngIf="userData.usrPhone" class="col-md-4 col-sm-6 pb-3 px-0">
+                                <div class="label">Phone No.</div>
+                                <div class="text">{{userData.usrPhone}}</div>
+                            </div>
+                            <div *ngIf="userData.usrLocation" class="col-md-4 col-sm-6 pb-3 px-0">
+                                <div class="label">Location</div>
+                                <div class="text">{{userData.usrLocation}}</div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 pb-3 px-0">
+                                <div class="label">Site Name</div>
+                                <div class="text">{{userData.siteName}}</div>
+                            </div>
+                            <div *ngIf="userData.roleName" class="col-md-4 col-sm-6 pb-3 px-0">
+                                <div class="label">Role</div>
+                                <div class="text">{{userData.roleName}}</div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 pb-3 px-0">
+                                <div class="label">Is an Admin</div>
+                                <div class="text">
+                                    {{userData.usrType == 2 ? 'Yes' : 'No'}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-tab>
+        <mat-tab label="Training Records"> 
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <p-table [value]="resourceService.userTrainingRecord" class="record_table">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                        <th>Licence</th>
+                                        <th>Expiry Date</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowIndex="rowIndex" let-rowData >
+                                <tr>
+                                    <td>
+                                        <span>{{rowData.trName}}</span>
+                                    </td>
+                                    <td>
+                                        <ng-container *ngIf="rowData.utrNeverExpire == 0">
+                                            {{rowData.utrExpiredate}}
+                                        </ng-container>
+                                        <ng-container *ngIf="rowData.utrNeverExpire == 1">
+                                            No Expiry Date
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <div *ngIf="resourceService.userTrainingRecord?.length == 0" class="noDataText py-4">
+                            <span>Data not found</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-tab>
+        <mat-tab label="Licences"> 
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <p-table [value]="resourceService.userLicences" class="record_table">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                        <th>Competency</th>
+                                        <th>Expiry Date</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowIndex="rowIndex" let-rowData >
+                                <tr>
+                                    <td>
+                                        <span>{{rowData.licName}}</span>
+                                    </td>
+                                    <td>
+                                        <ng-container *ngIf="rowData.ulNeverExpire == 0">
+                                            {{rowData.ulExpiredate}}
+                                        </ng-container>
+                                        <ng-container *ngIf="rowData.ulNeverExpire == 1">
+                                            No Expiry Date
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <div *ngIf="resourceService.userLicences?.length == 0" class="noDataText py-4">
+                            <span>Data not found</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-tab>
+        <mat-tab label="Competencies"> 
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <p-table [value]="resourceService.userCompetencies" class="record_table">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                        <th>Record</th>
+                                        <th>Expiry Date</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowIndex="rowIndex" let-rowData >
+                                <tr>
+                                    <td>
+                                        <span>{{rowData.comptName}}</span>
+                                    </td>
+                                    <td>
+                                        <ng-container *ngIf="rowData.ucNeverExpire == 0">
+                                            {{rowData.ucExpiredate}}
+                                        </ng-container>
+                                        <ng-container *ngIf="rowData.ucNeverExpire == 1">
+                                            No Expiry Date
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <div *ngIf="resourceService.userCompetencies?.length == 0" class="noDataText py-4">
+                            <span>Data not found</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-tab>        
+      </mat-tab-group>
+     <div class="position-sticky col-md-12 col-xs-12 pb-2 pt-1 pe-3 add_btn_box" >
+        <button class="cancel_btn" (click)="closeDialog()">{{commonService.loginUserDetail.usrType != 3 ? 'Cancel' : 'Close'}}</button>
+        <button class="add_btn" *ngIf="commonService.loginUserDetail.usrType != 3" (click)="edit()">{{'Update' + ' ' + tabName}}</button>
+     </div> 
+</div>

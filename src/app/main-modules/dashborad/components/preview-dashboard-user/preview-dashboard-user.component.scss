@@ -1,0 +1,77 @@
+    .modal-header {
+    height: 2.5rem;
+    padding: 0;
+    display: flex;
+    .header_text{
+        padding-left: 15px;
+        width: 80%;
+        text-align: left;
+    }
+    .close{
+        text-align: right;
+        width: 20%;
+        padding-right: 15px;
+    }
+    }
+    .preMainBox{
+        min-height: 235px;
+        max-height: 235px;
+        overflow-y: auto;
+        .preDetail {
+            padding-top: 20px;
+          
+            .imgBox {
+                display: flex;
+        
+                .userImg {
+                    width: 100px;
+                    height: 100px;
+                    background-color: #D9D9D9;
+                }
+            }
+        
+            .label {
+                color: #000;
+                font-size: 12px;
+                font-weight: 500;
+            }
+        
+            .text {
+                padding-right: 5px;
+                display: inline-block; 
+                color: #484848;
+                font-size: 12px;
+                font-weight: 400;
+            }
+        
+        }
+    }
+
+.add_btn{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 105px;
+    color: #FFF;
+    font-size: 12px;
+}
+
+.listBox {
+    padding-top: 5px;
+    color: #484848;
+    
+    .header {
+        color: #000;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .list {
+        line-height: 25px;
+        font-size: 12px;
+    }
+}
+
+.mat-mdc-menu-content , .mdc-list{
+    padding: 0px  !important;
+}

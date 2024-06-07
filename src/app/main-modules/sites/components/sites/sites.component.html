@@ -1,0 +1,60 @@
+<div class="container-fluid">
+    <div class="row" *ngIf="commonService.loginUserDetail.usrType != 3">
+        <div class="col-12 btn_box">
+            <button class="add_btn" (click)="openEditSite('','add')">Add New Site</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 table_box" [ngStyle]="{'padding-top': commonService.loginUserDetail.usrType == 3 ? '35px' : '' }">
+            <p-table class="table" [resizableColumns]="true" [columns]="cols" [value]="siteService.siteList" >
+                <ng-template pTemplate="header" let-columns>
+                    <tr>
+                        <th *ngFor="let col of columns" pResizableColumn [ngClass]="{'text-center': col.header == 'No. of Resource'}">
+                            {{col.header}}
+                        </th>
+                        <th pResizableColumn *ngIf="commonService.loginUserDetail.usrType != 3">
+                            Action
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-site let-rowIndex="rowIndex" let-columns="columns">
+                    <tr>
+                        <td *ngFor="let col of columns" [ngSwitch]="col.field" [ngClass]="{'text-center': col.field == 'totalUser'}" [ngStyle]="{'padding': commonService.loginUserDetail.usrType == 3 ? '8px 5px' : '' }">
+                            <div class="text-center" *ngSwitchCase="'siteNo'">
+                                    {{rowIndex+siteService.pageIndex}}
+                            </div>
+                            <ng-container *ngSwitchCase="'usrFirstname'">
+                                {{site[col.field]}} {{site['usrLastname']}}
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'siteName'">
+                                <span class="pointer" (click)="preSiteUser(site)">
+                                    {{site[col.field]}}
+                                </span>
+                            </ng-container>
+                            <span *ngSwitchDefault>
+                                {{site[col.field]}}
+                            </span>
+                        </td>
+                        <td class="text-center" *ngIf="commonService.loginUserDetail.usrType != 3">
+                            <span>
+                                <img (click)="openEditSite(site,'edit')" src="assets/images/edit.png" alt="edit">
+                            </span>
+                            <span *ngIf="site['siteType'] != 0">
+                                <img (click)="deleteSiteAlert(siteService.siteList[rowIndex])" src="assets/images/delete.png" alt="delete">
+                            </span>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <mat-paginator *ngIf="siteService.siteCount > 0" (page)="onPageChange($event)"  [length]="siteService.siteCount"
+                [pageSize]="siteService.pagination.limit"
+                [pageSizeOptions]="[5, 10, 25, 50]"
+                [pageIndex]="siteService.pagination.index/siteService.pagination.limit"
+                >
+              </mat-paginator>
+              <div *ngIf="siteService.siteCount == 0" class="noDataText py-4">
+                <span>Data not found</span>
+            </div>
+        </div>
+    </div>
+</div>

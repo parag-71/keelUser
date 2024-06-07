@@ -1,0 +1,50 @@
+<div class="main_box">
+    <div class="container">
+        <div class="row">
+            <div class="col main_logo">
+                <img src="assets/images/keel-logo.png" class="img_custem" />
+            </div>
+        </div>
+    </div>
+    <mat-nav-list class="mat-list">
+        <mat-list-item [routerLink]="['/dashboard']" (click)="hideNav()" class="list_item" routerLinkActive="activeLink">
+            <span>
+                <img src="assets/images/dashboard-black.png" />
+            </span>
+            <span class="text">Dashboard</span>
+        </mat-list-item>
+        <mat-list-item [routerLink]="['/sites']" (click)="hideNav()" class="list_item" routerLinkActive="activeLink">
+            <span>
+                <img src="assets/images/sites-black.png" />
+            </span>
+            <span class="text">Site</span>
+        </mat-list-item>
+        <mat-list-item [routerLink]="['/resources']" (click)="hideNav()" class="list_item" routerLinkActive="activeLink">
+            <span>
+                <img src="assets/images/resources-black.png" />
+            </span>
+            <span class="text">Resources</span>
+        </mat-list-item>
+        <mat-list-item [routerLink]="['/request']" (click)="hideNav()" class="list_item" routerLinkActive="activeLink">
+            <span>
+                <img src="assets/images/requests-black.png" />
+            </span>
+            <div matBadge="{{commonService.requestCount}}" matBadgeSize="small" matBadgeColor="warn">
+                <span class="text" >Requests</span>
+            </div>
+        </mat-list-item>
+    </mat-nav-list>
+    <div class="logout_btn" >
+        <div class="compimg" *ngIf="commonService.loginUserDetail?.compImageUrl && imageAvailable">
+            <img class="img-fluid" [src]="baseUrl+commonService.loginUserDetail.compImageUrl" alt="">
+        </div>
+        <div class="resourceCount" *ngIf="currentRouteName == 'dashboard' || currentRouteName == 'resources' || currentRouteName.includes('sitespreview')">
+            <span>Total resources : {{commonService.userCount}}</span>
+            
+        </div>
+        <button (click)="logoutUser()">
+            <img src="assets/images/Shutdown.png" alt="">
+            <span>Logout</span>
+        </button>
+    </div>
+</div>

@@ -1,0 +1,114 @@
+@import '../../../shared/scss/default_variables.scss';
+.position{
+  background-color: white;
+  width: 463px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.buttonSection{
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+    span{
+        width: 85px;
+        height: 25px;
+        border-radius: 20px;
+        border: 1px solid #A4A4A4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        cursor: pointer;
+    }
+    .selectedTab{
+        border-color: $primary-color;
+        color: $primary-color;
+    }
+    
+}
+.applyFilter{
+  font-size: 12px;
+  float: right;
+  font-weight: 400;
+  cursor: pointer;
+  background: $primary-color;
+  border: none;
+  border-radius: 15px;
+  color: white;
+  margin-bottom: 10px;
+  margin-left: 5px;
+  margin-top: 10px;
+  height: 24px;
+}
+.removeFilter{
+  font-size: 12px;
+  float: right;
+  font-weight: 400;
+  cursor: pointer;
+  background: #FFF1F2;
+  border: 1px solid #E61044;
+  border-radius: 15px;
+  color: #E61044;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  height: 24px;
+}
+.closeFilter{
+  font-size: 12px;
+  float: left;
+  font-weight: 400;
+  cursor: pointer;
+  background: white;
+  border: 1px solid #A4A4A4;
+  border-radius: 15px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  height: 24px;
+}
+.heading{
+    font-weight: 500;
+    padding-left: 14px;
+}
+.search_table {
+    background-color: #FDFDFD;
+    .record_td{
+      span{
+        font-size: 12px;
+        padding-left: 10px;
+      }
+    }
+    tr>th {
+      border: 1px solid #BBC5CB;
+      box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.05);
+      color: black;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 1.5rem;
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+  
+    tr>td {
+      color: #5E6366;
+      font-size: 12px;
+      font-weight: 400;
+      padding: 0;
+      img{
+        cursor: pointer;
+        height: auto;
+        width: 26px;
+      }
+    }
+    .checkBox{
+        float: right;
+    }
+    ::ng-deep .p-datatable>.p-datatable-wrapper{
+        overflow-y: scroll !important;
+        max-height: 213px !important;
+    }
+    ::ng-deep .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background, .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background, .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control[data-indeterminate=true]:enabled~.mdc-checkbox__background{
+        background-color: $primary-color !important;
+        border-color: $primary-color !important;
+    }
+}
+

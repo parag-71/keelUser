@@ -1,0 +1,118 @@
+@import '../../../../shared//scss/default_variables.scss';
+
+.cardBox{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 203px);
+  padding-bottom: 10px;
+  
+  .card{
+    margin-top: 15px;
+    height: auto;
+    border: 1px solid $primary-color;
+    max-width: 195px;
+    justify-content: space-between;
+    .userImg{
+      display: flex;
+      justify-content: center;
+      img{
+      height: 100px;
+      margin-top: 10px;
+      }
+    }
+    .mat_card_content{
+      .username{
+        font-size: 15px;
+        font-weight: 500;
+        padding-top: 10px;
+      }
+      .company{
+        display: flex;
+        align-items: center;
+        .company-icon{
+          vertical-align: text-top;
+        }
+        .comapnyName{
+          font-size: 12px;
+          font-weight: 400;
+          padding-left: 8px;
+        }
+      }
+      .location_section{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .from {
+          font-size: 12px;
+          font-weight: 400;
+        }
+      
+        .location {
+          font-size: 12px;
+          font-weight: 600;
+        }
+      }
+      
+        .requestDate {
+          font-size: 11px;
+          font-weight: 400;
+        }
+    }
+      .matCardAction{
+        display: flex;
+        justify-content: center;
+        .add_btn{
+          width: 170px;
+          font-size: 12px;
+          height: 27px;
+          font-weight: 500;
+        }
+        .accBtn{
+          width: 75px;
+          height: 31px;
+          border-radius: 0.375rem;
+          background: $primary-color;
+          color: $white-color;
+          text-align: center;
+          font-size: 0.875rem;
+          font-weight: 400;
+          border: none;
+          float: right;
+        }
+        .RejBtn{
+          width: 75px;
+          height: 31px;
+          border-radius: 0.375rem;
+          background:black;
+          color: $white-color;
+          text-align: center;
+          font-size: 0.875rem;
+          font-weight: 400;
+          border: none;
+          float: right;
+          margin-left: 5px;
+        }
+      }
+    }
+    .rej_btn{
+      background-color: #000;
+      color: white;
+      border-radius: 0.375rem;
+      text-align: center;
+      font-size: 0.875rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      width: 5.5625rem;
+      height: 2.2rem;
+      float: right;
+      margin-left: 12px;
+      border: none;
+    }
+}
+.mat-mdc-card-content{
+  padding: 0 7px !important;
+}
+
+.backColor{
+  background-color: #D9D9D9;;
+}

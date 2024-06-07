@@ -1,0 +1,64 @@
+<div class="container-fluid">
+    <div class="row" *ngIf="commonService.loginUserDetail.usrType != 3">
+        <div class="col-12 btn_box">
+            <button class="add_btn" (click)="openAddUpdateUser('','add')">Add resource</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 table_box" [ngStyle]="{'padding-top': commonService.loginUserDetail.usrType == 3 ? '35px' : '' }">
+            <p-table class="table" [resizableColumns]="true" [columns]="cols" [value]="resourceService.usersList" >
+                <ng-template pTemplate="header" let-columns>
+                    <tr>
+                        <th *ngFor="let col of columns" pResizableColumn>
+                            {{col.header}}
+                        </th>
+                        <th pResizableColumn>Action</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-user let-rowIndex="rowIndex" let-columns="columns">
+                    <tr>
+                        <td *ngFor="let col of columns" [ngSwitch]="col.field">
+                            <div class="text-center" *ngSwitchCase="'Sno'">
+                                {{user['index']}}
+                            </div>
+                            <span *ngSwitchCase="'usrFirstname'" class="pointer" (click)="redirectDash(user)">
+                                <span *ngIf="user.imageUrl" >
+                                    <img class="userImg" [src]="baseUrl + user.imageUrl" alt="edit">
+								</span>
+                                <span >
+                                {{user[col.field]}} {{user['usrLastname']}}
+                                </span>
+                            </span>
+                            <div *ngSwitchCase="'usrPhone'" class="text-center">
+                                {{user[col.field]}}
+                            </div>
+                            <span *ngSwitchDefault>
+                                {{user[col.field]}}
+                            </span>
+                        </td>
+                        <td class="actionTd">
+                            <span>
+                                <img (click)="previewResource(user)" class="eyeIcon" src="assets/images/seen_6497663.png" alt="edit">
+                            </span>
+                            <span *ngIf="user.usrId != userDetails.usrId && commonService.loginUserDetail.usrType != 3 && user.usrType != 1" class="px-1">
+                                <img (click)="deleteResourceAlert(resourceService.usersList[rowIndex])" class="addEditIcon" src="assets/images/delete.png" alt="delete" matTooltip="delete user">
+                            </span>
+                            <span *ngIf="user.usrId != userDetails.usrId && commonService.loginUserDetail.usrType != 3 && user.usrType != 1"  >
+                                <mat-slide-toggle (change)="changeStatus(resourceService.usersList[rowIndex])" [(ngModel)]="user['usrStatus']" matTooltip="Change user status"></mat-slide-toggle>
+                            </span>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <mat-paginator *ngIf="resourceService.usersCount > 0" (page)="onPageChange($event)"  [length]="resourceService.usersCount"
+                [pageSize]="resourceService.pagination.limit"
+                [pageSizeOptions]="[25, 50, 100, 150,200]"
+                [pageIndex]="resourceService.pagination.index/resourceService.pagination.limit"
+                >
+            </mat-paginator>
+              <div *ngIf="resourceService.usersCount == 0" class="noDataText py-4">
+                <span>Data not found</span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+<nav class="navbar">
+  <div class="container-fluid">
+    <div class="row header_box">
+      <div class="col-2" *ngIf="!commonService.isDesktop">
+        <button mat-icon-button class="menu_icon" (click)="inputSideNav.toggle()"
+          [ngStyle]="{ display: commonService.isDesktop ? 'none' : 'block' }">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
+      <div class="d-inline-flex justify-content-md-end col-9 position-relative" id="outerDiv">
+        <ng-container *ngIf="currentRouteName != 'request'">
+          <div class="search_container">
+            <img src="assets/images/Search.png" class="search_icon left_icon">
+            <input class="form-control clear" [(ngModel)]="search" (keyup)="searchCustomer()" aria-label="Search">
+            <img src="assets/images/Filter.png" *ngIf="currentRouteName == 'dashboard' || currentRouteName == 'preview-site-user'" (click)="openSearchFilter()" class="search_icon filter">
+            <img src="assets/images/cross.png" *ngIf="search" (click)="clearSearch()" matTooltip="Clear Search" class="search_icon right_icon" [ngStyle]="{'right': currentRouteName == 'dashboard' || currentRouteName == 'preview-site-user'  ? '32px' : ''}">
+          </div>
+          <button class="search_btn" type="submit" (click)="searchFn()">Search</button>
+          <app-search-filter *ngIf="showFilter" (dataEvent)="receiveDataFromChild()" class="filters"></app-search-filter>
+        </ng-container>
+      </div>
+      <div class="pe-0 col-3">
+        <div class="user_section">
+          <span class="user">
+            <img [ngClass]="{userImg: userDetails.imageUrl}" [src]="userDetails && userDetails.imageUrl ? baseUrl+userDetails.imageUrl : 'assets/images/profile-circle.png' " alt="userImg">
+          </span> 
+          <span class="userText">{{userDetails.usrFirstname}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,64 @@
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-12" >
+        <ng-container *ngIf="dashboradService.dashboardFilterChips.length">
+        <mat-chip-listbox class="filterLabel ms-2">
+          <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[1].roleName">
+            <span>{{item}}</span>
+            <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,1)">cancel</mat-icon>
+         </mat-chip>
+        </mat-chip-listbox>
+        <mat-chip-listbox class="filterLabel ms-2">
+          <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[2].licName">
+            <span>{{item}}</span>
+            <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,2)">cancel</mat-icon>
+         </mat-chip>
+        </mat-chip-listbox>
+        <mat-chip-listbox class="filterLabel ms-2">
+          <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[3].trName">
+            <span>{{item}}</span>
+            <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,3)">cancel</mat-icon>
+         </mat-chip>
+        </mat-chip-listbox> 
+        <mat-chip-listbox class="filterLabel ms-2">
+          <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[4].comptName">
+            <span>{{item}}</span>
+            <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,4)">cancel</mat-icon>
+         </mat-chip>
+        </mat-chip-listbox>   
+      </ng-container>
+    </div>
+      <div class="col-sm-12">
+        <div class="main_box" *ngFor="let site of dashboradService.displaySiteData">
+          <div class="example-container" >
+            <div class="siteName">
+              <span>
+                {{site.siteName}}
+              </span>
+            </div>
+          </div>
+          <div class="example-list" *ngIf="site.userData.length != 0">
+              <div class="userBox" *ngFor="let user of site.userData" (click)="previewUser(user,site)">
+                <div [ngClass]="{'expiry': user.expired > 0,'expirySoon': user.expiredSoon > 0 && user.expired == 0}" class="imgBox">
+                  <div class="incoming-section" *ngIf="user.suStatus == 1">
+                    Incoming
+                   </div>
+                   <div class="outging-section" *ngIf="user.suStatus == 3">
+                     Outgoing
+                   </div>
+                  <img [ngClass]="user.imageUrl ? 'userImg' : 'customImg'" [src]="user.imageUrl ? baseUrl+user.imageUrl : 'assets/images/User02.png'"
+                    class="img-fluid" alt="userImg">
+                  <div class="text-Section" [ngClass]="{'centerText': !user.roleName}">
+                    <div class="userName">{{user.usrFirstname}} {{user.usrLastname}}</div>
+                    <div class="role">{{user.roleName}}</div>
+                  </div>
+                </div> 
+              </div>
+            </div>
+            <div *ngIf="site.userData.length == 0" class="noDataText py-4">
+              <span>User not found</span>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>

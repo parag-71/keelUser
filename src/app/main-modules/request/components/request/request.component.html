@@ -1,0 +1,24 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 position-relative">
+            <div class="requestBox">
+                <mat-tab-group class="request_tab" (selectedTabChange)="tabChange($event)" [(selectedIndex)]="requestService.DashSelectIndex">
+                    <mat-tab label="Sent">
+                        <app-send-card></app-send-card>
+                    </mat-tab>
+                    <mat-tab label="Received">
+                        <app-send-card ></app-send-card>
+                    </mat-tab>                   
+                </mat-tab-group>               
+            </div>
+            <div class="heade_select" >
+                <mat-form-field appearance="outline" class="reqSelect">
+                    <mat-select (selectionChange)="changeSite()" [(ngModel)]="sites">
+                        <mat-option value="all">All</mat-option>
+                        <mat-option *ngFor="let site of (this.requestService.DashSelectIndex == 0 ? this.requestService.sentSiteList : dashboradService.siteList)" [value]="site.siteId">{{site.siteName}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div> 
+        </div>
+    </div>
+</div>

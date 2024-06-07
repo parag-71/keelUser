@@ -1,0 +1,73 @@
+<div class="popupParent " >
+    <div mat-dialog-title class="modal-header" >
+        <div class="header_text">
+           {{dashboradService.userDetails?.usrFirstname}} {{dashboradService.userDetails?.usrLastname}}
+        </div>
+            <mat-icon class="close" matTooltip="close"  matDialogClose>close</mat-icon>
+        </div>
+    </div>
+    <div class="container preMainBox" >
+        <div class="row preDetail">
+            <div class="col-md-3 col-xs-12 imgBox">
+                    <img [src]="dashboradService.userDetails && dashboradService.userDetails.imageUrl ? baseUrl+dashboradService.userDetails.imageUrl : 'assets/images/User02.png'" alt="" class="userImg">
+            </div>
+            <div class="col-md-9 col-xs-12">
+                <div class="row">
+                    <div  class="col-md-4 col-sm-6 pb-3 px-0">
+                        <div class="label">Company</div>
+                        <div class="text">{{dashboradService.userDetails?.compName}}</div>
+                    </div>
+                    <div  class="col-md-4 col-sm-6 pb-3 px-0">
+                        <div class="label">Role</div>
+                        <div class="text">{{dashboradService.userDetails?.roleName}}</div>
+                    </div>
+                    <div  class="col-md-4 col-sm-6 pb-3 px-0">
+                        <div class="label">Phone</div>
+                        <div class="text">{{dashboradService.userDetails?.usrPhone}}</div>
+                    </div>
+                    <div  class="col-md-4 col-sm-6 pb-3 px-0">
+                        <div class="label">Current site</div>
+                        <div class="text">{{dashboradService.userDetails?.siteName}}</div>
+                    </div>
+                    <div class="col-md-4 col-sm-6 pb-3 px-0">
+                        <div class="label">Email</div>
+                        <div class="text">{{dashboradService.userDetails?.usrEmail}}</div>
+                    </div>
+                    <div  class="col-md-4 col-sm-6 pb-3 px-0">
+                        <div class="label">Licences</div>
+                        <span class="text" *ngFor="let licData of dashboradService.userDetails?.licData; let last = last">{{licData.licName}}{{ !last ? ',' : '' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="dashboradService.userDetails && (dashboradService.userDetails?.trainingData.length || dashboradService.userDetails?.comptData.length)">
+            <div class="col-12 listBox">
+                <div class="header">
+                    Training / competencies
+                </div>
+                <div>
+                    <ul class="list">
+                        <li *ngFor="let trainingData of dashboradService.userDetails.trainingData">{{trainingData.trName}} <span>({{trainingData.utrNeverExpire == 0 ? 'Expiry: ' + trainingData.utrExpiredate : 'No expiry date'}})</span></li>
+                        <li *ngFor="let comptData of dashboradService.userDetails.comptData">{{comptData.comptName}} <span>({{comptData.ucNeverExpire == 0 ? 'Expiry: ' + comptData.ucExpiredate : 'No expiry date'}})</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+    <div class="container">
+    <div class="row">
+        <div class="col-12 position-sticky add_btn_box py-2">
+            <button class="add_btn" mat-button [matMenuTriggerFor]="menu">Send to
+                <img src="assets/images/Expand Arrow.png" alt="">
+            </button>
+                <mat-menu class="menu p-0" #menu="matMenu">
+                    <ng-container *ngFor="let item of dashboradService.siteList">
+                        <button *ngIf="item.siteName != 'All'" (click)="assginUser(item)" class="menuBtn" mat-menu-item > {{item.siteName}}</button>
+                    </ng-container>
+                    
+                </mat-menu>
+        </div>
+    </div>
+    </div>
+<div>

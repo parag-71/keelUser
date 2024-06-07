@@ -1,0 +1,97 @@
+@import "../../../../shared/scss/default_variables.scss";
+
+.table{
+    ::ng-deep .p-datatable .p-datatable-thead tr:hover th {
+       border: 1px solid transparent;
+       border-width: 0 1px 2px 0!important;
+       border-right-color: $primary-color;
+   }
+   tr{
+       th{
+           background-color:$secondary-color ;
+           color: #000;
+           font-size: 11px;
+           font-weight: 500;
+           padding: 7px;
+       }
+       th:nth-child(1),th:nth-child(5),th:nth-child(8){
+        text-align: center !important;
+       }
+       .actionTd{
+        text-align: center;
+        text-wrap: nowrap;
+       }
+       td{
+           padding:4px 5px;
+           font-size: 11px;
+           max-width: 200px;
+           white-space: initial;
+           
+           .eyeIcon{
+            cursor: pointer;
+            height: auto;
+            width: 20px;
+           }
+           .addEditIcon{
+               cursor: pointer;
+               height: auto;
+               width: 28px;
+           }
+           .userImg{
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+        }
+       }
+   }
+  }
+  ::ng-deep{
+    .mdc-switch__icons{
+        display: none !important;
+    }
+    .mat-mdc-slide-toggle .mdc-switch .mdc-switch__ripple {
+        height: auto !important;
+    }
+    .mdc-switch__handle{
+        height: 15px !important;
+        width: 15px !important;
+    }
+    .mat-mdc-slide-toggle .mdc-switch .mdc-switch__track{
+        height: 12px !important;
+        width: 30px !important;
+    }
+    .mat-mdc-slide-toggle .mdc-switch:enabled .mdc-switch__shadow{
+        background-color: $primary-color !important;
+        box-shadow: none !important;
+    }
+    .mat-mdc-slide-toggle .mdc-switch:enabled .mdc-switch__track::after {
+        background-color: $secondary-color !important;
+    }
+  }
+
+  ::ng-deep{
+    .mat-mdc-paginator-page-size-label{
+        color: #495057;
+        font-size:  13px;
+    }
+    .mat-mdc-paginator-page-size-select{
+        width: 70px !important;
+
+    }
+    .mat-mdc-paginator-range-label{
+        margin: 0 10px 0 10px !important;
+        font-size: 13px;
+    }
+    .mat-mdc-icon-button.mat-mdc-button-base {
+        padding: 10px !important;
+    }
+    .mat-mdc-select-value-text{
+        font-size: 13px !important;
+    }
+    .mat-mdc-paginator .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix{
+        padding-top: 0px;
+    }
+    .mat-mdc-text-field-wrapper{
+        height: 25px !important;
+    }
+}

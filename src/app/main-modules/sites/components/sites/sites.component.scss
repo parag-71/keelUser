@@ -1,0 +1,57 @@
+@import "../../../../shared/scss/default_variables.scss";
+
+.table{
+    ::ng-deep .p-datatable .p-datatable-thead tr:hover th {
+       border: 1px solid transparent;
+       border-width: 0 1px 2px 0!important;
+       border-right-color: $primary-color;
+   }
+   tr{
+    
+       th{
+           background-color:$secondary-color ;
+           color: #000;
+           font-size: 11px;
+           font-weight: 500;
+           padding: 7px;
+       }
+       td{
+        padding: 4px 5px;
+           font-size: 11px;
+           img{
+               cursor: pointer;
+               height: auto;
+               width: 28px;
+           }
+       }
+   }
+  }
+  th:nth-child(1),th:nth-child(5) {
+    text-align: center !important;
+  }
+  ::ng-deep{
+    .mat-mdc-paginator-page-size-label{
+        color: #495057;
+        font-size:  12px;
+    }
+    .mat-mdc-paginator-page-size-select{
+        width: 70px !important;
+
+    }
+    .mat-mdc-paginator-range-label{
+        margin: 0 10px 0 10px !important;
+        font-size: 12px;
+    }
+    .mat-mdc-icon-button.mat-mdc-button-base {
+        padding: 10px !important;
+    }
+    .mat-mdc-select-value-text{
+        font-size: 13px !important;
+    }
+    .mat-mdc-paginator .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix{
+        padding-top: 0px;
+    }
+    .mat-mdc-text-field-wrapper{
+        height: 25px !important;
+    }
+}

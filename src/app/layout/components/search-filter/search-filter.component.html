@@ -1,0 +1,40 @@
+<div class="container position">
+    <div class="row">
+        <div class="col-12">
+            <div class="buttonSection">
+                <span *ngIf="currentRouteName[1] == 'dashboard'" [ngClass]="{selectedTab: searchType == 1}" (click)="changeFilter('1')">Sites</span>
+                <span [ngClass]="{selectedTab: searchType == 2}" (click)="changeFilter('2')">Roles</span>
+                <span [ngClass]="{selectedTab: searchType == 3}" (click)="changeFilter('3')">Licence</span>
+                <span [ngClass]="{selectedTab: searchType == 4}" (click)="changeFilter('4')">Training</span>
+                <span [ngClass]="{selectedTab: searchType == 5}" (click)="changeFilter('5')">Competencies</span>
+            </div>
+        </div>
+    </div>
+    <div class="row" *ngIf="searchType != ''">
+        <div class="col-12">
+            <div class="table">
+                <span class="heading">{{searchType == 2 ? 'All Roles' : searchType == 1 ? 'All Sites' : searchType == 3 ? 'All Licence' : searchType == 4 ? 'All Training' : searchType == 5 ? 'All Competencies' : ''}}</span>
+                <p-table [value]="searchType == 2 ? this.resourceService.roleList  : searchType == 1 ? commonService.searchSiteList : searchType == 3 ? this.resourceService.licencesList : searchType == 4 ? this.resourceService.trainingList : searchType == 5 ? this.resourceService.competenciesList : '' " class="search_table">
+                            <ng-template pTemplate="body" let-rowIndex="rowIndex" let-rowData>
+                                <tr>
+                                    <td class="record_td">
+                                        <span >{{searchType == 2 ? rowData['roleName'] : searchType == 1 ? rowData['siteName'] : searchType == 3 ? rowData['licName'] : searchType == 4 ? rowData['trName'] : searchType == 5 ? rowData['comptName'] : '' }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="checkBox">
+                                            <mat-checkbox [(ngModel)]="rowData['selected']" (change)="selectItem($event,rowData)"></mat-checkbox>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <div>
+                            <button class="closeFilter" (click)="closeFilter()">Close</button>
+                            <button class="applyFilter" (click)="applyAdvanceFilter()">Apply Filter</button>
+                            <button class="removeFilter" (click)="removeFilter()">Remove Filter</button>
+                        </div>
+            </div>
+            
+        </div>
+    </div>
+</div>

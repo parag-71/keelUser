@@ -1,0 +1,110 @@
+@import '../../../../shared/scss/default_variables.scss';
+.popupParent{
+    height: 365px;
+}
+::ng-deep .mat-mdc-tab-body {
+    min-height: 246px;
+    max-height: 246px;
+    overflow-y: auto;
+  }
+ .preDetail{
+    .imgBox{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .userImg{
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+        } 
+    }
+    .imgBox::after {
+      content: "";
+      position: absolute;
+      top: 23px;
+      bottom: 0;
+      left: 156px;
+      width: 1px;
+      height: 155px;
+      background-color: #CCCCCC;
+    }
+    
+    .label{
+        font-size: 12px;
+        color:#5E5E5E;
+    }
+    .text{
+        font-size: 13px;
+        padding-right: 5px;
+        color: black;
+        word-wrap: break-word;
+    }
+   
+}
+
+.record_table {
+    background-color: #FDFDFD;
+    .record_td{
+      span{
+        font-size: 12px;
+      }
+    }
+    tr>th:nth-child(2){
+      width: 59%;
+    }
+    tr>th {
+      border: 1px solid #BBC5CB;
+      box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.05);
+      color: black;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 1.5rem;
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+  
+    tr>td {
+      color: #5E6366;
+      font-size: 12px;
+      font-weight: 400;
+      padding-top: 3px;
+      padding-bottom: 3px;
+      img{
+        cursor: pointer;
+        height: auto;
+        width: 30px;
+      }
+    }
+}
+::ng-deep{
+    //p-tab
+    .mat-mdc-tab-body{
+      padding-top: 20px;
+    }
+      .mat-mdc-tab.mdc-tab {
+          font-size: 13px !important;
+          height: 30px !important;
+      }
+      .mat-mdc-tab-labels{
+          padding-top: 5px;
+      }
+      .mdc-tab--active {
+          font-weight: bold; 
+      }
+      .mat-mdc-tab:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label{
+        color: $primary-color ;
+        font-size: 13px;
+      }
+      .mat-mdc-tab:not(.mat-mdc-tab-disabled) .mdc-tab-indicator__content--underline{
+        border-color: $primary-color ;
+      }
+      .mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs>.mat-mdc-tab-header .mat-mdc-tab{
+        flex-grow: 1 !important;
+      }
+    } 
+    @media only screen and (max-width: 760px) {
+      .imgBox::after {
+        display: none;
+    }
+  }

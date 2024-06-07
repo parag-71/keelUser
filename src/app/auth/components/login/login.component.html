@@ -1,0 +1,26 @@
+<div class="login_section">
+    <form [formGroup]="loginGrp" (ngSubmit)="loginGrp.valid ? userLogin(loginGrp.value) : commonService.markFormGroupTouched(loginGrp)">
+        <span class="login_text">Log in</span>
+        <div class="input-container form-group">
+            <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="mail" type="text" placeholder="Email" autocomplete="true">
+                <mat-error *ngIf="(loginGrp.get('mail').invalid && loginGrp.get('mail').touched)">{{getErrorMessage('email')}}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="input-container">
+            <mat-form-field appearance="outline">
+                <mat-label>Password</mat-label>
+                <input matInput formControlName="pass" type="password" placeholder="Password">
+                <mat-error *ngIf="(loginGrp.get('pass').invalid && loginGrp.get('pass').touched)">{{getErrorMessage('passWord')}}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="input-container">
+            <button class="login_btn">Login</button>
+            <div class="forgotDiv">
+                <mat-checkbox formControlName="rememberMe"  class="checkbox">Remember Me</mat-checkbox>
+                <span class="Forgot_txt" [routerLink]="['/forgot-password']">Forgot Password</span>
+            </div>
+        </div>
+    </form>
+</div>

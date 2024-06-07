@@ -1,0 +1,9 @@
+<mat-sidenav-container fullscreen>
+    <mat-sidenav #sidenav mode="side" (keydown.escape)="close('escape')" [opened]="isDesktop" [mode]="isDesktop ? 'side' : 'over'" fixedTopGap="56" class="sidenav_content">
+      <app-left-site-menu></app-left-site-menu>
+     </mat-sidenav>
+     <mat-sidenav-content>
+       <app-header [inputSideNav]="sidenav"></app-header>
+       <router-outlet ></router-outlet>
+     </mat-sidenav-content>
+    </mat-sidenav-container>
