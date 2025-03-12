@@ -26,7 +26,7 @@ const app_routes: Routes = [
   {
 		path: '',
 		loadChildren: () => import('./main-modules/main-modules.module').then(m => m.MainModulesModule),
-	}
+	},
 ]
 @NgModule({
   declarations: [

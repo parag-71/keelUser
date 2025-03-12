@@ -1,0 +1,184 @@
+
+  <nav class="navbar navbar-expand-lg  navCustomStyle">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <img class="navbar-brand img-fluid" src="assets/images/logo.png" width="200" height="150">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto" style="justify-content: space-between;">
+                <li class="nav-item px-lg-3">
+                   <a class="nav-link " (click)="scrollTo('benefits')" [class.active]="activeSection === 'benefits'">BENEFITS</a>
+                </li>
+                <li class="nav-item px-lg-3">
+                    <a class="nav-link" (click)="scrollTo('industries')" [class.active]="activeSection === 'industries'">INDUSTRIES</a>
+                </li>
+                <li class="nav-item px-lg-3">
+                    <a class="nav-link" (click)="scrollTo('requestDemo')" [class.active]="activeSection === 'requestDemo'">REQUEST DEMO</a>
+                </li>
+                <li class="nav-item px-lg-3">
+                    <a class="nav-link" [routerLink]="['/login']" [ngClass]="{ 'active': activeSection === 'login' }">LOGIN</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+  </nav>
+  <div class="backImg" >
+      <!-- Hero Section -->
+      <div class="hero-section text-center  d-flex align-items-center justify-content-center">
+          <div class="container">
+              <p class="headingTxt">RESOURCE VISIBILITY REDEFINED</p>
+              <p class="peraTxt">Gain complete visibility by tracking and managing resources in real time, with </p>
+              <p class="peraTxt">instant access to the Keel board from any location.</p>
+          </div>
+      </div>
+      <div class="container">
+          <div class="row">
+              <div class="col-md-12 col-sm-12 text-center">
+                  <img src="assets/images/main-image.png" alt="" class="img-fluid" class="img-fluid" style="width: 80%;">
+              </div>
+              <!-- <div class="col-md-5 col-sm-6 d-flex align-items-center">
+                  <div class="contactUsForm container">
+                      <div class="row">
+                          <div class="contactUsTxt col-12">Contact Us!</div>
+                          <div class="col-md-6 col-sm-12 my-3 px-4">
+                              <label class="contLabel">First Name</label>
+                              <input type="text" class="contactInput" placeholder="Enter Name">
+                          </div>
+                          <div class="col-md-6 col-sm-12 my-3 px-4">
+                              <label class="contLabel">Last Name</label>
+                              <input type="text" class="contactInput" placeholder="Enter Last Name">
+                          </div>
+                          <div class="col-md-6 col-sm-12 my-3 px-4">
+                              <label class="contLabel">Phone No.</label>
+                              <input type="text" class="contactInput" placeholder="Enter Number">
+                          </div>
+                          <div class="col-md-6 col-sm-12 my-3 px-4">
+                              <label class="contLabel">Email</label>
+                              <input type="text" class="contactInput" placeholder="Enter Email">
+                          </div>
+                          <div class="col-md-6 col-sm-12 my-3 px-4">
+                              <label class="contLabel">Company Name</label>
+                              <input type="text" class="contactInput" placeholder="Enter Company Name">
+                          </div>
+                          <div class="col-12 mt-4 d-flex justify-content-center">
+                              <button class="contSaveBtn ">
+                                  Send Request
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              </div> -->
+          </div>
+      </div>
+  </div>
+  <!-- About Us -->
+    <section class="container my-5 about-us" id="about">
+      <div class="row center-line">
+        <div class="col-lg-6">
+          <h3 class="heading-txt-orange">About Us</h3>
+          <p class="about-big-txt">The founders are project management professionals who had a simple vision: To create a software platform that is easy to use and is one source of truth.</p>
+          <h3 class="heading-txt-orange">About Keel</h3>
+          <p class="pt-2">Keel is designed to streamline operations by providing clear visibility of the key staff (including their qualifications and competencies) and other resources available on your job site from day-to-day. Locate within a few clicks any additional resources available in your wider company, so you can focus on doing the job, not finding the people.</p>
+        </div>
+        <div class="col-lg-6 d-flex justify-content-center">
+          <img src="assets/images/about_us.png" alt="About Us" class="img-fluid p-4" width="85%">
+        </div>
+      </div>
+    </section>
+    <!-- Image cards -->
+    <!-- <div class="container text-center my-5">
+      <div class="card-container">
+          <div  *ngFor="let item of aboutCard" class="card">
+            <img [src]="'assets/images/' + item.img" alt="Card Image 1" class="card-image">
+            <div class="card-text">
+              <p>{{item.title}}</p>
+            </div>
+          </div>
+        </div>
+    </div> -->
+    <!-- THE BENEFITS -->
+    <section class="container d-flex flex-column align-items-center  my-5" id="benefits" >
+      <h3 class="mb-4 text-center heading-txt-black">THE BENEFITS</h3>
+      <div class="row">
+        <div class="col-md-6 col-sm-6 mb-4" *ngFor="let benefit of benefits ; let last = last" [ngClass]="{'offset-md-3': last && benefits.length % 2 !== 0}">
+          <div class="benefit-container">
+            <img [src]="benefit.image" [alt]="benefit.alt" class="pe-3 align-self-center" width="110px">
+            <div class="benefit-item h-100">
+              <h5>{{ benefit.title }}</h5>
+              <p>{{ benefit.description }}</p>
+            </div>
+          </div>
+      </div>
+      </div>
+    </section>
+    <!-- Industries -->
+    <section class="container industries-section text-center my-5" id="industries" >
+      <h3 class="mb-4 heading-txt-black">INDUSTRIES</h3>
+      <div class="row" style="display: flex;justify-content:center">
+          <div class="industry-item p-2 text-white rounded m-4" *ngFor="let industry of industries; let i = index">
+              <div class="quarter-circle"></div>
+              <img [src]="industry.image" [alt]="industry.name" width="90px">
+              <p >{{ industry.name }}</p>
+          </div>
+      </div>
+    </section>
+    <!-- Request  -->
+    <section class="container py-4 d-flex flex-column align-items-center" id="requestDemo" >
+      <h3 class="mb-4 heading-txt-black">REQUEST A DEMO</h3>
+      <div class="row">
+        <div class="col-12 requestSection">
+          <div class="center-heading"> Please submit your details and <br> we will be in touch</div>
+              <form [formGroup]="requestDemoForm" (ngSubmit)="requestDemoForm.valid ? onSubmit() : commonService.markFormGroupTouched(requestDemoForm)" class="row px-5 pt-3">
+                <div class="mb-3 px-4 col-md-6 col-sm-12">
+                  <label class="form-label">Your Name</label>
+                  <input type="text" formControlName="name" class="form-control" placeholder="Enter Name">
+                  <mat-error class="text-white p-0" *ngIf="(requestDemoForm.get('name').invalid && requestDemoForm.get('name').touched)">{{getErrorMessage('name')}}</mat-error>
+                </div>
+                <div class="mb-3 px-4 col-md-6 col-sm-12">
+                  <label class="form-label">Phone Number</label>
+                  <input type="number" formControlName="phone" class="form-control no-spinner" placeholder="Enter Phone Number">
+                </div>
+                <div class="mb-3 px-4 col-md-6 col-sm-12">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" formControlName="email" class="form-control" placeholder="Enter Email Address">
+                  <mat-error class="text-white p-0" *ngIf="(requestDemoForm.get('email').invalid && requestDemoForm.get('email').touched)">{{getErrorMessage('mail')}}</mat-error>
+                </div>
+                <div class="mb-3 px-4 col-md-6 col-sm-12">
+                  <label class="form-label">Company Name</label>
+                  <input type="text" formControlName="companyName" class="form-control" placeholder="Enter Company Name">
+                </div>
+                <div class="mb-3 px-4 col-12">
+                  <label class="form-label">Comment</label>
+                  <label class="float-end comment-hint" style="font-size: 13px; font-weight: 100;">Max limit 200 characters</label>
+                  <textarea formControlName="comment" maxlength="200" class="form-control form-control-textAera" rows="3"></textarea>
+                  <mat-error class="text-white p-0" *ngIf="(requestDemoForm.get('comment').invalid && requestDemoForm.get('comment').touched)">{{getErrorMessage('comment')}}</mat-error>
+                </div>
+                <button type="submit" class="btn btn-request mx-auto">Send Request</button>
+              </form>
+              <div class="row pt-3">
+                <div class="col-md-6 col-sm-12  d-flex justify-content-center justify-content-md-end border-md-right" >
+                  <span class="p-1 location-txt text-start" >
+                    <img src="assets/images/Keel-systems-location-icon.png" width="22px" class="me-2">
+                    Auckland, New Zealand
+                  </span>
+                </div>
+                <div class="col-md-6 col-sm-12  d-flex  justify-content-center justify-content-md-start">
+                  <span class="p-1 location-txt">
+                    <img src="assets/images/Keel-systems-mail-icon.png" alt="" width="28px" class="me-2">
+                    Info@keelsystems.co.nz
+                  </span>
+                </div>
+              </div>
+        </div>
+      </div>
+    </section>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-end footer" style="color: rgb(217, 121, 67);">
+          <p>Copyright &copy; 2024 Keel Systems</p>
+        </div>
+    </div>

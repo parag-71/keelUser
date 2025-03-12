@@ -1,4 +1,4 @@
-<div class="popupParent" [ngStyle]="{'height':from === 'add' ? '525px' : '490px' }">
+<div class="popupParent" [ngStyle]="{'height':from === 'add' ? '547px' : '510px' }">
     <h4 mat-dialog-title class="modal-header text-center">
         <span class="header_text">
            {{this.from == 'edit' ? 'Update Resource' : 'Add resource'}} 
@@ -103,7 +103,18 @@
                                 </mat-checkbox>
                             </div>
                         </div>
-                       
+                        <div class="col-md-12 col-xs-12 checkbox align-items-baseline d-flex" *ngIf="userDetails.usrId != 1">
+                            <div class="p-0 createAccCheckBox">
+                                <mat-checkbox formControlName="plannerPermission">Planner Access</mat-checkbox>
+                            </div>
+                            <div class="ms-2 d-flex flex-column role-radio" *ngIf="addUpdateUserGrp.get('plannerPermission').value">
+                                <label>Role</label> 
+                                <mat-radio-group formControlName="readWritePermission" class="d-flex">
+                                    <mat-radio-button [value]="1">View only</mat-radio-button>
+                                    <mat-radio-button [value]="2">View & Edit</mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>

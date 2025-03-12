@@ -19,7 +19,7 @@ export class SiteService {
     ) { }
   getSiteList(pagination:any){
     let siteListModal = new PaginationModal()
-      siteListModal.search = pagination && pagination.search ? pagination.search : ''
+      siteListModal.search = pagination && pagination.search ? pagination.search : this.commonService.search = ''
       siteListModal.index = pagination && pagination.index ? pagination.index : '0'
       siteListModal.limit = pagination && pagination.limit ? pagination.limit : '25'
     this.endUserService.siteList(siteListModal).subscribe((result:any)=>{

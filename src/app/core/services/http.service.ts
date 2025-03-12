@@ -26,14 +26,16 @@ export class HttpService {
    * @returns {Observable<>}
    */
   post(url: any, body: any, type?: any): Observable<any> {
-    type == undefined ? this.requestInterceptor() : '';
+    if(type == undefined){
+      this.requestInterceptor()
+    }
     return this.http.post<any>(url, body)
     .pipe(tap({
       next:(res)=> this.onSubscribeSuccess(res),
       error:(err)=>this.onSubscribeError(err)
     }))
     .pipe(finalize(() => {
-      this.onFinally();
+        this.onFinally()
     }));
     ;
   }
@@ -47,11 +49,11 @@ export class HttpService {
    * @param res
    */
   public onSubscribeSuccess(res: any): any {
-    setTimeout(() => {
-      this.loading.next({
-        loading: false,
-      });
-    }, 5);
+      setTimeout(() => {
+        this.loading.next({
+          loading: false,
+        });
+      }, 5);
   }
 
   /**
@@ -68,11 +70,9 @@ export class HttpService {
       // Server-side error
       errorMessage = `Server returned code ${error.status}, error message is: ${error.message}`;
     }
-    setTimeout(() => {
-			this.loading.next({
-				loading: false
-			});
-		}, 5);
+        this.loading.next({
+          loading: false
+        });
     return throwError(errorMessage);
 		
 	}

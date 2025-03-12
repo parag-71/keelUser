@@ -1,0 +1,367 @@
+@import '../../../shared/scss/default_variables.scss';
+
+   // narbar style
+   .navCustomStyle {
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    background: #fff;
+    height: 75px;
+    li {
+        a {
+            color: black;
+            font-weight: 500;
+            cursor: pointer;
+        }
+    }
+    .nav-link.active {
+        position: relative;
+        text-decoration: none;
+      }
+      
+      .nav-link.active::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background-color: orange;
+        left: 0;
+        bottom: -5px; /* Adjust the position as needed */
+      }
+      
+}
+
+// hero section style
+.backImg {
+// background: 
+//   linear-gradient(180deg, 
+//     rgba(255, 255, 255, 0.8) 55%, 
+//     rgb(212, 122, 59) 55%, 
+//     rgba(143 74 6 / 90%) 80%),
+//   url('/assets/images/Banner-image.jpg');
+
+background: 
+linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgb(255, 255, 255) 50%, rgb(169, 169, 169) 70%, rgb(0, 0, 0) 100%), url("/assets/images/Banner-image.jpg");
+  
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+    .hero-section {
+        padding: 10px 0 40px 0;
+        .headingTxt {
+            font-size: 45px;
+            font-weight: bold;
+        }
+
+        .peraTxt {
+            font-size: 22px;
+            font-weight: bold;
+            line-height: 15px;
+        }
+    }
+}
+
+// contact Us form style
+.contactUsForm {
+    background-color: $primary-color;
+    height: 95%;
+    width: 90%;
+    border-radius: 15px;
+    border: 1px solid white;
+
+    .contactUsTxt {
+        color: $white-color;
+        font-size: 25px;
+        margin-top: 10px;
+    }
+
+    .contLabel {
+        color: white;
+        font-size: 15px;
+    }
+
+    .contactInput {
+        width: 100%;
+        // height: 50px;
+        border: none;
+        background-color: $primary-color;
+        border-bottom: 2px solid white;
+        font-family: 16px;
+        color: white;
+        caret-color:white !important;
+    }
+
+    .contactInput::placeholder {
+        color: white;
+        font-size: 12px;
+    }
+
+    .contSaveBtn {
+        border: none;
+        width: 75%;
+        height: 40px;
+        background-color: white;
+        border-radius: 8px;
+        color: $primary-color;
+    }
+}
+
+// About Us style
+.about-us {
+    .heading-txt-orange {
+        color: $primary-color ;
+        display: inline-block;
+        position: relative;
+        font-size: 22px;
+    }
+
+    .heading-txt-orange::after {
+        content: '';
+        position: absolute;
+        width: 60%;
+        height: 2px;
+        background-color: $primary-color;
+        bottom: 0;
+        left: 0;
+    }
+
+    .about-big-txt {
+        font-size: 17px;
+        font-weight: 500;
+        padding-top: 6px;
+    }
+
+    
+}
+
+.center-line {
+    position: relative;
+}
+
+.center-line::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background-color: #00000036;
+}
+
+// About Us image Card
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
+    padding: 14px;
+}
+
+.card {
+    position: relative;
+    flex: 1 1 calc(25% - 40px);
+    // max-width: calc(25% - 40px); /* Ensures max width on large screens */
+    height: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    // background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-text {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 12px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.card-text p {
+    margin: 0;
+    // font-size: 18px;
+}
+
+// Request Section 
+.requestSection {
+    background-color: #D97943;
+    color: white;
+    padding: 40px;
+    border-radius: 8px;
+    .center-heading{
+        text-align: center;
+        font-size: 30px;
+        font-weight: 500;
+        padding-bottom: 15px;
+    }
+    .location-txt{
+        font-weight: 100;
+        display: flex;
+        align-items: center;
+    }
+    .border-md-right {
+        border-right: 1px solid white; /* Apply white border */
+    }
+    
+    @media (max-width: 768px) { /* For mobile screens */
+        .border-md-right {
+            border-right: none; /* Remove the border on small screens */
+        }
+    }
+    .form-control {
+        background-color: transparent;
+        border: none;
+        border-bottom: 1px solid white;
+        border-radius: 0;
+        color: white;
+        padding: 8px 0;
+        caret-color:white !important;
+    }
+    .form-control:focus {
+        outline: none;
+        box-shadow: none;
+    }
+    .form-control::placeholder {
+        color: white;
+        font-size: 12px;
+    }
+    .form-control-textAera{
+        border: 1px solid white;
+        border-radius: 5px;
+        padding: 10px;
+    }
+    .form-label {
+        color: white;
+        font-size: 18px;
+    }
+
+    .btn-request {
+        background-color: white;
+        color: #D97943;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        width: 40%;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    }
+    .no-spinner::-webkit-outer-spin-button,
+    .no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    }
+
+    /* Firefox */
+    .no-spinner[type="number"] {
+        -moz-appearance: textfield;
+    }
+}
+
+
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 1024px) {
+    .card {
+        flex: 1 1 calc(50% - 40px);
+        /* 2 cards per row on tablets */
+        max-width: calc(50% - 40px);
+    }
+}
+
+@media (max-width: 768px) {
+    .card {
+        flex: 1 1 calc(100% - 40px);
+        /* 1 card per row on mobile */
+        max-width: calc(100% - 40px);
+    }
+}
+
+
+
+
+@media (max-width: 767.98px) {
+    .hero-section {
+        padding: 50px 0;
+    }
+
+    .benefit-item,
+    .industry-item {
+        margin-bottom: 20px;
+    }
+}
+
+.benefit-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .benefit-item {
+        width: 70%;
+    }
+}
+#benefits::after {
+    content: "";
+    display: block;
+    width: 80%;
+    border-top: 2px solid rgba(235,235,235,255);
+    margin-top: 20px; 
+  }
+.industry-item {
+    background-color: $primary-color;
+    width: 100%;
+    max-width: 300px;
+    position: relative; /* Needed for quarter-circle positioning */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.quarter-circle {
+    position: absolute;
+    left: -40px;
+    top: -75px;
+    height: 175px;
+    width: 175px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    z-index: 0;
+  }
+/* For smaller screens, remove the line and stack the columns */
+@media (max-width: 767px) {
+    .center-line::after {
+        display: none;
+    }
+
+}
+
+
+
+.heading-txt-black {
+    display: inline-block;
+    position: relative;
+    font-size: 25px;
+}
+
+.heading-txt-black::after {
+    content: '';
+    position: absolute;
+    width: 30%;
+    height: 2px;
+    background-color: $primary-color;
+    bottom: 0;
+    left: 0;
+}

@@ -5,6 +5,8 @@ export const base_url = environment.BASE_URL
 //System Admin login logout Api 
 export const login = environment.API_ENDPOINT + "login"
 export const logout = environment.API_ENDPOINT + "logout"
+export const changeUserPassword = environment.API_ENDPOINT + "changeUserPassword"
+export const getUserAccess = environment.API_ENDPOINT + "getUserAccess"
 
 //site API
 export const addOrUpdateSite = environment.API_ENDPOINT + "addOrUpdateSite"
@@ -56,6 +58,21 @@ export const sentRequestSiteNameList = environment.API_ENDPOINT + "sentRequestSi
 //Forget Password
 export const forgotPassword = environment.API_ENDPOINT + "forgotPassword"
 export const resetPassword = environment.API_ENDPOINT + "resetPassword"
+
+//request demo 
+export const requestDemo = environment.API_ENDPOINT + "requestDemo"
+
+//resource planner
+export const addOrUpdateResourcePlanner = environment.API_ENDPOINT + "addOrUpdateResourcePlanner"
+export const resourceList = environment.API_ENDPOINT + "resourceList"
+export const resourcePlannerList = environment.API_ENDPOINT + "resourcePlannerList"
+export const deleteResourcePlan = environment.API_ENDPOINT + "deleteResourcePlan"
+
+//add Dummy resource
+export const addOrUpdateDummyUser = environment.API_ENDPOINT + "addOrUpdateDummyUser"
+export const DummyUserList = environment.API_ENDPOINT + "DummyUserList"
+export const deleteDummyUser = environment.API_ENDPOINT + "deleteDummyUser"
+
 
 
 

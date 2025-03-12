@@ -18,6 +18,7 @@ export class SearchFilterComponent {
   @Output() dataEvent = new EventEmitter<boolean>();
   public filterSite: any
   public currentRouteName:any
+  public removeFilterValue:any
   constructor(public resourceService: ResourceService,
     public commonService: CommonService,
     public dashboradService: DashboradService,
@@ -36,6 +37,7 @@ export class SearchFilterComponent {
   ngOnInit() {
     this.changeFilter(this.searchType)
     this.dashboradService.removeFilterLabel.subscribe((val: any) => {
+      this.removeFilterValue = ''
       switch (val.index) {
         case 0:
           this.dashboradService.filterItem[0].siteName = this.removeDuplicateFilterData(this.dashboradService.filterItem[0].siteName, val.item)
@@ -59,76 +61,65 @@ export class SearchFilterComponent {
           break;
         default:
       }
+      this.removeFilterValue = val
       this.applyAdvanceFilter()
     })
   }
 
   applyAdvanceFilter() {
     this.dashboradService.displaySiteData = []
+    
     let noFilterExist = (!this.dashboradService.filterItem[1].roleName.length && !this.dashboradService.filterItem[2].licName.length && !this.dashboradService.filterItem[3].trName.length && !this.dashboradService.filterItem[4].comptName.length) ? true : false
-    this.dashboradService.filterItem.filter((filterData: any) => {
-      this.dashboradService.allSiteData.filter((arrData: any) => {
-        switch (filterData.searchType) {
-          case '1':
-            if (filterData.siteName.includes(arrData.siteName) || !filterData.siteName.length) {
-              this.dashboradService.displaySiteData.push(JSON.parse(JSON.stringify(arrData)))
-              this.dashboradService.displaySiteData[this.dashboradService.displaySiteData.length - 1].userData = []
-            }
-            break;
-          case '2':
-            let index = this.utiObj.getIndexOfArrayData(this.dashboradService.displaySiteData, 'siteId', arrData.siteId);
-            index != -1 ? arrData.userData.filter((userData: any) => {
-              if (filterData.roleName.includes(userData.roleName) || noFilterExist) {
-                let checkExistUser: any = this.checkUser(this.dashboradService.displaySiteData[index].userData, userData.assignId)
-                checkExistUser ? '' : this.dashboradService.displaySiteData[index].userData.push(userData)
-              }
-            }) : ''
-            break;
-          case '3':
-            let index2 = this.utiObj.getIndexOfArrayData(this.dashboradService.displaySiteData, 'siteId', arrData.siteId);
-            index2 != -1 ? arrData.userData.filter((userData: any) => {
-              userData.licData.filter((licData: any) => {
-                if (filterData.licName.includes(licData.licName) || noFilterExist) {
-                  let checkExistUser: any = this.checkUser(this.dashboradService.displaySiteData[index2].userData, userData.assignId)
-                  checkExistUser ? '' : this.dashboradService.displaySiteData[index2].userData.push(userData)
-                }
-              })
-            }) : ''
-            break;
-          case '4':
-            let index3 = this.utiObj.getIndexOfArrayData(this.dashboradService.displaySiteData, 'siteId', arrData.siteId);
-            index3 != -1 ? arrData.userData.filter((userData: any) => {
-              userData.trainingData.filter((trainingData: any) => {
-                if (filterData.trName.includes(trainingData.trName) || noFilterExist) {
-                  let checkExistUser: any = this.checkUser(this.dashboradService.displaySiteData[index3].userData, userData.assignId)
-                  checkExistUser ? '' : this.dashboradService.displaySiteData[index3].userData.push(userData)
-                }
-              })
-            }) : ''
-            break;
-          case '5':
-            let index4 = this.utiObj.getIndexOfArrayData(this.dashboradService.displaySiteData, 'siteId', arrData.siteId);
-            index4 != -1 ? arrData.userData.filter((userData: any) => {
-              userData.comptData.filter((comptData: any) => {
-                if (filterData.comptName.includes(comptData.comptName) || noFilterExist) {
-                  let checkExistUser: any = this.checkUser(this.dashboradService.displaySiteData[index4].userData, userData.assignId)
-                  checkExistUser ? '' : this.dashboradService.displaySiteData[index4].userData.push(userData)
-                }
-              })
-            }) : ''
-            break;
-          default:
-            break;
+    let hasSiteRoleFilter  = this.dashboradService.filterItem[1].roleName.length
+    this.dashboradService.allSiteData.filter((arrData: any) => {
+      if (this.dashboradService.filterItem[0].siteName.includes(arrData.siteName) || !this.dashboradService.filterItem[0].siteName.length) {
+        this.dashboradService.displaySiteData.push(JSON.parse(JSON.stringify(arrData)))
+        this.dashboradService.displaySiteData[this.dashboradService.displaySiteData.length - 1].userData = []
+      }
+      let index = this.utiObj.getIndexOfArrayData(this.dashboradService.displaySiteData, 'siteId', arrData.siteId);
+      index != -1 ? arrData.userData.filter((userData: any) => {
+        if (this.dashboradService.filterItem[1].roleName.includes(userData.roleName) || noFilterExist) {
+          let checkExistUser: any = this.checkUser(this.dashboradService.displaySiteData[index].userData, userData.assignId)
+          checkExistUser ? '' : this.dashboradService.displaySiteData[index].userData.push(userData)
         }
-
-      })
-    })
+      }) : ''
+      if(index != -1){
+      let filterArray = hasSiteRoleFilter ? this.dashboradService.displaySiteData[index].userData : arrData.userData
+        JSON.parse(JSON.stringify(filterArray)).filter((userData: any) => {
+          let userLicData = userData.licData.map((obj: any) => obj.licName);
+          let userTrData = userData.trainingData.map((obj: any) => obj.trName);
+          let userCompData = userData.comptData.map((obj: any) => obj.comptName);
+          let licResult = this.areAllElementsPresent(this.dashboradService.filterItem[2].licName, userLicData)
+          let trResult = this.areAllElementsPresent(this.dashboradService.filterItem[3].trName, userTrData)
+          let compResult = this.areAllElementsPresent(this.dashboradService.filterItem[4].comptName, userCompData)
+          if(index != -1 ){
+            if(licResult && trResult && compResult){
+              let checkExistUser: any = this.checkUser(this.dashboradService.displaySiteData[index].userData, userData.assignId)
+              checkExistUser ? '' : this.dashboradService.displaySiteData[index].userData.push(userData)
+            }else{
+              const indexToRemove = this.dashboradService.displaySiteData[index].userData.findIndex((user: any) => user.assignId === userData.assignId)
+              indexToRemove !== -1 ? this.dashboradService.displaySiteData[index].userData.splice(indexToRemove, 1) : '';
+            }
+          }
+        })
+      }
+    })   
+   
     let filterUserData = !this.dashboradService.filterItem[0].siteName.length && !this.dashboradService.filterItem[1].roleName.length && !this.dashboradService.filterItem[2].licName.length && !this.dashboradService.filterItem[3].trName.length && !this.dashboradService.filterItem[4].comptName.length
     !filterUserData ?  this.dashboradService.displaySiteData = this.dashboradService.displaySiteData.filter((obj: any) => obj.userData.length > 0) : ''
     this.dashboradService.dashboardFilterChips = JSON.parse(JSON.stringify(this.dashboradService.filterItem))
     this.checkDateIsExpired()
     this.dataEvent.emit(false);
   }
+  areAllElementsPresent(arr1:any, arr2:any) {
+    for (let element of arr1) {
+        if (!arr2.includes(element)) {
+            return false; 
+        }
+    }
+    return true;
+  }
+
   checkDateIsExpired(){
     this.dashboradService.displaySiteData.forEach((siteData: any) => {
       siteData.userData.forEach((user: any) => {

@@ -3,15 +3,15 @@
 
 .forAdd{
   ::ng-deep .mat-mdc-tab-body {
-    min-height: 389px !important;
-    max-height: 389px !important;
+    min-height: 425px !important;
+    max-height: 425px !important;
     overflow-y: auto;
   }
 }
 .forUpdate{
   ::ng-deep .mat-mdc-tab-body {
-    min-height: 359px !important;
-    max-height: 359px !important;
+    min-height: 385px !important;
+    max-height: 385px !important;
     overflow-y: auto;
   }
 }
@@ -133,6 +133,28 @@
       .checkbox{
         padding-left: 22px !important;
         height: 38px;
+        .role-radio{
+          label{
+            margin-left: 10px;
+            color: #4F4F4F;
+            font-size: 13px;
+            font-weight: 500;
+          }
+          ::ng-deep {
+            .mdc-form-field > label {
+              font-size: 12px;
+              font-weight: 500;
+              color: #4F4F4F;
+            }
+        
+            .mdc-radio__native-control:enabled + .mdc-radio__background {
+              .mdc-radio__inner-circle,
+              .mdc-radio__outer-circle {
+                border-color: $primary-color !important;
+              }
+            }
+          }
+        }
       .createAccCheckBox{
         mat-checkbox{
           color: #4F4F4F;
@@ -336,6 +358,7 @@
     }
   }
 }
+
 }
 
 .matSelectPadding{

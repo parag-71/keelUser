@@ -1,0 +1,63 @@
+<div class="popupParent">
+    <h4 mat-dialog-title class="modal-header text-center">
+        <span class="header_text">
+            Select Site
+        </span>
+        <mat-icon class="close" matTooltip="close" (click)="closeDialog()" matDialogClose>close</mat-icon>
+    </h4>
+    <form [formGroup]="siteForm" (ngSubmit)="siteForm.valid ? createEvent() : commonService.markFormGroupTouched(siteForm)">
+        <div class="container"> 
+            <div class="row inpu_field_box">
+                <div class="col-12 mb-3 position-relative">
+                        <mat-form-field appearance="outline" class="matSelectPadding">
+                            <mat-label>Select Site</mat-label>
+                            <input matInput [formControl]="siteForm.controls['siteName']" [matAutocomplete]="auto" placeholder="Select Site" (input)="filterSites()" >
+                            <mat-icon matSuffix>keyboard_arrow_down</mat-icon>
+                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="showAllSites()">
+                              <mat-option *ngFor="let site of filteredSites | async" [value]="site.siteName">
+                                {{ site.siteName }}
+                              </mat-option>
+                            </mat-autocomplete>
+                            <mat-error *ngIf="siteForm.get('siteName')?.touched && siteForm.get('siteName')?.hasError('required')">
+                              Site is required
+                            </mat-error>
+                        </mat-form-field>
+                        <div class="select-site-link">
+                            <span (click)="openSiteDilog()">Add Site</span>
+                        </div>
+                </div>
+                <div class="col-md-6 col-xs-12 ">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Start Date</mat-label>
+                        <input matInput [matDatepicker]="startDate" formControlName="startDates">
+                        <mat-datepicker-toggle matIconSuffix [for]="startDate"></mat-datepicker-toggle>
+                        <mat-datepicker #startDate></mat-datepicker>
+                        <mat-error *ngIf="siteForm.get('startDates')?.touched && siteForm.get('startDates')?.hasError('required')">
+                            Start Date is required
+                        </mat-error>
+                      </mat-form-field>
+                </div>
+                <div class="col-md-6 col-xs-12">
+                    <mat-form-field appearance="outline">
+                        <mat-label>End Date</mat-label>
+                        <input matInput [matDatepicker]="endDate" formControlName="endDates">
+                        <mat-datepicker-toggle matIconSuffix [for]="endDate"></mat-datepicker-toggle>
+                        <mat-datepicker #endDate></mat-datepicker>
+                        <mat-error *ngIf="siteForm.get('endDates')?.touched && siteForm.get('endDates')?.hasError('required')">
+                            End Date is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+                <div class="col-12 add_btn_box " [ngClass]="{ 'd-flex justify-content-between': this.data.selectInfo.id, 'justify-content-end': !this.data.selectInfo.id }">
+                    <button *ngIf="this.data.selectInfo.id" type="button" class="del_btn" style="margin-right: 12px;" (click)="deleteEventAlert()">Delete</button>
+                    <div>
+                        <button type="submit" class="add_btn">Confirm</button>
+                        <button type="button" class="cancel_btn" (click)="closeDialog()">Cancel</button>
+                    </div>
+                </div>
+        </div>
+    </form>
+<div>
+
+  

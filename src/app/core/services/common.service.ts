@@ -22,6 +22,9 @@ export class CommonService {
   public requestCount:any
   public userSiteList:any
   public searchSiteList:any
+  public search:any
+  public usrpermission:any
+  resourcePlannerSub: Subject<any> = new Subject()
   constructor(
     private deviceService: DeviceDetectorService,
     public route:Router,
@@ -80,7 +83,7 @@ export class CommonService {
   }
 
   siteNameList(usrId?:any){
-    this.endUserService.siteNameList({usrId:usrId}).subscribe((result:any)=>{
+    this.endUserService.siteNameList({usrId:usrId,siteType:[0,1]}).subscribe((result:any)=>{
       if (result.status == '200' ){
         let site:any = []
         usrId ? this.userSiteList = result.data : ''
@@ -95,7 +98,7 @@ export class CommonService {
     })
   }
   searchFilterSiteList(){
-    this.endUserService.siteNameList({}).subscribe((result:any)=>{
+    this.endUserService.siteNameList({siteType:[0,1]}).subscribe((result:any)=>{
       if (result.status == '200' ){
         this.searchSiteList = result.data
       }else{
@@ -127,5 +130,16 @@ export class CommonService {
       this.utilObj.setLoginUser(userDetails)
       this.localStorageSubject.next();
   }
+
+  getUserAccess(){
+    this.endUserService.getUserAccess({usrId:this.utilObj.getLoginUser().usrId}).subscribe((result:any)=>{
+      if (result.status == '200' ){
+        this.usrpermission = result.data[0] 
+      }else{
+        this.ApiErrAlert(result)
+      }
+    })
+  }
+ 
 
 }

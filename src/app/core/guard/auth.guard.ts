@@ -11,11 +11,9 @@ export class AuthGuard implements CanActivate {
 		public router: Router,
   ) {}
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): any {
-    if(this.utiObj.getLoginUser()?.rememberMe){
+    if(this.utiObj.getLoginUser()){
       return true; 
-    }else if(this.utiObj.getLoginUser()?.rememberMe == false && sessionStorage.getItem('rememberMe') == 'session'){
-      return true; 
-    } else{
+    }else{
       this.router.navigate(["/login"]) 
       return false; 
     }

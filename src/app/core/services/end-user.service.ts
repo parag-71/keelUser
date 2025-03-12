@@ -23,6 +23,21 @@ export class EndUserService {
 		);
   }
 
+  changeUserPassword(paramData:any):any{
+    return this.http.post(
+			Global.changeUserPassword,
+			paramData
+		);
+  }
+
+  getUserAccess(paramData:any):any{
+    return this.http.post(
+			Global.getUserAccess,
+			paramData,
+      'backgroundApi'
+		);
+  }
+
   //Site API Fn
   addOrUpdateSite(paramData:any):any{
     return this.http.post(
@@ -224,6 +239,60 @@ export class EndUserService {
 		);
   }
 
+
+  // request demo 
+  requestDemo(paramData:any):any{
+    return this.http.post(
+			Global.requestDemo,
+			paramData
+		);
+  }
+
+  //Resource Planner
+  resourceList(paramData:any):any{
+    return this.http.post(
+			Global.resourceList,
+			paramData
+		);
+  }
+  addOrUpdateResourcePlanner(paramData:any):any{
+    return this.http.post(
+			Global.addOrUpdateResourcePlanner,
+			paramData
+		);
+  }
+  resourcePlannerList(paramData:any):any{
+    return this.http.post(
+			Global.resourcePlannerList,
+			paramData
+		);
+  }
+  deleteResourcePlan(paramData:any):any{
+    return this.http.post(
+			Global.deleteResourcePlan,
+			paramData
+		);
+  }
+ 
+  //add Dummy Resource
+  addOrUpdateDummyUser(paramData:any):any{
+    return this.http.post(
+			Global.addOrUpdateDummyUser,
+			paramData
+		);
+  }
+  DummyUserList(paramData:any):any{
+    return this.http.post(
+			Global.DummyUserList,
+			paramData
+		);
+  }
+  deleteDummyUser(paramData:any):any{
+    return this.http.post(
+			Global.deleteDummyUser,
+			paramData
+		);
+  }
 }
 
 

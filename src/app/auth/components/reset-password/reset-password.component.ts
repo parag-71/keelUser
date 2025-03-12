@@ -30,7 +30,7 @@ export class ResetPasswordComponent {
     });
     this.resetPasswordGrp = this.fb.group({
       mail: [this.mail,[]],
-			password: ['',[Validators.required,this.commonService.noWhitespace,Validators.pattern(/^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/)]],
+			password: ['',[Validators.required,this.commonService.noWhitespace,Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\W_]{6,}$/)]],
 			cPassword: ['',[Validators.required,this.commonService.noWhitespace]],
 		});
     this.resetPasswordGrp.get('cPassword').valueChanges.subscribe(() => {
@@ -46,7 +46,6 @@ export class ResetPasswordComponent {
   resetPassword(data:any){
       this.endUserService.resetPassword({usrPassword:data.password,usrId:this.userId}).subscribe((result:any)=>{
         if(result.status == '200'){
-          result.data[0]['rememberMe'] = false
           this.utiObj.setLoginUser(result.data[0])
         this.route.navigate(['/dashboard'])
         }else{
@@ -58,7 +57,7 @@ export class ResetPasswordComponent {
   getErrorMessage(type:any) {
     switch (type) {
       case "pass":
-        return this.resetPasswordGrp.get('password').hasError('required') || this.resetPasswordGrp.get('password').hasError('whitespace') ?  'Password is required' : this.resetPasswordGrp.get('password').hasError('pattern') ? 'Password should be minimum 6 characters and can be a combination of letters and numbers.' : '';
+        return this.resetPasswordGrp.get('password').hasError('required') || this.resetPasswordGrp.get('password').hasError('whitespace') ?  'Password is required' : this.resetPasswordGrp.get('password').hasError('pattern') ? 'Password should be a minimum of 6 characters with combination of letters and numbers.' : '';
       case "cPass":
         return this.resetPasswordGrp.get('cPassword').hasError('required') || this.resetPasswordGrp.get('cPassword').hasError('whitespace') ? 'Confirm Password is match' : this.resetPasswordGrp.get('cPassword').hasError('mismatch')  ? 'Password is not matched' : '';
       default:

@@ -4,7 +4,6 @@ import { EndUserService } from './end-user.service';
 import { Util } from '../resource/utils';
 import { Router } from '@angular/router';
 import { CommonService } from './common.service';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -26,6 +25,15 @@ export class AuthService {
       if(result.status == '200'){
         result.data[0]['rememberMe'] = user.rememberMe
         this.utiObj.setLoginUser(result.data[0])
+        if(user.rememberMe == true){
+          this.utiObj.setRememberPassword({
+            mail:user.mail,
+            pass:user.pass,
+            rememberMe:user.rememberMe
+          })
+        }else{
+          this.utiObj.removeRememberPassword()
+        }
         this.router.navigate(['/dashboard'])
       }else{
         this.commonService.ApiErrAlert(result)

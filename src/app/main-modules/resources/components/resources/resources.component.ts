@@ -46,7 +46,10 @@ export class ResourcesComponent {
           this.openAddUpdateUser(res,'edit')
       })
       this.resourceService.pageIndex = 1
-      this.resourceService.getUserList('')
+      this.resourceService.pagination = {index:'0',limit:'25',search:''}
+      this.resourceService.visibleNoDataFound = false
+      this.resourceService.usrAdminMergedData = []
+      this.resourceService.getUserList(this.resourceService.pagination)
       this.resourceService.trainingList ? '' : this.resourceService.getTrainingRecord()
       this.resourceService.licencesList ? '' : this.resourceService.getLicencesList()
       this.resourceService.competenciesList ? '' : this.resourceService.getCompetenciesList()

@@ -9,6 +9,7 @@ import { DashboradModule } from './dashborad/dashborad.module';
 import { RequestModule } from './request/request.module';
 import { ResourcesModule } from './resources/resources.module';
 import { SitesModule } from './sites/sites.module';
+import { PlannerModule } from './planner/planner.module';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { SitesModule } from './sites/sites.module';
     ResourcesModule,
     SitesModule,
     LayoutModule,
-    SharedModule
+    SharedModule,
+    PlannerModule
   ]
 })
 export class MainModulesModule { }

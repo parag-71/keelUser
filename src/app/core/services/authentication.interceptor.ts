@@ -39,9 +39,10 @@ export class AuthenticationInterceptor implements HttpInterceptor {
       }
       request = request.clone({ headers: header });
     }
-
-    // Show loader
-    this.loaderService.show();
+    
+    if (!request.url.includes('getUserAccess')) {
+      this.loaderService.show();
+    }
     
     return next.handle(request).pipe(
       finalize(() => {

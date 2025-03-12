@@ -11,6 +11,8 @@ import Swal from 'sweetalert2';
 export class ResourceService {
   pagination:any = {index:'0',limit:'25',search:''}
   public usersList:any
+  public superAdmin:any
+  public usrAdminMergedData:any
   public usersCount:any
   public roleList:any
   public trainingList:any
@@ -27,7 +29,8 @@ export class ResourceService {
   public userTrainingListSubject = new Subject<void>();
   public userCompetenciesListSubject = new Subject<void>();
   public editResourceSubject = new Subject<void>();
-
+  public visibleNoDataFound = false
+  public superAdminData:any
   editResourceSubject$ = this.editResourceSubject.asObservable();
   userLicencesListSuccess$ = this.userLicencesListSubject.asObservable();
   userTrainingListSuccess$ = this.userTrainingListSubject.asObservable();
@@ -58,44 +61,48 @@ export class ResourceService {
   }
   getUserList(pagination:any){
     let paginationModal =  new PaginationModal()
-    paginationModal.search = pagination && pagination.search ? pagination.search : ''
+    paginationModal.search = pagination && pagination.search ? pagination.search : this.commonService.search = ''
     paginationModal.index = pagination && pagination.index ? pagination.index : '0'
     paginationModal.limit = pagination && pagination.limit ? pagination.limit : '25'
+    paginationModal.usrType = [2,3]
     this.endUserService.userList(paginationModal).subscribe((result:any)=>{
       if(result.status == '200'){
-        this.usersList = this.processArray(result.data)
+        this.getSuperAdmin(pagination)
+        this.usersList = result.data
         this.commonService.updateLocalStorage(this.usersList)
-        
+        this.usersCount = result.totalCount.totalCount
+        this.commonService.userCount = this.usersCount;
       }else{
         this.commonService.ApiErrAlert(result)
       }
     })
   }
 
-  processArray(arr:any) {
-    // Filter objects with usrType 1 and others
-    const usrType1 = arr.filter((item:any) => item.usrType === 1);
-    const others = arr.filter((item:any) => item.usrType !== 1);
-    this.commonService.userCount = others.length 
-    this.usersCount = others.length 
-    // Combine the arrays, placing usrType1 objects at the top
-    const result = [...usrType1, ...others];
-
-    // Add index to the objects, excluding usrType 1 objects from indexing
-    let indexCounter = 1;
-    result.forEach((item, idx) => {
+  getSuperAdmin(pagination:any){
+    let paginationModal =  new PaginationModal()
+    pagination && pagination.search ? paginationModal.search = pagination.search : ''
+    paginationModal.usrType = [1]
+    this.endUserService.userList(paginationModal).subscribe((result:any)=>{
+      if(result.status == '200'){
+        this.superAdminData = result.data
+        this.usrAdminMergedData = [...result.data,...this.usersList]
+        this.visibleNoDataFound = true
+        let indexCounter = 1;
+        this.usrAdminMergedData.forEach((item:any, idx:any) => {
         if (item.usrType !== 1) {
-            item.index = indexCounter++;
+          item.index = pagination && pagination.index != 0 ? pagination.index + indexCounter++ : indexCounter++;
         } else {
             item.index = ''; // You can choose to set this to -1 or any other value to indicate it's not indexed
         }
     });
-
-    return result;
-}
+      }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
 
   deleteUser(userData:any){
-    this.endUserService.deleteUser({usrId :userData.usrId}).subscribe((result:any)=>{
+    this.endUserService.deleteUser({usrId :userData.usrId,usrEmail:userData.usrEmail}).subscribe((result:any)=>{
       if (result.status == '200' ){
         this.getUserList('')
         this.commonService.successAlert(result.message)
@@ -107,7 +114,9 @@ export class ResourceService {
           html:"<div style='font-size: 15px;font-weight: 500;'>"+result.message+"</div>" +"<div style='font-size: 15px;font-weight: 400;padding-top:10px;'>"+Text+"</div>",
           confirmButtonColor: 'rgb(223,129,62)',
           width: '50rem',
-          customClass: 'swal-wide',
+          customClass: {
+            popup: 'swal-wide',  // Correct: Use 'popup' to style the popup container
+          }
         });
       }else{
         this.commonService.ApiErrAlert(result)

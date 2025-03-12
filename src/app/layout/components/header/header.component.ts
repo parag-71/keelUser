@@ -8,6 +8,7 @@ import { SiteService } from 'src/app/main-modules/sites/site-service/site.servic
 import * as Global from '../../../../environments/environment'
 import { DashboradService } from 'src/app/main-modules/dashborad/dashborad-service/dashborad.service';
 import { MatDialog } from '@angular/material/dialog';
+import { UpdatePasswordComponent } from '../update-password/update-password.component';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -15,7 +16,6 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class HeaderComponent {
   public isDesktop:any
-  public search:any
   public userDetails:any
   public currentRouteName:any
   public customImg:any
@@ -51,23 +51,35 @@ export class HeaderComponent {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd | any) => {
-        this.search = ''
+        this.commonService.search = ''
         this.currentRouteName = event.url.split('/')[2] ? event.url.split('/')[2] : event.url.split('/')[1];
       });
   }
+
+  openUpdatePassDialog(){
+    const dialogRef = this.dialog.open(UpdatePasswordComponent, {
+      width: '27rem',
+      autoFocus: false,
+      disableClose: true,
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    })
+  }
+
   searchCustomer(){
-    if(this.search.length >= 3){
-      this.pagination.search = this.search
-      this.resourcesPagination.search = this.search 
+    if(this.commonService.search.length >= 3){
+      this.pagination.search = this.commonService.search
+      this.resourcesPagination.search = this.commonService.search 
       this.callSearchListApi(this.currentRouteName)
-    }else if(this.search.length == 0){
+    }else if(this.commonService.search.length == 0){
       this.pagination.search = ''
       this.resourcesPagination.search = ''
       this.callSearchListApi(this.currentRouteName)
+      this.commonService.resourcePlannerSub.next('')
     }
   }
   clearSearch(){
-    this.search = ''
+    this.commonService.search = ''
     this.pagination.search = ''
     this.resourcesPagination.search = ''
     switch (this.currentRouteName) {
@@ -82,6 +94,9 @@ export class HeaderComponent {
         this.dashboradService.displaySiteData = this.dashboradService.dashboardFilterSite
         this.dashboradService.setinitialData()
       return ''
+      case "planner":
+        this.commonService.resourcePlannerSub.next('')
+        return ''
       default:
 				return '';
     }
@@ -114,7 +129,7 @@ export class HeaderComponent {
       return ''
       case "dashboard":
       case "preview-site-user":
-      if(this.search == ''){
+      if(this.commonService.search == ''){
         this.dashboradService.displaySiteData = this.dashboradService.dashboardFilterSite
        this.dashboradService.setinitialData()
       }else{
@@ -125,12 +140,15 @@ export class HeaderComponent {
               userData: obj.userData.filter(
                 (user: any) => {
                   var name = `${user.usrFirstname}${user.usrLastname}${user.roleName}`;
-                  return name.toLowerCase().split(" ").join("").search(this.search.toLowerCase().split(" ").join("")) != -1
+                  return name.toLowerCase().split(" ").join("").search(this.commonService.search.toLowerCase().split(" ").join("")) != -1
                   }
               ),
             }))
             .filter((obj: any) => obj.userData.length > 0); 
       }
+      return ''
+      case "planner":
+      this.commonService.resourcePlannerSub.next(this.commonService.search)                                                     
       return ''
       default:
 				return '';

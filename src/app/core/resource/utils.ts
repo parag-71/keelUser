@@ -14,9 +14,22 @@ export class Util {
 	}
 	setLoginUser(data:any) {
 		let enc = this.utoa(JSON.stringify(data));
-		!data.rememberMe ? sessionStorage.setItem('rememberMe','session') : ''
 		localStorage.setItem('user_details', enc);
 	}
+	setRememberPassword(val:any){
+		let enc = window.btoa(JSON.stringify(val));
+        localStorage.setItem('rememberMe', enc);
+	}
+	removeRememberPassword() {
+        localStorage.removeItem('rememberMe');
+    }
+	getRememberPassword() {
+        let rememberUsr: any = localStorage.getItem('rememberMe') != "undefined" ? (localStorage.getItem('rememberMe')) : null;
+        if (rememberUsr) {
+            rememberUsr = JSON.parse(window.atob(rememberUsr));
+        }
+        return rememberUsr;
+    }
 	getIndexOfArrayData(data:any, property:any, value:any) {
 		let result = -1;
 		data.some(function (item:any, i:any): any {

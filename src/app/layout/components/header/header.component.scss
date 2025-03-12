@@ -37,16 +37,27 @@
   font-weight: 600;
   line-height: normal;
   padding-left: .5rem;
+  cursor: pointer;
   }
   .user { 
     img{
       height: 28px;
+      cursor: pointer;
     }
     .userImg{
       width: 28px;
       height: 28px;
       border-radius: 50%;
+      cursor: pointer;
     }
+    
+  }
+}
+::ng-deep .customize {
+  .mat-mdc-menu-content{
+    background-color: #464E50 !important;
+    color: white;
+    padding: 0px;
   }
 }
 

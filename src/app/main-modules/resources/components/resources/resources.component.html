@@ -6,7 +6,7 @@
     </div>
     <div class="row">
         <div class="col-12 table_box" [ngStyle]="{'padding-top': commonService.loginUserDetail.usrType == 3 ? '35px' : '' }">
-            <p-table class="table" [resizableColumns]="true" [columns]="cols" [value]="resourceService.usersList" >
+            <p-table class="table" [resizableColumns]="true" [columns]="cols" [value]="resourceService.usrAdminMergedData" >
                 <ng-template pTemplate="header" let-columns>
                     <tr>
                         <th *ngFor="let col of columns" pResizableColumn>
@@ -41,10 +41,10 @@
                                 <img (click)="previewResource(user)" class="eyeIcon" src="assets/images/seen_6497663.png" alt="edit">
                             </span>
                             <span *ngIf="user.usrId != userDetails.usrId && commonService.loginUserDetail.usrType != 3 && user.usrType != 1" class="px-1">
-                                <img (click)="deleteResourceAlert(resourceService.usersList[rowIndex])" class="addEditIcon" src="assets/images/delete.png" alt="delete" matTooltip="delete user">
+                                <img (click)="deleteResourceAlert(resourceService.usersList[resourceService.superAdminData.length ? rowIndex - 1 : rowIndex ])" class="addEditIcon" src="assets/images/delete.png" alt="delete" matTooltip="delete user">
                             </span>
                             <span *ngIf="user.usrId != userDetails.usrId && commonService.loginUserDetail.usrType != 3 && user.usrType != 1"  >
-                                <mat-slide-toggle (change)="changeStatus(resourceService.usersList[rowIndex])" [(ngModel)]="user['usrStatus']" matTooltip="Change user status"></mat-slide-toggle>
+                                <mat-slide-toggle (change)="changeStatus(resourceService.usersList[resourceService.superAdminData.length ? rowIndex - 1 : rowIndex ])" [(ngModel)]="user['usrStatus']" matTooltip="Change user status"></mat-slide-toggle>
                             </span>
                         </td>
                     </tr>
@@ -56,7 +56,7 @@
                 [pageIndex]="resourceService.pagination.index/resourceService.pagination.limit"
                 >
             </mat-paginator>
-              <div *ngIf="resourceService.usersCount == 0" class="noDataText py-4">
+              <div *ngIf="resourceService.usrAdminMergedData == 0 && resourceService.visibleNoDataFound" class="noDataText py-4">
                 <span>Data not found</span>
             </div>
         </div>

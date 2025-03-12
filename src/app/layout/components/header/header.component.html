@@ -11,20 +11,23 @@
         <ng-container *ngIf="currentRouteName != 'request'">
           <div class="search_container">
             <img src="assets/images/Search.png" class="search_icon left_icon">
-            <input class="form-control clear" [(ngModel)]="search" (keyup)="searchCustomer()" aria-label="Search">
+            <input class="form-control clear" [(ngModel)]="commonService.search" (keyup)="searchCustomer()" aria-label="Search">
             <img src="assets/images/Filter.png" *ngIf="currentRouteName == 'dashboard' || currentRouteName == 'preview-site-user'" (click)="openSearchFilter()" class="search_icon filter">
-            <img src="assets/images/cross.png" *ngIf="search" (click)="clearSearch()" matTooltip="Clear Search" class="search_icon right_icon" [ngStyle]="{'right': currentRouteName == 'dashboard' || currentRouteName == 'preview-site-user'  ? '32px' : ''}">
+            <img src="assets/images/cross.png" *ngIf="commonService.search" (click)="clearSearch()" matTooltip="Clear Search" class="search_icon right_icon" [ngStyle]="{'right': currentRouteName == 'dashboard' || currentRouteName == 'preview-site-user'  ? '32px' : ''}">
           </div>
           <button class="search_btn" type="submit" (click)="searchFn()">Search</button>
           <app-search-filter *ngIf="showFilter" (dataEvent)="receiveDataFromChild()" class="filters"></app-search-filter>
         </ng-container>
       </div>
       <div class="pe-0 col-3">
-        <div class="user_section">
-          <span class="user">
+        <div class="user_section" >
+          <span class="user" [matMenuTriggerFor]="menu">
             <img [ngClass]="{userImg: userDetails.imageUrl}" [src]="userDetails && userDetails.imageUrl ? baseUrl+userDetails.imageUrl : 'assets/images/profile-circle.png' " alt="userImg">
+            <mat-menu #menu="matMenu" class="customize">
+              <button mat-menu-item (click)="openUpdatePassDialog()">Update Password</button>
+            </mat-menu>
           </span> 
-          <span class="userText">{{userDetails.usrFirstname}}</span>
+          <span class="userText" [matMenuTriggerFor]="menu">{{userDetails.usrFirstname}}</span>
         </div>
       </div>
     </div>

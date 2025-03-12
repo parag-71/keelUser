@@ -121,7 +121,7 @@ export class DashboradService {
   }
 
   siteNameList(usrId?:any){
-    this.endUserService.siteNameList({usrId:usrId}).subscribe((result:any)=>{
+    this.endUserService.siteNameList({usrId:usrId,siteType:[0,1]}).subscribe((result:any)=>{
       if (result.status == '200' ){
         this.siteList = result.data
         this.commonService.siteIdList = []

@@ -9,15 +9,14 @@
         <div class="container"> 
             <form [formGroup]="addUpdateSiteGrp" (ngSubmit)="addUpdateSiteGrp.valid ? addUpdateSite(addUpdateSiteGrp.getRawValue()) : commonService.markFormGroupTouched(addUpdateSiteGrp)" class="row inpu_field_box">
                 <div class="col-12">
-                    <div class="p-0">
                         <mat-form-field appearance="outline">
                             <mat-label>Site Name</mat-label>
                             <input matInput formControlName="siteName">
                             <mat-error *ngIf="(addUpdateSiteGrp.get('siteName').invalid && addUpdateSiteGrp.get('siteName').touched)">{{getErrorMessage('siteName')}}</mat-error>
                         </mat-form-field>
-                    </div>
+                        
                 </div>
-                <div class="col-12">
+                <div class="col-12 mb-3" *ngIf="addUpdateSiteGrp.get('siteType').value">
                         <mat-form-field appearance="outline" class="siteLeaderPad">
                             <mat-label>Site Leader</mat-label>
                             <mat-select formControlName="siteLeader">
@@ -27,6 +26,9 @@
                             </mat-select>
                             <mat-error *ngIf="(addUpdateSiteGrp.get('siteLeader').invalid && addUpdateSiteGrp.get('siteLeader').touched)">{{getErrorMessage('siteLeader')}}</mat-error>
                         </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-checkbox class="checkbox" formControlName="siteType" (change)="onCheckboxChange($event)">Display site in dashboard?</mat-checkbox>
                 </div>
                 <div class="col-12 add_btn_box">
                     <button type="button" class="cancel_btn" (click)="closeDialog()">Cancel</button>

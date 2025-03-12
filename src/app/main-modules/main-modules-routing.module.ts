@@ -29,6 +29,10 @@ const routes: Routes = [
         path: 'request',
         loadChildren: () => import('./request/request.module').then(x => x.RequestModule),
       },
+      {
+        path: 'planner',
+        loadChildren: () => import('./planner/planner.module').then(x => x.PlannerModule),
+      },
     ]
   }
 ];

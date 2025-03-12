@@ -23,7 +23,10 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatBadgeModule} from '@angular/material/badge';
 import { MatChipsModule } from '@angular/material/chips';
-
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatButtonModule} from '@angular/material/button';
+import {MatRadioModule} from '@angular/material/radio';
 const modules = [
   MatSidenavModule,
   MatListModule,
@@ -47,7 +50,11 @@ const modules = [
   MatExpansionModule,
   MatMenuModule,
   MatBadgeModule,
-  MatChipsModule
+  MatChipsModule,
+  MatButtonToggleModule,
+  MatAutocompleteModule,
+  MatButtonModule,
+  MatRadioModule
 ]
 @NgModule({
   declarations: [],

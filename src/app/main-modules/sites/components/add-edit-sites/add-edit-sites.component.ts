@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { AddUpdateSiteModal } from 'src/app/core/model/admin-model';
 import { CommonService } from 'src/app/core/services/common.service';
@@ -31,8 +31,12 @@ export class AddEditSitesComponent {
     this.editSiteData = this.data.siteData
     this.addUpdateSiteGrp = this.fb.group({
       siteName:[this.from == 'edit' ? this.editSiteData.siteName : '',[Validators.required,this.commonService.noWhitespace]],
-      siteLeader:[{value:this.from == 'edit' ? this.editSiteData.usrId : '',disabled:!(this.commonService.loginUserDetail.usrType == 2 || this.commonService.loginUserDetail.usrType == 1)  && this.from == 'edit'},[Validators.required]]
+      siteLeader:[{value:this.from == 'edit' ? this.editSiteData.usrId || '' : '',disabled:!(this.commonService.loginUserDetail.usrType == 2 || this.commonService.loginUserDetail.usrType == 1)  && this.from == 'edit'},[Validators.required]],
+      siteType:[this.data.siteData.siteType == 2 ? false : !this.data?.isPlanner]
     })
+    if(this.data?.isPlanner || this.data.siteData.siteType == 2){
+        this.addUpdateSiteGrp.get('siteLeader').clearValidators();
+    }
     this.from == 'edit' && this.editSiteData.siteType == 0 ?  this.addUpdateSiteGrp.controls['siteName'].disable() : ''
   }
   addUpdateSite(value:any){
@@ -41,6 +45,7 @@ export class AddEditSitesComponent {
     this.from == 'edit' && this.editSiteData.usrId != value.siteLeader  ? addUpdateSiteModal.siteLeaderChanged = 1 : addUpdateSiteModal.siteLeaderChanged = 0
     addUpdateSiteModal.siteName = value.siteName
     addUpdateSiteModal.usrId = value.siteLeader ? value.siteLeader : this.editSiteData.usrId
+    addUpdateSiteModal.siteType = value.siteType ? 1 : 2
     this.endUserService.addOrUpdateSite(addUpdateSiteModal).subscribe((result:any)=>{
       if (result.status == 200){
         this.dialogRef.close('success');
@@ -73,4 +78,13 @@ export class AddEditSitesComponent {
         return '';
 		}
 	}
+  onCheckboxChange(event:any){
+    const siteLeaderControl = this.addUpdateSiteGrp.get('siteLeader');
+    if (event.checked) {
+      siteLeaderControl.setValidators([Validators.required]);
+    } else {
+      siteLeaderControl.clearValidators();
+    }
+    siteLeaderControl.updateValueAndValidity();
+  }
 }

@@ -54,20 +54,26 @@
       }
     }
   }
+    .checkbox {
+      display: flex;
+      align-items: flex-end;
+      height: 25px;
+      ::ng-deep {
+        .mat-mdc-checkbox .mdc-checkbox {
+          padding-bottom: 10px !important;
+        }
+        .mdc-checkbox .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background {
+          background-color: $primary-color;
+          border: 1px solid $primary-color;
+        }
+        label{
+          font-size: 13px;
+        }
+      }
+    }
 }
 
-::ng-deep{
-  .mdc-list-item__primary-text{
-    font-size: 13px !important;
-  }
-}
-.siteLeaderPad{
-  @-moz-document url-prefix() {
-    .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
-      padding-top: 7px; /* Adds padding only for Firefox */
-    }
-  }
-}
+
 
 
 

@@ -1,0 +1,47 @@
+
+<div class="container-fluid mt-3">
+    <div class="row planner_header">
+        <div class="col-5">
+            <div class="row">
+                <div class="col-auto">
+                    <button class="cal-today-btn px-3" (click)="calendarApi.today()">Today</button>
+                </div>
+                <div class="col-auto">
+                    <mat-icon class="cal-pre-next-btn" (click)="calendarApi.prev()">navigate_before</mat-icon>
+                    <mat-icon class="cal-pre-next-btn" (click)="calendarApi.next()">navigate_next</mat-icon>
+                </div>
+                <div class="col-auto view-title">
+                    <div class="d-flex justify-content-center align-items-center">
+                            {{calendarApi?.currentData?.viewTitle}}
+                            <img src="assets/images/calendars.png" class="ms-2 pointer"  (click)="picker.open()" width="20px" height="20px"/>
+                            <mat-form-field style="visibility: hidden; height: 0; width: 0; margin: 0;">
+                                <input matInput [matDatepicker]="picker" placeholder="Choose a date" (dateChange)="onDateChange($event)">
+                                <mat-datepicker #picker [panelClass]="'calanderPicker'"></mat-datepicker>
+                            </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-7">
+            <div class="row justify-content-end">
+                <div class="col-auto">
+                    <mat-form-field appearance="outline" >
+                        <mat-select placeholder="Select Sites" (selectionChange)="filterSites($event)" multiple>
+                            <mat-option *ngFor="let event of siteList" [value]="event.siteId">{{ event.siteName }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-auto">
+                    <mat-form-field appearance="outline" >
+                        <mat-select placeholder="Select View" [(value)]="selectdView" (selectionChange)="changeView($event)">
+                            <mat-option *ngFor="let view of viewType" [value]="view.id">{{ view.name }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <full-calendar #calander [options]="calendarOptions"></full-calendar>
+</div>

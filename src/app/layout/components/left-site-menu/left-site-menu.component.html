@@ -33,6 +33,12 @@
                 <span class="text" >Requests</span>
             </div>
         </mat-list-item>
+        <mat-list-item *ngIf="commonService?.usrpermission?.usrPlannerAccess != 0" [routerLink]="['/planner']" (click)="hideNav()" class="list_item" routerLinkActive="activeLink">
+                <span>
+                    <img src="assets/images/calendars.png" />
+                </span>
+                <span class="text" >Planner</span>
+        </mat-list-item>
     </mat-nav-list>
     <div class="logout_btn" >
         <div class="compimg" *ngIf="commonService.loginUserDetail?.compImageUrl && imageAvailable">

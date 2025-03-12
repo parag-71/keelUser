@@ -1,5 +1,5 @@
 import { Component, ElementRef, Inject, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonService } from 'src/app/core/services/common.service';
 import { ResourceService } from '../../add-resources-service/resource.service';
@@ -51,6 +51,8 @@ export class AddEditResourcesComponent {
   public userTrainingListSubjDestroy:any
   public userCompetenciesListSubjDestroy:any
   public saveType:any
+  public isAdminChecked = false
+  public isKeelChecked = false
   utilObj = new Util();
   previousTab:any 
   currentTab:any = this.resourceService.selectedTabIndex
@@ -121,7 +123,9 @@ export class AddEditResourcesComponent {
       roleId:[this.from == 'edit' ? this.userEditData.roleId : '',[]],
       siteId:[{value:this.from == 'edit' ? this.userEditData.siteId : '', disabled:this.data.from == 'edit' && this.userEditData.siteId},[Validators.required]],
       usrType:[this.from == 'edit' ? this.userEditData.usrType == 2 ? true : false : false,[]],
-      createKeelAccount:[this.from == 'edit' ? this.userEditData.createKeelAccount == 1 ? true : false : false]
+      createKeelAccount:[this.from == 'edit' ? this.userEditData.createKeelAccount == 1 ? true : false : false],
+      plannerPermission:[this.from == 'edit'? this.userEditData.usrPlannerAccess :  0],
+      readWritePermission:[ this.from === 'edit' ? (this.userEditData.usrPlannerAccess === 0 ? 1 : this.userEditData.usrPlannerAccess) : 1]
     })
     this.userEditData && this.userEditData.imageUrl ? this.EditImages = this.baseUrl+this.userEditData.imageUrl : ''    
   }
@@ -218,7 +222,6 @@ export class AddEditResourcesComponent {
   }
 
   AddUpdateResourceData(value:any,type:any){
-    this.saveType = type
     !this.addUpdateUserGrp.valid ? this.commonService.markFormGroupTouched(this.addUpdateUserGrp) : ''
       switch(this.resourceService.selectedTabIndex) {
         case 0:
@@ -258,11 +261,22 @@ export class AddEditResourcesComponent {
         break;
       }
   }
+  getUpdatedValues(formGroup: FormGroup) {
+    let updatedValues:any = {};
+    
+    Object.keys(formGroup.controls).forEach(key => {
+      if (formGroup.controls[key].dirty) { 
+        updatedValues[key] = formGroup.controls[key].value;
+      }
+    });
   
+    return updatedValues;
+  }
   AddUpdateCustomer(value:any,type:any){
+    let updatedData = this.getUpdatedValues(this.addUpdateUserGrp);
     let fd = new FormData()
     if(this.from == "edit" || this.resourceService.userId){
-      fd.append('usrId',this.userEditData.usrId) 
+      fd.append('usrId',this.userEditData.usrId ? this.userEditData.usrId : this.resourceService.userId) 
     }else{
       fd.append('createKeelAccount',value.createKeelAccount == true ? '1' : '0')
     }
@@ -271,10 +285,10 @@ export class AddEditResourcesComponent {
     siteIndex != -1 ? fd.append('receiverId',this.dashboradService.siteList[siteIndex].usrId || '') : ''
     fd.append('usrFirstname',value.usrFirstname || '')
     fd.append('usrLastname',value.usrLastname || '')
-    fd.append('usrEmail',this.from == "edit" ? this.userEditData.usrEmail || '' : value.usrEmail || '')
+    if ('usrEmail' in updatedData)  fd.append('usrEmail', updatedData.usrEmail || '')
     fd.append('usrPhone',value.usrPhone || '')
     fd.append('usrLocation',value.usrLocation || '')
-    
+    fd.append('usrPlannerAccess',!value.plannerPermission ? Number(value.plannerPermission) : value.readWritePermission || 1)
     fd.append('roleId',value.roleId || 0)
     if(this.data.userData.usrType == 1){
       fd.append('usrType','1') 
@@ -391,19 +405,23 @@ export class AddEditResourcesComponent {
   }
 
   isAdminFn($event:any){
+    this.isAdminChecked = $event.checked
     if($event.checked){
       this.addUpdateUserGrp.get('usrEmail').setValidators([Validators.required,this.commonService.noWhitespace,Validators.email])
+      this.from == 'edit' ? this.addUpdateUserGrp.controls["usrEmail"].enable() : ''
       this.addUpdateUserGrp.controls["usrEmail"].updateValueAndValidity();
-    }else{
+    }else if(!this.isKeelChecked && !this.isAdminChecked){
       this.addUpdateUserGrp.get('usrEmail').setValidators(this.commonService.noWhitespace,Validators.email)
+      this.from == 'edit' ? this.addUpdateUserGrp.controls["usrEmail"].disable() : ''
       this.addUpdateUserGrp.controls["usrEmail"].updateValueAndValidity();
     }
   }
   isKeelUserFn($event:any){
+    this.isKeelChecked = $event.checked
     if($event.checked){
       this.addUpdateUserGrp.get('usrEmail').setValidators([Validators.required,this.commonService.noWhitespace,Validators.email])
       this.addUpdateUserGrp.controls["usrEmail"].updateValueAndValidity();
-    }else{
+    }else if(!this.isKeelChecked && !this.isAdminChecked){
       this.addUpdateUserGrp.get('usrEmail').setValidators(this.commonService.noWhitespace,Validators.email)
       this.addUpdateUserGrp.controls["usrEmail"].updateValueAndValidity();
     }

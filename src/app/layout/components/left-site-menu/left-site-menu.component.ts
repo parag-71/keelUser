@@ -26,13 +26,14 @@ export class LeftSiteMenuComponent {
     ){
       this.commonService.loginUserDetail = this.utilObj.getLoginUser();
       this.currentRouteName = this.router.url.replace(/\//g, '');
+      this.commonService.getUserAccess()
       this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd | any) => {
+        this.commonService.getUserAccess()
         this.currentRouteName = event.url.replace(/\//g, '');
         (this.currentRouteName != 'login' && this.currentRouteName != 'forgot-password' && this.currentRouteName != 'reset-password') && (this.currentRouteName == 'dashboard' || !this.commonService.requestCount) ? this.commonService.siteNameList(this.commonService.loginUserDetail['usrId']) : ''
       });
-      
   }
   ngOnInit(): void {
     // const url = this.baseUrl + this.commonService.loginUserDetail.compImageUrl

@@ -1,4 +1,7 @@
-<div class="login_main">
+<div *ngIf="showLogin">
+    <router-outlet></router-outlet>
+</div>
+<div class="login_main" *ngIf="!showLogin">
     <div class="container">
         <div class="row login_row">
             <div class="col-md-6 col-xs-12 image_div">
