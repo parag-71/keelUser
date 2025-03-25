@@ -61,7 +61,7 @@ export class DashboradService {
         }
         this.currentRouteName == 'resources' ? this.allUserSiteList.next() : ''
         this.dashboardFilterSite = this.allSiteData
-		this.displaySiteData = JSON.parse(JSON.stringify(this.allSiteData))
+		    this.displaySiteData = JSON.parse(JSON.stringify(this.allSiteData))
         this.commonService.userCount = this.allSiteData.reduce((total:any, site:any) => {
           const filteredUsers = site.userData.filter((user:any) => user.suStatus !== 1);
           return total + filteredUsers.length;

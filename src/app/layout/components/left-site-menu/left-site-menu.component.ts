@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { Util } from 'src/app/core/resource/utils';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { CommonService } from 'src/app/core/services/common.service';
@@ -17,6 +17,7 @@ export class LeftSiteMenuComponent {
   public currentRouteName:any
   baseUrl = Global.environment.BASE_URL
   imageAvailable: boolean | null = null;
+  private routerSubscription!: Subscription;
   constructor(
     public authService:AuthService,
     public dashboradService:DashboradService,
@@ -26,11 +27,11 @@ export class LeftSiteMenuComponent {
     ){
       this.commonService.loginUserDetail = this.utilObj.getLoginUser();
       this.currentRouteName = this.router.url.replace(/\//g, '');
-      this.commonService.getUserAccess()
-      this.router.events
+      this.utilObj.getLoginUser()?.usrId ? this.commonService.getUserAccess() : ''
+      this.routerSubscription =  this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd | any) => {
-        this.commonService.getUserAccess()
+        this.utilObj.getLoginUser()?.usrId ? this.commonService.getUserAccess() : ''
         this.currentRouteName = event.url.replace(/\//g, '');
         (this.currentRouteName != 'login' && this.currentRouteName != 'forgot-password' && this.currentRouteName != 'reset-password') && (this.currentRouteName == 'dashboard' || !this.commonService.requestCount) ? this.commonService.siteNameList(this.commonService.loginUserDetail['usrId']) : ''
       });
@@ -43,9 +44,15 @@ export class LeftSiteMenuComponent {
     });
   }
   hideNav(){
-    this.currentRouteName != 'dashboard' ? this.commonService.siteNameList(this.commonService.loginUserDetail['usrId']) : ''
+    // comment this code because Api is calling two time
+    // this.currentRouteName != 'dashboard' ? this.commonService.siteNameList(this.commonService.loginUserDetail['usrId']) : ''
   }
   logoutUser(){
     this.authService.logoutUser()
+  }
+  ngOnDestroy() {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
   }
 }

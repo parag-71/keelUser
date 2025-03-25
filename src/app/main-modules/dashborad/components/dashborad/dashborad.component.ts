@@ -105,7 +105,6 @@ export class DashboradComponent {
       if(check){
       this.pagination.siteIds = []
       this.dashboradService.selectedSite = []
-      this.dashboradService.getAllSitesUserList(this.pagination)
       localStorage.setItem('slectSite',JSON.stringify(this.dashboradService.selectedSite))
       }else{
         this.dashboradService.selectedSite = this.dashboradService.siteList

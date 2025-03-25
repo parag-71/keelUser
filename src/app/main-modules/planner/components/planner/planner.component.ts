@@ -89,6 +89,7 @@ export class PlannerComponent {
     height: 'auto',
     resources: [],
     events: [],
+    resourceOrder:'title',
     views: {
       resourceTimelineMonth: {
         slotLabelFormat: {
@@ -286,7 +287,7 @@ export class PlannerComponent {
         const newEvent = this.createAddUpdatePlanData(actionType,result,selectInfo)
         this.addUpdateResourcePlaner(newEvent,result.type,'');
       }else if(result == 'delete'){
-        this.resourcePlannerList()
+        this.getResourceList()
       }else if(result == 'addSite'){
         this.openSiteDilog()
       }
@@ -394,7 +395,7 @@ export class PlannerComponent {
         })
       ).subscribe((result: any) => {
         if (result.status == '200') {
-          this.resourcePlannerList();
+          this.getResourceList()
           const messages: any = {
             add: result.message,
             edit: 'Resource update successful.',
