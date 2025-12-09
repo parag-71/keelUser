@@ -33,6 +33,10 @@ const routes: Routes = [
         path: 'planner',
         loadChildren: () => import('./planner/planner.module').then(x => x.PlannerModule),
       },
+      {
+        path: 'setting',
+        loadChildren: () => import('./setting/setting.module').then(x => x.SettingModule),
+      },
     ]
   }
 ];

@@ -1,0 +1,17 @@
+<div class="main_box" [@inOutPaneAnimation]>
+    <div class="header">
+        <span class="text-nowrap">{{settingData && settingData.settingType == 'edit' ? 'Update' : 'Add New'}}</span>
+        <mat-icon class="close" matTooltip="close" (click)="close()">close</mat-icon>
+    </div>
+    <form class="input_box" [formGroup]="addEditRoleGrp" (ngSubmit)="addEditRoleGrp.valid ? settingData && settingData.settingType == 'edit' ? editSettings(addEditRoleGrp.value) : addSettings(addEditRoleGrp.value) : commonService.markFormGroupTouched(addEditRoleGrp)">
+        <mat-form-field appearance="outline" class="mat-form-field">
+            <mat-label>{{'Enter' +' '+ sectionType}}</mat-label>
+            <input matInput formControlName="settingName" >
+            <mat-error *ngIf="(addEditRoleGrp.get('settingName').invalid && addEditRoleGrp.get('settingName').touched)">{{getErrorMessage('setting')}}</mat-error>
+        </mat-form-field>
+        <div>
+            <button class="cancel_btn" type="button" (click)="close()">Cancel</button>
+            <button class="add_btn" type="submit">{{settingData && settingData.settingType == 'edit' ? 'Update' : 'Add'}}</button>
+        </div>
+    </form>
+</div>

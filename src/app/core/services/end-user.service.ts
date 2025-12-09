@@ -194,7 +194,13 @@ export class EndUserService {
 			paramData
 		);
   }
-  
+
+  assignUsersInSitesByAdmin(paramData:any):any{
+    return this.http.post(
+			Global.assignUsersInSitesByAdmin,
+			paramData
+		);
+  }
 
   //Request
   acceptSiteUser(paramData:any):any{
@@ -290,6 +296,83 @@ export class EndUserService {
   deleteDummyUser(paramData:any):any{
     return this.http.post(
 			Global.deleteDummyUser,
+			paramData
+		);
+  }
+
+  //Company setting
+  addOrUpdateCompanyRole(paramData:any):any{
+    return this.http.post(
+			Global.addOrUpdateCompanyRole,
+			paramData
+		);
+  }
+  companyRoleList(paramData:any):any{
+    return this.http.post(
+			Global.companyRoleList,
+			paramData
+		);
+  }
+  deleteCompanyRole(paramData:any):any{
+    return this.http.post(
+			Global.deleteCompanyRole,
+			paramData
+		);
+  }
+
+  addOrUpdateCompanyTrainingRecord(paramData:any):any{
+    return this.http.post(
+			Global.addOrUpdateCompanyTrainingRecord,
+			paramData
+		);
+  }
+  companyTrainingRecordList(paramData:any):any{
+    return this.http.post(
+			Global.companyTrainingRecordList,
+			paramData
+		);
+  }
+  deleteCompanyTrainingRecord(paramData:any):any{
+    return this.http.post(
+			Global.deleteCompanyTrainingRecord,
+			paramData
+		);
+  }
+
+  addOrUpdateCompanyLicences(paramData:any):any{
+    return this.http.post(
+			Global.addOrUpdateCompanyLicences,
+			paramData
+		);
+  }
+  companyLicencesList(paramData:any):any{
+    return this.http.post(
+			Global.companyLicencesList,
+			paramData
+		);
+  }
+  deleteCompanyLicences(paramData:any):any{
+    return this.http.post(
+			Global.deleteCompanyLicences,
+			paramData
+		);
+  }
+
+  addOrUpdateCompanyCompetencies(paramData:any):any{
+    return this.http.post(
+			Global.addOrUpdateCompanyCompetencies,
+			paramData
+		);
+  }
+  companyCompetenciesList(paramData:any):any{
+    return this.http.post(
+			Global.companyCompetenciesList,
+			paramData
+		);
+  }
+  deleteCompanyCompetencies(paramData:any):any{
+    return this.http.post(
+			Global.deleteCompanyCompetencies,
 			paramData
 		);
   }

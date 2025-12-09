@@ -41,7 +41,7 @@
                                 <img (click)="previewResource(user)" class="eyeIcon" src="assets/images/seen_6497663.png" alt="edit">
                             </span>
                             <span *ngIf="user.usrId != userDetails.usrId && commonService.loginUserDetail.usrType != 3 && user.usrType != 1" class="px-1">
-                                <img (click)="deleteResourceAlert(resourceService.usersList[resourceService.superAdminData.length ? rowIndex - 1 : rowIndex ])" class="addEditIcon" src="assets/images/delete.png" alt="delete" matTooltip="delete user">
+                                <img (click)="deleteResourceAlert(resourceService.usersList[resourceService.superAdminData.length ? rowIndex - 1 : rowIndex ])" class="addEditIcon" src="assets/images/delete.png" alt="delete" matTooltip="Delete User">
                             </span>
                             <span *ngIf="user.usrId != userDetails.usrId && commonService.loginUserDetail.usrType != 3 && user.usrType != 1"  >
                                 <mat-slide-toggle (change)="changeStatus(resourceService.usersList[resourceService.superAdminData.length ? rowIndex - 1 : rowIndex ])" [(ngModel)]="user['usrStatus']" matTooltip="Change user status"></mat-slide-toggle>

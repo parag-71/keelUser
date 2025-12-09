@@ -1,43 +1,36 @@
+
 <div class="container-fluid" >
-  <div class="row justify-content-end ">
-    <div class="col-9" *ngIf="dashboradService.dashboardFilterChips.length">
-        <mat-chip-listbox class="filterLabel">
-          <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[0].siteName">
-            <span>{{item}}</span>
-            <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,0)">cancel</mat-icon>
-         </mat-chip>
+    <div class="row align-items-center" [ngClass]="(commonService.usrpermission.usrType == 2 || commonService.usrpermission.usrType == 1)
+                ? 'justify-content-between' 
+                : 'justify-content-end'">
+      <!-- left side dummy preview functionality run only for admin(2) -->
+      <div class="col-2 d-flex" *ngIf="commonService?.usrpermission?.usrType == 2 || commonService?.usrpermission?.usrType == 1">
+        <ng-container >
+          <button *ngIf="!pendingChanges.length" class="cancel_btn" style="width: auto;cursor:default">Preview Mode</button>
+          <button *ngIf="pendingChanges.length > 0" class="cancel_btn" (click)="cancelChanges()">Cancel</button>
+          <button *ngIf="pendingChanges.length > 0" class="add_btn" (click)="saveChanges()">Save Changes</button>
+        </ng-container>
+      </div>
+  
+    <!-- Middle Section (Filter Chips) -->
+    <div class="col-7" *ngIf="dashboradService.dashboardFilterChips.length > 0">
+      <div class="d-flex flex-wrap align-items-center">
+        <mat-chip-listbox class="filterLabel"
+          *ngFor="let chipGroup of dashboradService.dashboardFilterChips; let i = index">
+          <mat-chip *ngFor="let item of chipGroup[getChipKey(i)]">
+            <span>{{ item }}</span>
+            <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item, i)">cancel</mat-icon>
+          </mat-chip>
         </mat-chip-listbox>
-        <mat-chip-listbox class="filterLabel ms-2">
-          <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[1].roleName">
-            <span>{{item}}</span>
-            <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,1)">cancel</mat-icon>
-         </mat-chip>
-        </mat-chip-listbox>
-        <mat-chip-listbox class="filterLabel ms-2">
-          <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[2].licName">
-            <span>{{item}}</span>
-            <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,2)">cancel</mat-icon>
-         </mat-chip>
-        </mat-chip-listbox>
-        <mat-chip-listbox class="filterLabel ms-2">
-          <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[3].trName">
-            <span>{{item}}</span>
-            <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,3)">cancel</mat-icon>
-         </mat-chip>
-        </mat-chip-listbox> 
-        <mat-chip-listbox class="filterLabel ms-2">
-          <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[4].comptName">
-            <span>{{item}}</span>
-            <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,4)">cancel</mat-icon>
-         </mat-chip>
-        </mat-chip-listbox>   
+      </div>
     </div>
+  
     <div class="col-3 userSelectBox">
       <div>Select Site:</div>
       <mat-form-field appearance="outline">
         <mat-select [(ngModel)]="dashboradService.selectedSite"  [compareWith]="compareFn" multiple>
             <mat-select-trigger >{{ getSelectedLabel() }}</mat-select-trigger>
-          <mat-option *ngFor="let site of dashboradService.siteList" (click)="selectSite(site)" [value]="site" >{{site.siteName}}</mat-option>
+          <mat-option *ngFor="let site of dashboradService.siteList;trackBy: trackBySiteId" (click)="selectSite(site)" [value]="site" >{{site.siteName}}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -51,29 +44,28 @@
               {{site.siteName}}
             </span>
           </div>
-          <div [id]="site.siteId+'_'+ site.usrId+'_'+site.siteName" cdkDropList [cdkDropListData]="site.userData" [cdkDropListConnectedTo]="[ site.siteId+'_'+ site.usrId+'_'+site.siteName]"
-            class="example-list" (cdkDropListDropped)="drop($event)" >
-            <div class="userBox"  *ngFor="let user of site.userData"  >
+           <div div [id]="site.siteId+'_'+ site.usrId+'_'+site.siteName" cdkDropList [cdkDropListData]="site.userData"
+            [cdkDropListConnectedTo]="[ site.siteId+'_'+ site.usrId+'_'+site.siteName]" (cdkDropListDropped)="drop($event)"
+            class="example-list">
+            <div class="userBox" *ngFor="let user of site.userData;trackBy: trackByUserId">
               <div [ngClass]="{'expiry': user.expired > 0,'expirySoon': user.expiredSoon > 0 && user.expired == 0}" class="imgBox"
-                (click)="previewUser(user,site)" (cdkDragStarted)="onDragStarted($event)" [cdkDragData]="user"
-                cdkDrag
-                >
+                (click)="previewUser(user,site)" (cdkDragStarted)="onDragStarted($event)" [cdkDragData]="user" cdkDrag>
                 <div class="incoming-section" *ngIf="user.suStatus == 1">
                   Incoming
                 </div>
                 <div class="outging-section" *ngIf="user.suStatus == 3">
                   Outgoing
                 </div>
-                
-                  <img [ngClass]="user.imageUrl ? 'userImg' : 'customImg'"
-                    [src]="user.imageUrl ? baseUrl+user.imageUrl : 'assets/images/User02.png'" class="img-fluid" alt="userImg">
-                  <div class="text-Section" [ngClass]="{'centerText': !user.roleName}">
-                    <div class="userName">{{user.usrFirstname}} {{user.usrLastname}} </div>
-                    <div class="role" *ngIf="user.roleName">{{user.roleName}}</div>
-                  </div>
+                <img [ngClass]="user.imageUrl ? 'userImg' : 'customImg'"
+                  [src]="user.imageUrl ? baseUrl+user.imageUrl : 'assets/images/User02.png'" loading="lazy" decoding="async"
+                  class="img-fluid" alt="userImg" >
+                <div class="text-Section" [ngClass]="{'centerText': !user.roleName}">
+                  <div class="userName">{{user.usrFirstname}} {{user.usrLastname}} </div>
+                  <div class="role" *ngIf="user.roleName">{{user.roleName}}</div>
                 </div>
               </div>
-          </div>
+            </div>
+         </div>
         </div>
       </div>
     </div>

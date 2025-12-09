@@ -256,13 +256,13 @@ export class SearchFilterComponent {
     if (type == 1) {
       !this.commonService.searchSiteList ? this.commonService.searchFilterSiteList() : '';
     } else if (type == 2) {
-      !this.resourceService.roleList ? this.resourceService.getRoleList() : '';
+      this.resourceService.getRoleList();
     } else if (type == 3) {
-      !this.resourceService.licencesList ? this.resourceService.getLicencesList() : '';
+      this.resourceService.getLicencesList();
     } else if (type == 4) {
-      !this.resourceService.trainingList ? this.resourceService.getTrainingRecord() : '';
+      this.resourceService.getTrainingRecord();
     } else if (type == 5) {
-      !this.resourceService.competenciesList ? this.resourceService.getCompetenciesList() : '';
+      this.resourceService.getCompetenciesList();
     }
   }
   closeFilter() {

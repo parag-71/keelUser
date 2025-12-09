@@ -32,7 +32,7 @@ export class AddEditSitesComponent {
     this.addUpdateSiteGrp = this.fb.group({
       siteName:[this.from == 'edit' ? this.editSiteData.siteName : '',[Validators.required,this.commonService.noWhitespace]],
       siteLeader:[{value:this.from == 'edit' ? this.editSiteData.usrId || '' : '',disabled:!(this.commonService.loginUserDetail.usrType == 2 || this.commonService.loginUserDetail.usrType == 1)  && this.from == 'edit'},[Validators.required]],
-      siteType:[this.data.siteData.siteType == 2 ? false : !this.data?.isPlanner]
+      siteType:[{value:this.data.siteData.siteType == 2 ? false : !this.data?.isPlanner,disabled:this.editSiteData.totalUser != 0 && this.from != 'add'  }]
     })
     if(this.data?.isPlanner || this.data.siteData.siteType == 2){
         this.addUpdateSiteGrp.get('siteLeader').clearValidators();
@@ -42,9 +42,9 @@ export class AddEditSitesComponent {
   addUpdateSite(value:any){
     let addUpdateSiteModal = new AddUpdateSiteModal()
     this.from == 'edit' ? addUpdateSiteModal.siteId = this.editSiteData.siteId : ''
-    this.from == 'edit' && this.editSiteData.usrId != value.siteLeader  ? addUpdateSiteModal.siteLeaderChanged = 1 : addUpdateSiteModal.siteLeaderChanged = 0
-    addUpdateSiteModal.siteName = value.siteName
-    addUpdateSiteModal.usrId = value.siteLeader ? value.siteLeader : this.editSiteData.usrId
+    this.from == 'edit' && this.editSiteData.usrId != value.siteLeader ? addUpdateSiteModal.siteLeaderChanged = 1 : addUpdateSiteModal.siteLeaderChanged = 0
+    this.addUpdateSiteGrp.get('siteName')?.dirty ? addUpdateSiteModal.siteName = value.siteName : ''//SiteName me koi changes ho toh hi SideName pass karna he
+    value.siteType ? addUpdateSiteModal.usrId = value.siteLeader ? value.siteLeader : this.editSiteData.usrId : ''//Ager site dashboard pr show karna he toh site leader pass kare ge
     addUpdateSiteModal.siteType = value.siteType ? 1 : 2
     this.endUserService.addOrUpdateSite(addUpdateSiteModal).subscribe((result:any)=>{
       if (result.status == 200){

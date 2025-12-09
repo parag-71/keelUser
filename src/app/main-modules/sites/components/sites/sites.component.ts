@@ -60,7 +60,7 @@ export class SitesComponent {
         title:'Are you sure?',
         text: 'You want to delete this Site?',
         width: '27rem',
-        confirmButtonText:'yes',
+        confirmButtonText:'Yes',
         cancelButtonText:'No',
         showCancelButton:true,
         confirmButtonColor: 'rgb(223,129,62)',

@@ -39,6 +39,12 @@
                 </span>
                 <span class="text" >Planner</span>
         </mat-list-item>
+        <mat-list-item *ngIf="commonService.usrpermission?.usrType == 1 || commonService.usrpermission?.usrType == 2" [routerLink]="['/setting']" (click)="hideNav()" class="list_item" routerLinkActive="activeLink">
+            <span>
+                <img src="assets/images/settings-black.png" />
+            </span>
+            <span class="text" >Settings</span>
+    </mat-list-item>
     </mat-nav-list>
     <div class="logout_btn" >
         <div class="compimg" *ngIf="commonService.loginUserDetail?.compImageUrl && imageAvailable">

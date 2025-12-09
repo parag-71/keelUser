@@ -85,6 +85,7 @@ export class ResourceService {
     this.endUserService.userList(paginationModal).subscribe((result:any)=>{
       if(result.status == '200'){
         this.superAdminData = result.data
+        this.commonService.updateLocalStorage(this.superAdminData)
         this.usrAdminMergedData = [...result.data,...this.usersList]
         this.visibleNoDataFound = true
         let indexCounter = 1;
@@ -135,7 +136,7 @@ export class ResourceService {
   }
 
   getRoleList(){
-    this.endUserService.roleList('').subscribe((result:any)=>{
+    this.endUserService.companyRoleList('').subscribe((result:any)=>{
       if (result.status == '200' ){
         this.roleList = result.data
       }else{
@@ -145,7 +146,7 @@ export class ResourceService {
   }
 
   getTrainingRecord(){
-    this.endUserService.trainingRecordList('').subscribe((result:any)=>{
+    this.endUserService.companyTrainingRecordList('').subscribe((result:any)=>{
       if (result.status == '200' ){
         this.trainingList = result.data
         this.trainingList.map((tr:any)=>{
@@ -159,7 +160,7 @@ export class ResourceService {
   }
 
   getLicencesList(){
-    this.endUserService.licencesList('').subscribe((result:any)=>{
+    this.endUserService.companyLicencesList('').subscribe((result:any)=>{
       if (result.status == '200' ){
         this.licencesList = result.data
         this.licencesList.map((ls:any)=>{
@@ -172,7 +173,7 @@ export class ResourceService {
   }
 
   getCompetenciesList(){
-    this.endUserService.competenciesList('').subscribe((result:any)=>{
+    this.endUserService.companyCompetenciesList('').subscribe((result:any)=>{
       if (result.status == '200' ){
         this.competenciesList = result.data
         this.competenciesList.map((co:any)=>{

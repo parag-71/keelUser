@@ -25,7 +25,7 @@ export class LeftSiteMenuComponent {
     public router: Router,
     public imageCheckService:ImageCheckService
     ){
-      this.commonService.loginUserDetail = this.utilObj.getLoginUser();
+      this.commonService.loginUserDetail = this.utilObj.getLoginUser();//1-Company Admin, 2-Admin, 3-User, 4-Dummy User
       this.currentRouteName = this.router.url.replace(/\//g, '');
       this.utilObj.getLoginUser()?.usrId ? this.commonService.getUserAccess() : ''
       this.routerSubscription =  this.router.events

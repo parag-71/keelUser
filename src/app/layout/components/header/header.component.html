@@ -8,7 +8,7 @@
         </button>
       </div>
       <div class="d-inline-flex justify-content-md-end col-9 position-relative" id="outerDiv">
-        <ng-container *ngIf="currentRouteName != 'request'">
+        <ng-container *ngIf="currentRouteName != 'request' && currentRouteName != 'setting'">
           <div class="search_container">
             <img src="assets/images/Search.png" class="search_icon left_icon">
             <input class="form-control clear" [(ngModel)]="commonService.search" (keyup)="searchCustomer()" aria-label="Search">

@@ -50,9 +50,9 @@ export class ResourcesComponent {
       this.resourceService.visibleNoDataFound = false
       this.resourceService.usrAdminMergedData = []
       this.resourceService.getUserList(this.resourceService.pagination)
-      this.resourceService.trainingList ? '' : this.resourceService.getTrainingRecord()
-      this.resourceService.licencesList ? '' : this.resourceService.getLicencesList()
-      this.resourceService.competenciesList ? '' : this.resourceService.getCompetenciesList()
+      this.resourceService.getTrainingRecord()
+      this.resourceService.getLicencesList()
+      this.resourceService.getCompetenciesList()
       this.resourceService.addResourceSuccess$.subscribe((res) => {
         this.dialog.closeAll();
       });
@@ -65,10 +65,10 @@ export class ResourcesComponent {
   deleteResourceAlert(userData:any){
     Swal.fire({
       icon: "warning",
-      title:'Are you sure?',
-      text: 'You want to delete this User?',
+      // title:'Are you sure?',
+      text: 'Are you sure you want to delete this user?',
       width: '27rem',
-      confirmButtonText:'yes',
+      confirmButtonText:'Yes',
       cancelButtonText:'No',
       showCancelButton:true,
       confirmButtonColor: 'rgb(223,129,62)',

@@ -13,6 +13,10 @@
         }
         
     }
+    .today-slot-label {
+      font-weight: bold;
+      color: #007bff;
+    }
     .fc-datagrid-cell-main{
         font-size: 14px;
         text-decoration: none;
@@ -170,3 +174,40 @@
     width: 100%;
     padding: 5px 10px;
   }
+
+.selectAllCheck {
+  padding: 0 5px !important;
+  font-size: 12px;
+
+  ::ng-deep .mdc-checkbox {
+    .mdc-checkbox__native-control:enabled {
+      
+      & ~ .mdc-checkbox__background {
+        // Common background and border for default & checked state
+        & .mdc-checkbox__checkmark {
+          color: white !important;
+        }
+
+        & .mdc-checkbox__mixedmark {
+          border-color: white !important;
+        }
+      }
+
+      & ~ .mdc-checkbox__background {
+        // Checked or indeterminate
+        background-color: $primary-color !important;
+        border-color: $primary-color !important;
+      }
+
+      &.indeterminate ~ .mdc-checkbox__background {
+        background-color: $primary-color !important;
+        border-color: $primary-color !important;
+      }
+
+      &.checked ~ .mdc-checkbox__background {
+        background-color: $primary-color !important;
+        border-color: $primary-color !important;
+      }
+    }
+  }
+}

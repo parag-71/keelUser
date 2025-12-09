@@ -14,6 +14,8 @@ import * as moment from 'moment';
 import { Util } from 'src/app/core/resource/utils';
 import { DatePipe } from '@angular/common';
 import { DashboradService } from 'src/app/main-modules/dashborad/dashborad-service/dashborad.service';
+import imageCompression from 'browser-image-compression';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 const MY_FORMATS = {
   parse: {
@@ -53,6 +55,7 @@ export class AddEditResourcesComponent {
   public saveType:any
   public isAdminChecked = false
   public isKeelChecked = false
+  public imageSizeOverOneMB:any = false
   utilObj = new Util();
   previousTab:any 
   currentTab:any = this.resourceService.selectedTabIndex
@@ -68,7 +71,8 @@ export class AddEditResourcesComponent {
     public endUserService:EndUserService,
     public siteService:SiteService,
     public datePipe: DatePipe,
-    public dashboradService:DashboradService
+    public dashboradService:DashboradService,
+    public loaderService:LoaderService
     ){}
   ngOnInit(){
     this.from = this.data.from
@@ -117,16 +121,25 @@ export class AddEditResourcesComponent {
     this.addUpdateUserGrp = this.fb.group({
       usrFirstname:[this.from == 'edit' ? this.userEditData.usrFirstname : '' ,[Validators.required,this.commonService.noWhitespace,Validators.maxLength(50)]],
       usrLastname:[this.from == 'edit' ? this.userEditData.usrLastname : '',[Validators.required,this.commonService.noWhitespace,Validators.maxLength(50)]],
-      usrEmail:[ {value: this.from == 'edit' ? this.userEditData.usrEmail : '',disabled:this.data.from == 'edit'},[Validators.email ]],
+      usrEmail:[ this.from == 'edit' ? this.userEditData.usrEmail : '' ,[Validators.email ]],
       usrPhone:[this.from == 'edit' ? this.userEditData.usrPhone : '',[Validators.pattern(/^\d+$/)]],
       usrLocation:[this.from == 'edit' ? this.userEditData.usrLocation : '',[]],
       roleId:[this.from == 'edit' ? this.userEditData.roleId : '',[]],
       siteId:[{value:this.from == 'edit' ? this.userEditData.siteId : '', disabled:this.data.from == 'edit' && this.userEditData.siteId},[Validators.required]],
       usrType:[this.from == 'edit' ? this.userEditData.usrType == 2 ? true : false : false,[]],
-      createKeelAccount:[this.from == 'edit' ? this.userEditData.createKeelAccount == 1 ? true : false : false],
+      usrKeelAccount:[this.from == 'edit' ? this.userEditData.usrKeelAccount == 1 ? true : false : false],
       plannerPermission:[this.from == 'edit'? this.userEditData.usrPlannerAccess :  0],
-      readWritePermission:[ this.from === 'edit' ? (this.userEditData.usrPlannerAccess === 0 ? 1 : this.userEditData.usrPlannerAccess) : 1]
+      readWritePermission:[ this.from === 'edit' ? (this.userEditData.usrPlannerAccess === 0 ? 1 : this.userEditData.usrPlannerAccess) : 1],
+      sendInvitation:[]
     })
+    const shouldRequireEmail = this.userEditData.usrType == 2 || this.userEditData.usrKeelAccount == 1;
+    if (shouldRequireEmail) {
+      this.addUpdateUserGrp.get('usrEmail')?.setValidators([
+        Validators.required,
+        Validators.email
+      ]);
+      this.addUpdateUserGrp.get('usrEmail')?.updateValueAndValidity();
+    }
     this.userEditData && this.userEditData.imageUrl ? this.EditImages = this.baseUrl+this.userEditData.imageUrl : ''    
   }
 
@@ -222,6 +235,7 @@ export class AddEditResourcesComponent {
   }
 
   AddUpdateResourceData(value:any,type:any){
+    this.saveType = type
     !this.addUpdateUserGrp.valid ? this.commonService.markFormGroupTouched(this.addUpdateUserGrp) : ''
       switch(this.resourceService.selectedTabIndex) {
         case 0:
@@ -261,31 +275,22 @@ export class AddEditResourcesComponent {
         break;
       }
   }
-  getUpdatedValues(formGroup: FormGroup) {
-    let updatedValues:any = {};
-    
-    Object.keys(formGroup.controls).forEach(key => {
-      if (formGroup.controls[key].dirty) { 
-        updatedValues[key] = formGroup.controls[key].value;
-      }
-    });
-  
-    return updatedValues;
-  }
+
   AddUpdateCustomer(value:any,type:any){
-    let updatedData = this.getUpdatedValues(this.addUpdateUserGrp);
+    // let updatedData = this.getUpdatedValues(this.addUpdateUserGrp);
     let fd = new FormData()
     if(this.from == "edit" || this.resourceService.userId){
       fd.append('usrId',this.userEditData.usrId ? this.userEditData.usrId : this.resourceService.userId) 
-    }else{
-      fd.append('createKeelAccount',value.createKeelAccount == true ? '1' : '0')
     }
+    
     value.siteId ? fd.append('siteId',value.siteId || '') : ''
     let siteIndex = this.utilObj.getIndexOfArrayData(this.dashboradService.siteList,'siteId',value.siteId ? value.siteId : this.userEditData.siteId)
     siteIndex != -1 ? fd.append('receiverId',this.dashboradService.siteList[siteIndex].usrId || '') : ''
     fd.append('usrFirstname',value.usrFirstname || '')
     fd.append('usrLastname',value.usrLastname || '')
-    if ('usrEmail' in updatedData)  fd.append('usrEmail', updatedData.usrEmail || '')
+    fd.append('usrKeelAccount',value.usrKeelAccount ? '1' : '0');//send mail to user
+    if(this.from == 'edit' && ((value.usrKeelAccount && this.addUpdateUserGrp.controls['usrKeelAccount'].dirty) || (value.usrType && this.addUpdateUserGrp.controls['usrType'].dirty) || value.sendInvitation)) fd.append('sendMail', '1');
+    if(this.addUpdateUserGrp.controls['usrEmail'].dirty) fd.append('usrEmail', value.usrEmail || '')
     fd.append('usrPhone',value.usrPhone || '')
     fd.append('usrLocation',value.usrLocation || '')
     fd.append('usrPlannerAccess',!value.plannerPermission ? Number(value.plannerPermission) : value.readWritePermission || 1)
@@ -373,20 +378,54 @@ export class AddEditResourcesComponent {
     return ''
   }
 
-  onFileSelected(event:any){
-    if (event && event.target && event.target.files && event.target.files.length && event.target.files[0].type === 'image/jpeg' || 
-    event.target.files[0].type === 'image/png' || 
-    event.target.files[0].type ==='image/jpg') {
-      const file: File = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imageUrl = reader.result;
+  onFileSelected(event: any) {
+    const file: File = event?.target?.files?.[0];
+    // const fileSize = event.target.files[0].size / (1024 * 1024)
+    const fileSizeMB = file?.size / (1024 * 1024);
+    if (fileSizeMB >= 2) {
+      this.imageSizeOverOneMB = true;
+      return; // 🚫 Stop further processing
+    } else {
+      this.imageSizeOverOneMB = false;
+    }
+    if (file && ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type) ) {
+       this.loaderService.show()
+      const options = {
+        maxSizeMB: 0.2,            // Smaller max size in MB (~200 KB)
+        maxWidthOrHeight: 800,     // Resize to max 800px on longest side
+        useWebWorker: true,
+        initialQuality: 0.5
       };
-      reader.readAsDataURL(file);
-      this.uploadedFile = file
-      this.from == 'edit' ? this.EditImages = '' : ''
-    }else{
-      this.commonService.Alert("Invalid filetype upload. Please make sure you are only uploading 'jpg, png, jpeg' formats.",'error')
+      imageCompression(file, options)
+        .then((compressedFile: any) => {
+          if (!(compressedFile instanceof File)) {
+            this.uploadedFile = new File(
+              [compressedFile],
+              file.name,
+              { type: compressedFile.type }
+            );
+          } else {
+            this.uploadedFile = compressedFile;
+          }
+          this.from == 'edit' ? this.EditImages = '' : '';
+          const compressedReader = new FileReader();
+          compressedReader.onload = () => {
+            this.imageUrl = compressedReader.result;
+             this.loaderService.hide()
+          };
+          compressedReader.readAsDataURL(compressedFile);
+        })
+        .catch(error => {
+          console.error('Compression error:', error);
+          this.commonService.Alert('Image compression failed.', 'error');
+          this.loaderService.hide()
+        });
+        
+      // reader.readAsDataURL(file);
+      // this.uploadedFile = file
+      // this.from == 'edit' ? this.EditImages = '' : ''
+    } else {
+      this.commonService.Alert("Invalid filetype upload. Please make sure you are only uploading 'jpg, png, jpeg' formats.", 'error')
     }
   }
 
@@ -408,11 +447,9 @@ export class AddEditResourcesComponent {
     this.isAdminChecked = $event.checked
     if($event.checked){
       this.addUpdateUserGrp.get('usrEmail').setValidators([Validators.required,this.commonService.noWhitespace,Validators.email])
-      this.from == 'edit' ? this.addUpdateUserGrp.controls["usrEmail"].enable() : ''
       this.addUpdateUserGrp.controls["usrEmail"].updateValueAndValidity();
-    }else if(!this.isKeelChecked && !this.isAdminChecked){
+    }else if(!this.isKeelChecked && !this.isAdminChecked && this.userEditData.usrKeelAccount != 1){
       this.addUpdateUserGrp.get('usrEmail').setValidators(this.commonService.noWhitespace,Validators.email)
-      this.from == 'edit' ? this.addUpdateUserGrp.controls["usrEmail"].disable() : ''
       this.addUpdateUserGrp.controls["usrEmail"].updateValueAndValidity();
     }
   }
@@ -421,7 +458,7 @@ export class AddEditResourcesComponent {
     if($event.checked){
       this.addUpdateUserGrp.get('usrEmail').setValidators([Validators.required,this.commonService.noWhitespace,Validators.email])
       this.addUpdateUserGrp.controls["usrEmail"].updateValueAndValidity();
-    }else if(!this.isKeelChecked && !this.isAdminChecked){
+    }else if(!this.isKeelChecked && !this.isAdminChecked && this.userEditData.usrKeelAccount != 1){
       this.addUpdateUserGrp.get('usrEmail').setValidators(this.commonService.noWhitespace,Validators.email)
       this.addUpdateUserGrp.controls["usrEmail"].updateValueAndValidity();
     }
@@ -430,6 +467,7 @@ export class AddEditResourcesComponent {
     this.imageUrl = null;
     this.uploadedFile = ''
     this.EditImages = ''
+    this.imageSizeOverOneMB = false
   }
 
   closeDialog(){

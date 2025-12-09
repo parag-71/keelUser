@@ -1,0 +1,114 @@
+@import "../../../../shared/scss/default_variables.scss";
+
+.main_box {
+  max-height: 100px;
+  .btn_box{
+    padding-top: 39px;
+  }
+  .input_section{
+    padding-top: 9px;
+  }
+  .label {
+    color: #000;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 2rem;
+    padding-bottom: 7px;
+  }
+
+  .Settinglist {
+    background: #fdfdfd;
+
+    mat-list-item {
+      height:29px;
+      line-height: 4.2375rem;
+
+      .settingLabel{
+        color: black ;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: 300;
+      }
+      .selected {
+        font-weight: 700;
+      }
+    }
+    
+  }
+}
+
+.role_table {
+  background-color: #FDFDFD;
+  tr>th:nth-child(1){
+    width: 65%;
+  }
+  tr>th {
+    // border: 1px solid #BBC5CB;
+    box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.05);
+    color: black;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.5rem;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    background-color:$secondary-color ;
+  }
+
+  tr>td {
+    color: #5E6366;
+    font-size: 12px;
+    font-weight: 400;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    img{
+      cursor: pointer;
+      height: auto;
+      width: 28px;
+    }
+  }
+
+  th:nth-child(2) {
+    text-align: right;
+  }
+
+  td:nth-child(2) {
+    text-align: right;
+  }
+ 
+}
+
+.mat-divider {
+  border-color: #BBC5CB;
+
+}
+.mdc-list{
+  padding-top: 0px !important;
+}
+
+::ng-deep{
+  .mat-mdc-paginator-page-size-label{
+      color: #495057;
+      font-size:  13px;
+  }
+  .mat-mdc-paginator-page-size-select{
+      width: 65px !important;
+
+  }
+  .mat-mdc-paginator-range-label{
+      margin: 0 10px 0 10px !important;
+      font-size: 12px;
+  }
+  .mat-mdc-icon-button.mat-mdc-button-base {
+      padding: 10px !important;
+  }
+  .mat-mdc-select-value-text{
+      font-size: 12px !important;
+  }
+  .mat-mdc-paginator-container{
+    padding: 0;
+  }
+}
+.content {
+  transition: width 500ms linear;
+}

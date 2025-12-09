@@ -26,7 +26,7 @@ export class AddOrUpdateUser{
     usrPhone:any
     usrLocation:any
     usrType:any
-    createKeelAccount:any
+    usrKeelAccount:any
     image:any
     deleteImage:any
     usrOldImage:any

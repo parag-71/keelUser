@@ -4,9 +4,6 @@ import { DashboradComponent } from './components/dashborad/dashborad.component';
 import { DashboradRoutingModule } from './dashborad-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { PreviewDashboardUserComponent } from './components/preview-dashboard-user/preview-dashboard-user.component';
-
-
-
 @NgModule({
   declarations: [
     DashboradComponent,
@@ -15,7 +12,7 @@ import { PreviewDashboardUserComponent } from './components/preview-dashboard-us
   imports: [
     CommonModule,
     DashboradRoutingModule,
-    SharedModule
+    SharedModule,
   ]
 })
 export class DashboradModule { }

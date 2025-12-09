@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { Subject, filter } from 'rxjs';
+import { Subject, filter, from, mergeMap } from 'rxjs';
 import { Util } from 'src/app/core/resource/utils';
 import { CommonService } from 'src/app/core/services/common.service';
 import { EndUserService } from 'src/app/core/services/end-user.service';
 import { RequestService } from '../../request/request-service/request.service';
 import { ResourceService } from '../../resources/add-resources-service/resource.service';
-
+import * as Global from '../../../../environments/environment'
 @Injectable({
   providedIn: 'root'
 })
 export class DashboradService {
+  baseUrl = Global.environment.BASE_URL
   public allSiteData:any
   public displaySiteData: any
   public currentRouteName:any
@@ -20,6 +21,7 @@ export class DashboradService {
   allUserSiteList$ = this.allUserSiteList.asObservable();
   removeFilterLabel: Subject<any> = new Subject()
   public dashboardFilterChips:any = []
+  public originalSiteData: any[] = [];
 	public filterItem: any = [
 		{ searchType: '1', siteName: [] },
 		{ searchType: '2', roleName: [] },
@@ -48,20 +50,17 @@ export class DashboradService {
    }
 
   getAllSitesUserList(pagination:any,siteId?:any){
-    this.endUserService.allSitesUserList(pagination).subscribe((result:any)=>{
+    this.endUserService.allSitesUserList(pagination).subscribe(async (result:any)=>{
       if (result.status == '200' ){
         this.allSiteData = result.data
         this.updateSuStatus(this.allSiteData)
-        if(siteId){//for show site user preview 
-          this.allSiteData = this.allSiteData.filter((val:any)=>{
-            if(siteId == val.siteId){
-              return this.allSiteData
-            }
-          })
+        if (siteId) {
+          this.allSiteData = this.allSiteData.filter((val: any) => val.siteId == siteId);
         }
         this.currentRouteName == 'resources' ? this.allUserSiteList.next() : ''
         this.dashboardFilterSite = this.allSiteData
 		    this.displaySiteData = JSON.parse(JSON.stringify(this.allSiteData))
+        this.originalSiteData = JSON.parse(JSON.stringify(this.allSiteData));
         this.commonService.userCount = this.allSiteData.reduce((total:any, site:any) => {
           const filteredUsers = site.userData.filter((user:any) => user.suStatus !== 1);
           return total + filteredUsers.length;

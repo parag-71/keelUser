@@ -1,0 +1,50 @@
+<div class="container-fluid main_box">
+    <div class="row btn_box">
+        <div class="col-6">
+            <div class="label">Inputs</div>
+        </div>
+        <div class="col-6 ">
+            <button class="add_btn" (click)="openAddSettingPopup()">Add New</button>
+        </div>
+    </div>
+    <div class="row input_section">
+        <div class="col-12">
+                <div class="row">
+                    <div class="col-md-2 col-s-12">
+                        <mat-list *ngFor="let item of inputList" class="Settinglist">
+                            <mat-list-item> 
+                                <span class="settingLabel" [class.selected]="item === selectedItem" (click)="selectItem(item)">{{item == 'Role' ? 'Roles' : item == 'Training Record' ? 'Training Records' : item}}</span>
+                            </mat-list-item>
+                            <mat-divider></mat-divider>
+                          </mat-list>
+                    </div>
+                    <div  [ngClass]="{'col-md-5 col-s-12 content': addNewRole, 'col-md-10 col-s-12 content': !addNewRole}" > 
+                        <p-table [value]="SettingsService.allSettingList" class="role_table" [scrollable]="true" [scrollHeight]="'calc(100vh - 150px)'">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>{{selectedItem}}</th>
+                                    <th>Action </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowIndex="rowIndex" let-setting>
+                                <tr>
+                                    <td>{{ setting[ParamName]}}</td>
+                                    <td>
+                                        <span>
+                                            <img (click)="editSetting(SettingsService.allSettingList[rowIndex])" src="assets/images/edit.png" alt="edit">
+                                        </span>
+                                        <span>
+                                            <img (click)="deleteRole(SettingsService.allSettingList[rowIndex])" src="assets/images/delete.png" alt="delete">
+                                        </span>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                    <div class="col-md-5 col-s-12 add_setting" *ngIf="addNewRole" >
+                        <app-add-update-setting [sectionType]="selectedItem" [settingData]="settingEditData"  (isClose)="receiveData($event)" ></app-add-update-setting>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>

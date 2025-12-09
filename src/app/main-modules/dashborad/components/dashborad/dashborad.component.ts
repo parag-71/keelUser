@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 import { CommonService } from 'src/app/core/services/common.service';
 import { Router } from '@angular/router';
 import { Util } from 'src/app/core/resource/utils';
+import { EndUserService } from 'src/app/core/services/end-user.service';
 @Component({
   selector: 'app-dashborad',
   templateUrl: './dashborad.component.html',
@@ -19,16 +20,18 @@ export class DashboradComponent {
   pagination:any = {
     siteIds:[]
   }
+  pendingChanges: any[] = [];
   constructor(
     public dashboradService:DashboradService,
     public dialog: MatDialog,
     public commonService:CommonService,
-    public router: Router
+    public router: Router,
+    public endUserService: EndUserService
 
   ) {
     this.dashboradService.allSiteData = []
-	this.dashboradService.displaySiteData = []
-   }
+    this.dashboradService.displaySiteData = []
+  }
   ngOnInit() {
     this.dashboradService.siteNameList()
     const localSiteList:any = JSON.parse(localStorage.getItem('slectSite') || '[]')
@@ -39,15 +42,38 @@ export class DashboradComponent {
     });
     this.dashboradService.getAllSitesUserList(this.pagination)
   }
-  drop(event: CdkDragDrop<string[]>|any) {
+  drop(event: CdkDragDrop<string[]> | any) {
     var assignId = event.previousContainer.data[event.previousIndex].assignId
+    var senderId = event.previousContainer.data[event.previousIndex].senderId
     var assignName = event.previousContainer.data[event.previousIndex].usrFirstname
-    var siteId = event.container.id.split('_',1)[0]
-    var receiverId = event.container.id.split('_',2)[1]
-    var siteName = event.container.id.split('_',3)[2]
-    var preSiteId = event.previousContainer.id.split('_',3)[0]
-    if(event.previousContainer.id.split('_',3)[1] == this.commonService.loginUserDetail.usrId && !event.previousContainer.data[event.previousIndex].local && event.previousContainer.data[event.previousIndex].suStatus != 1 || (assignId == event.previousContainer.id.split('_',3)[1] && (this.commonService.loginUserDetail.usrType == 2))){
-      if (event.previousContainer != event.container  ) {
+    var preSiteId = event.previousContainer.id.split('_', 3)[0]
+    var siteId = event.container.id.split('_', 1)[0]
+    var receiverId = event.container.id.split('_', 2)[1]
+    var siteName = event.container.id.split('_', 3)[2]
+
+    if (this.commonService?.usrpermission.usrType == 2 || this.commonService?.usrpermission.usrType == 1) {
+      // ✅ Check if dropped into another site (not the same one)
+      if (preSiteId !== siteId) {
+        if (event.previousContainer !== event.container) {
+          transferArrayItem(
+            event.previousContainer.data,
+            event.container.data,
+            event.previousIndex,
+            event.currentIndex
+          );
+        }
+        const existingIndex = this.pendingChanges.findIndex(
+          (c) => c.assignId === assignId
+        );
+
+        if (existingIndex > -1) {
+          this.pendingChanges[existingIndex] = { siteId, receiverId, assignId, preSiteId, senderId };
+        } else {
+          this.pendingChanges.push({ siteId, receiverId, assignId, preSiteId, senderId });
+        }
+      }
+    } else if (event.previousContainer.id.split('_', 3)[1] == this.commonService?.usrpermission.usrId) {
+      if (event.previousContainer != event.container) {
         Swal.fire({
           icon: 'warning',
           text: `Do you want to move ${assignName} to ${siteName} site`,
@@ -58,21 +84,69 @@ export class DashboradComponent {
           showCancelButton: true,
         }).then((result) => {
           if (result.isConfirmed && event.previousContainer != event.container) {
-              this.dashboradService.assignUserInSite(siteId,receiverId,assignId,preSiteId);
+            this.dashboradService.assignUserInSite(siteId, receiverId, assignId, preSiteId);
           }
         });
       }
-    }else{
-      event.previousContainer.data[event.previousIndex]['local'] = true
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
     }
-      
   }
+
+  saveChanges() {
+    if (!this.pendingChanges.length) {
+      this.commonService.Alert('No changes to save.', 'info');
+      return;
+    }
+
+    Swal.fire({
+      icon: 'warning',
+      text: 'Do you want to save all changes?',
+      width: '27rem',
+      confirmButtonText:'Yes',
+      cancelButtonText:'No',
+      showCancelButton:true,
+      confirmButtonColor: 'rgb(223,129,62)',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.assignUsersInSitesByAdmin()
+      }
+    });
+  }
+
+  assignUsersInSitesByAdmin() {
+    const paramData = {
+      userSiteData: this.pendingChanges
+    };
+    this.endUserService.assignUsersInSitesByAdmin(paramData).subscribe((result: any) => {
+      if (result.status == '200') {
+        this.commonService.successAlert(result.message);
+        this.dashboradService.originalSiteData = JSON.parse(JSON.stringify(this.dashboradService.displaySiteData));
+        this.pendingChanges = [];
+      } else {
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+
+  cancelChanges() {
+    Swal.fire({
+      icon: 'warning',
+      text: 'All unsaved changes will be reverted.',
+      width: '27rem',
+      confirmButtonText:'Yes',
+      cancelButtonText:'No',
+      showCancelButton:true,
+      confirmButtonColor: 'rgb(223,129,62)',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // revert to original snapshot
+        this.dashboradService.displaySiteData = JSON.parse(
+          JSON.stringify(this.dashboradService.originalSiteData)
+        );
+        this.pendingChanges = [];
+      }
+    });
+  }
+
   onDragStarted(event: CdkDragStart): void {
     if(event.source.data.suStatus == 1){
       this.commonService.Alert('This user is pending for approval','error')
@@ -82,6 +156,16 @@ export class DashboradComponent {
     }
   }
   
+  trackByUserId(index: number, user: any) {
+    return user.usrId;
+  }
+  trackBySiteId(index: number, site: any){
+    return site.siteId
+  }
+  getChipKey(index: number): string {
+    const keys = ['siteName', 'roleName', 'licName', 'trName', 'comptName'];
+    return keys[index];
+  }
   previewUser(user:any,site:any){
     const dialogRef = this.dialog.open(PreviewDashboardUserComponent, {
       data:{user: user, site : site},

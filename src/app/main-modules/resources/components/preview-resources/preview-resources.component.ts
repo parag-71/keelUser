@@ -39,7 +39,7 @@ export class PreviewResourcesComponent {
     }
     edit(){
       this.resourceService.selectedTabIndex = this.preSelectedTabIndex
-      this.resourceService.editResourceSubject.next(this.userData);
+      this.resourceService.editResourceSubject.next(this.resourceDetails);
       this.dialogRef.close()
     }
     closeDialog(){

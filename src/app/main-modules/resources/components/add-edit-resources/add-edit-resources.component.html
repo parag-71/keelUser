@@ -11,17 +11,21 @@
             <form [formGroup]="addUpdateUserGrp" >
                 <div class="container"> 
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-12 file-upload-wapper">
+                            <span class="text">Upload profile image</span>
                             <div class="file-upload">
-                                <span class="text">Upload profile image</span>
+                                <div class="position-relative">
                                 <label class="logo">
-                                  <img for="file-input" [ngClass]="{'after-upload' : imageUrl || EditImages}" [src]="imageUrl ? imageUrl : EditImages ? EditImages : 'assets/images/Add Image.png'" alt="Logo">
-                                  <input id="file-input" type="file" (change)="onFileSelected($event)">
+                                    <img for="file-input" [ngClass]="{'after-upload' : imageUrl || EditImages}"
+                                        [src]="imageUrl ? imageUrl : EditImages ? EditImages : 'assets/images/Add Image.png'" alt="Logo">
+                                    <input id="file-input" type="file" (change)="onFileSelected($event)">
                                 </label>
                                 <span class="remove-icon" (click)="removeImage()" *ngIf="imageUrl || EditImages">
-                                    <mat-icon class="close" matTooltip="close" (click)="removeImage()">close</mat-icon>
-                                </span>
-                              </div>
+                                        <mat-icon class="close" matTooltip="close" (click)="removeImage()">close</mat-icon>
+                                    </span>
+                                </div>
+                                <mat-error *ngIf="imageSizeOverOneMB">Image size must be less than 2MB</mat-error>
+                            </div>
                         </div>
                     </div>
                     <div class="row inpu_field_box">
@@ -96,10 +100,16 @@
                                 <mat-checkbox (change)="isAdminFn($event)" formControlName="usrType">Is an Admin</mat-checkbox>
                             </div>
                         </div>
-                        <div class="col-md-12 col-xs-12 checkbox" *ngIf="from == 'add'">
+                        <div class="col-md-12 col-xs-12 checkbox" *ngIf="from == 'add' || userEditData.usrKeelAccount == 0">
                             <div class="p-0 createAccCheckBox" >
-                                <mat-checkbox (change)="isKeelUserFn($event)" formControlName="createKeelAccount">Create Keel accounts
+                                <mat-checkbox (change)="isKeelUserFn($event)"  formControlName="usrKeelAccount">Create Keel accounts
                                     <div class="p-0">This will send the user an email to generate a Keel account with read-only access</div>
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-xs-12 checkbox" *ngIf="userEditData.usrKeelAccount == 1 && !userEditData.usrLastLogin">
+                            <div class="p-0 createAccCheckBox" >
+                                <mat-checkbox (change)="isKeelUserFn($event)" formControlName="sendInvitation">Resend the invitation
                                 </mat-checkbox>
                             </div>
                         </div>
@@ -140,7 +150,7 @@
                                     <td>
                                         <div class="custom-date-input">
                                             <mat-form-field appearance="outline">
-                                                <input matInput [disabled]="rowData.isRowSelected" [matDatepicker]="picker" placeholder="DD  /  MM  /  YYYY" [(ngModel)]="rowData.utrExpiredate">
+                                                <input matInput [disabled]="rowData.isRowSelected" [matDatepicker]="picker" placeholder="DD  /  MM  /  YYYY" (dateChange)="selectDate($event,rowData)" [(ngModel)]="rowData.utrExpiredate">
                                                 <mat-datepicker #picker [disabled]="rowData.isRowSelected"></mat-datepicker>
                                             </mat-form-field>
                                             <img  src=".../../../../../../../assets/images/calendar.png" (click)="openDatepicker(picker)" alt="">

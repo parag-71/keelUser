@@ -118,17 +118,19 @@ export class CommonService {
     })
   }
 
-  updateLocalStorage(data:any){
+  updateLocalStorage(data: any) {
     var userDetails = this.utilObj.getLoginUser()
-     data.filter((item:any)=>{
-      if(item.usrId == userDetails.usrId){
+    data.filter((item: any) => {
+      if (item.usrId == userDetails.usrId) {
         userDetails.usrFirstname = item.usrFirstname
         userDetails.usrLastname = item.usrLastname
         userDetails.imageUrl = item.imageUrl
+        userDetails.usrType = item.usrType
       }
     })
-      this.utilObj.setLoginUser(userDetails)
-      this.localStorageSubject.next();
+    this.loginUserDetail = userDetails
+    this.utilObj.setLoginUser(userDetails)
+    this.localStorageSubject.next();
   }
 
   getUserAccess(){

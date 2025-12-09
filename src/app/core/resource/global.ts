@@ -48,6 +48,8 @@ export const competenciesList = environment.API_ENDPOINT + "competenciesList"
 export const allSitesUserList = environment.API_ENDPOINT + "allSitesUserList"
 export const assignUserInSite = environment.API_ENDPOINT + "assignUserInSite"
 export const siteNameList = environment.API_ENDPOINT + "siteNameList"
+export const assignUsersInSitesByAdmin = environment.API_ENDPOINT + "assignUsersInSitesByAdmin"
+
 
 //request API 
 export const acceptSiteUser = environment.API_ENDPOINT + "acceptSiteUser"
@@ -73,7 +75,27 @@ export const addOrUpdateDummyUser = environment.API_ENDPOINT + "addOrUpdateDummy
 export const DummyUserList = environment.API_ENDPOINT + "DummyUserList"
 export const deleteDummyUser = environment.API_ENDPOINT + "deleteDummyUser"
 
+//settins Api
 
+//Role
+export const addOrUpdateCompanyRole = environment.API_ENDPOINT + "addOrUpdateCompanyRole"
+export const companyRoleList = environment.API_ENDPOINT + "CompanyRoleList"
+export const deleteCompanyRole = environment.API_ENDPOINT + "deleteCompanyRole"
+
+//training
+export const addOrUpdateCompanyTrainingRecord = environment.API_ENDPOINT + "addOrUpdateCompanyTrainingRecord"
+export const companyTrainingRecordList = environment.API_ENDPOINT + "CompanyTrainingRecordList"
+export const deleteCompanyTrainingRecord = environment.API_ENDPOINT + "deleteCompanyTrainingRecord"
+
+//Licences
+export const addOrUpdateCompanyLicences = environment.API_ENDPOINT + "addOrUpdateCompanyLicences"
+export const companyLicencesList = environment.API_ENDPOINT + "companyLicencesList"
+export const deleteCompanyLicences = environment.API_ENDPOINT + "deleteCompanyLicences"
+
+//Competencies
+export const addOrUpdateCompanyCompetencies = environment.API_ENDPOINT + "addOrUpdateCompanyCompetencies"
+export const companyCompetenciesList = environment.API_ENDPOINT + "companyCompetenciesList"
+export const deleteCompanyCompetencies = environment.API_ENDPOINT + "deleteCompanyCompetencies"
 
 
 

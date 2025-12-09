@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
-import { CalendarOptions, EventChangeArg } from '@fullcalendar/core';
+import { CalendarOptions, DatesSetArg, EventApi, EventChangeArg } from '@fullcalendar/core';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import interactionPlugin from '@fullcalendar/interaction';
 import { MatDialog } from '@angular/material/dialog';
@@ -17,6 +17,7 @@ import { PlannerDummyResourceComponent } from '../planner-dummy-resource/planner
 import * as Global from '../../../../../environments/environment'
 import { Router } from '@angular/router';
 import { of, switchMap } from 'rxjs';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 @Component({
   selector: 'app-planner',
   templateUrl: './planner.component.html',
@@ -26,7 +27,8 @@ export class PlannerComponent {
   selectedRange: number | null = null;
   public siteList:any
   public inicialResourceList:any
-  // public filterPeriod: any;
+  public initialEventsList:any
+  public selectedSite:any = []
   public calendarApi :any
   utilObj = new Util();
   selectdView:any = 'fourWeeks'
@@ -84,12 +86,25 @@ export class PlannerComponent {
     selectable: this.commonService?.usrpermission?.usrPlannerAccess == 1 ? false :true,
     stickyHeaderDates: true,
     headerToolbar: false,
+    weekends:true,
     slotMinWidth: 45,
     eventMinHeight:100,
     height: 'auto',
     resources: [],
     events: [],
     resourceOrder:'title',
+    slotLabelContent: (arg: any) => {
+      const today = new Date();
+      const isToday = arg.date.toDateString() === today.toDateString();
+      if (arg.level === 1 && isToday) {
+        return {
+          html: `<div class="today-slot-label">${arg.text}</div>`
+        };
+      }
+      return {
+        html: `<div>${arg.text}</div>`
+      };
+    },
     views: {
       resourceTimelineMonth: {
         slotLabelFormat: {
@@ -136,7 +151,7 @@ export class PlannerComponent {
         duration: { months: 6 },
         slotLabelFormat: [
           { month: 'long', year: 'numeric' },
-          { weekday: 'short', day: '2-digit' }
+          {  weekday: 'short', day: '2-digit' }
         ],
       },
       eightMonths: {
@@ -184,46 +199,13 @@ export class PlannerComponent {
     select: this.handleAddPlan.bind(this),
     eventDataTransform: this.transformEventData.bind(this),
     eventClick: this.handleUpdatePlan.bind(this),
-    viewDidMount:()=>{
-      // let headerCells = document.querySelectorAll('.fc-datagrid-cell-frame');
-      // if (headerCells.length > 0) {
-      //   let headerCell = headerCells[headerCells.length - 1] as HTMLElement;
-      //   headerCell.style.justifyContent = 'space-between'
-      //   let lastHeader = headerCells[headerCells.length - 1];
-      //   const buttons = document.createElement('button');
-      //   buttons.textContent = 'Add Resource';
-      //   buttons.classList.add('planner-btn')
-      //   buttons.addEventListener('click', (event) => {
-      //     event.stopPropagation();
-      //     this.addEditDummyRes('','Add');
-      //   });
-      //   lastHeader.appendChild(buttons);
-      // }
-    },
     resourceLabelDidMount: (info: any) => {
       info.el.addEventListener('click', () => {
         this.previewResource(info.resource)
       });
-      // const resourceHeader = info.el;
-      // const resourceHeaders = info.el.closest('td')
-      // resourceHeaders.style.display = 'flex'
-      // resourceHeader.style.justifyContent = 'space-between'
-      // resourceHeader.style.alignItems = 'center'
-      // if (info.resource.extendedProps.usr_type == 4) {
-      //   const buttonWrapper = document.createElement('div');
-      //   buttonWrapper.classList.add('button-container');
-      //   const button = document.createElement('button');
-      //   button.innerText = 'Update';
-      //   button.classList.add('planner-btn')
-      //   button.addEventListener('click', (event) => {
-      //     event.stopPropagation();
-      //     this.addEditDummyRes(info.resource,'Update');
-      //   });
-      //   buttonWrapper.appendChild(button);
-      //   resourceHeader.appendChild(buttonWrapper);
-      // }
     },
   };
+  
   addEditDummyRes(data:any,type:any){
     const dialogRef = this.dialog.open(PlannerDummyResourceComponent, {
       width: '30rem',
@@ -242,17 +224,55 @@ export class PlannerComponent {
       event.usrId == newEvent.usrId && event.siteId == newEvent.siteId && moment(event.rpStartdate).format('DD-MM-YYYY') == newEvent.rpStartdate && moment(event.rpEnddate).format('DD-MM-YYYY')  == newEvent.rpEnddate
     );
   }
-  filterSites(event: any) {
-    const selectedSites = event.value;
-    if (selectedSites.length === 0) {
-      this.calendarOptions.resources = this.inicialResourceList;
+  isAllSelected(): boolean {
+    return this.siteList?.length && this.selectedSite?.length === this.siteList?.length;
+  }
+
+  isIndeterminate(): boolean {
+    return this.selectedSite?.length && this.selectedSite.length < this.siteList.length;
+  }
+
+  toggleAllSelection(change: MatCheckboxChange): void {
+    if (change.checked) {
+      this.selectedSite = this.siteList.map((site: any) => site.siteId);
     } else {
-      const filteredResources = this.inicialResourceList.filter((resource: any) => {
-        return resource.sites.some((siteId: any) => selectedSites.includes(siteId));
-      });
-      this.calendarOptions.resources = filteredResources;
+      this.selectedSite = [];
     }
+    this.filterSites(); // Ensure the filter updates when all are toggled
+  }
+  filterSites() {
+    if (!this.selectedSite || this.selectedSite.length === 0) {
+      // No events selected, reset to full resource list
+      this.calendarOptions.resources = this.inicialResourceList;
+      this.calendarApi.refetchResources();
+      return;
+    }
+    const viewStart = this.calendarApi.view.activeStart.getTime();
+    const viewEnd = this.calendarApi.view.activeEnd.getTime();
+    const filteredEventResources = new Set<string>();
+    for (const ev of this.initialEventsList) {
+      if (!this.selectedSite.includes(ev.siteId)) continue;
+      const evStart = new Date(ev.rpStartdate).getTime() ?? 0;
+      const evEnd = new Date(ev.rpEnddate).getTime() ?? 0;
+
+      if (evEnd <= viewStart || evStart >= viewEnd) continue;
+      filteredEventResources.add(ev.usrId)
+    }
+    const filteredResources = this.inicialResourceList.filter((res: any) =>
+      filteredEventResources.has(res.id)
+    );
+    this.calendarOptions.resources = filteredResources;
     this.calendarApi.refetchResources();
+    // const selectedSites = event.value;
+    // if (selectedSites.length === 0) {
+    //   this.calendarOptions.resources = this.inicialResourceList;
+    // } else {
+    //   const filteredResources = this.inicialResourceList.filter((resource: any) => {
+    //     return resource.sites.some((siteId: any) => selectedSites.includes(siteId));
+    //   });
+    //   this.calendarOptions.resources = filteredResources;
+    // }  
+    // this.calendarApi.refetchResources();
   }
   changeView(event: any){
     const selectedView =  event.value ?? event;
@@ -457,9 +477,11 @@ export class PlannerComponent {
               siteId: event.siteId,
           };
       });
-      this.calendarOptions.events = fullCalendarEvents
-      this.calendarApi.refetchEvents();
-      this.updateEventColor()
+        this.calendarOptions.events = fullCalendarEvents
+        this.initialEventsList = this.calendarOptions.events
+        this.calendarApi.refetchEvents();
+        
+        this.updateEventColor()
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -494,4 +516,5 @@ export class PlannerComponent {
         }
       });
   }
+  
 }

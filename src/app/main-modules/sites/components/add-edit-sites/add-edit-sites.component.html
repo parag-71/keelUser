@@ -29,6 +29,7 @@
                 </div>
                 <div class="col-12">
                     <mat-checkbox class="checkbox" formControlName="siteType" (change)="onCheckboxChange($event)">Display site in dashboard?</mat-checkbox>
+                    <div *ngIf="editSiteData.totalUser != 0 && this.from != 'add'" class="activeRes">Site has active resources. Reassign them before removing it.</div>
                 </div>
                 <div class="col-12 add_btn_box">
                     <button type="button" class="cancel_btn" (click)="closeDialog()">Cancel</button>
