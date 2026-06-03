@@ -7,15 +7,12 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { LandingPageComponent } from '../layout/components/landing-page/landing-page.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/Home', pathMatch: 'full' },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   {
     path: '',
     component: AuthComponent,
     children: [
-      {
-        path: 'Home',
-        component: LandingPageComponent,
-      },
+      
       {
         path: 'login',
         component: LoginComponent,
@@ -27,7 +24,11 @@ const routes: Routes = [
       {
         path: 'reset-password/:data',
         component: ResetPasswordComponent,
-      }
+      },
+      // {
+      //   path: 'Home',
+      //   component: LandingPageComponent,
+      // },
     ],
   },
 ];
