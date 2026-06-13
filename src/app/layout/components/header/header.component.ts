@@ -4,6 +4,7 @@ import { filter } from 'rxjs';
 import { Util } from 'src/app/core/resource/utils';
 import { CommonService } from 'src/app/core/services/common.service';
 import { ResourceService } from 'src/app/main-modules/resources/add-resources-service/resource.service';
+import { PlantResourceService } from 'src/app/main-modules/plant-resources/plant-resource-service/plant-resource.service';
 import { SiteService } from 'src/app/main-modules/sites/site-service/site.service';
 import * as Global from '../../../../environments/environment'
 import { DashboradService } from 'src/app/main-modules/dashborad/dashborad-service/dashborad.service';
@@ -31,6 +32,11 @@ export class HeaderComponent {
     limit: '25',
     search: '',
   };
+  public plantResourcesPagination = {
+    index: '0',
+    limit: '25',
+    search: '',
+  };
   @Input() inputSideNav: any;
   public showFilter:any = false
   constructor(
@@ -38,6 +44,7 @@ export class HeaderComponent {
     public router: Router,
     public siteService:SiteService,
     public resourceService :ResourceService,
+    public plantResourceService :PlantResourceService,
     public dashboradService:DashboradService,
     public dialog: MatDialog,
     ) { 
@@ -69,11 +76,13 @@ export class HeaderComponent {
   searchCustomer(){
     if(this.commonService.search.length >= 3){
       this.pagination.search = this.commonService.search
-      this.resourcesPagination.search = this.commonService.search 
+      this.resourcesPagination.search = this.commonService.search
+      this.plantResourcesPagination.search = this.commonService.search
       this.callSearchListApi(this.currentRouteName)
     }else if(this.commonService.search.length == 0){
       this.pagination.search = ''
       this.resourcesPagination.search = ''
+      this.plantResourcesPagination.search = ''
       this.callSearchListApi(this.currentRouteName)
       this.commonService.resourcePlannerSub.next('')
     }
@@ -82,12 +91,16 @@ export class HeaderComponent {
     this.commonService.search = ''
     this.pagination.search = ''
     this.resourcesPagination.search = ''
+    this.plantResourcesPagination.search = ''
     switch (this.currentRouteName) {
       case "sites":
         this.siteService.getSiteList(this.pagination)
         return ''
       case "resources":
         this.resourceService.getUserList(this.resourcesPagination)
+      return ''
+      case "plant-resources":
+        this.plantResourceService.getPlantList(this.plantResourcesPagination)
       return ''
       case "dashboard":
       case "preview-site-user":
@@ -126,6 +139,9 @@ export class HeaderComponent {
         return ''
       case "resources":
         this.resourceService.getUserList(this.resourcesPagination)
+      return ''
+      case "plant-resources":
+        this.plantResourceService.getPlantList(this.plantResourcesPagination)
       return ''
       case "dashboard":
       case "preview-site-user":

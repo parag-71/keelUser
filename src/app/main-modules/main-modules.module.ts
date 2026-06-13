@@ -8,6 +8,7 @@ import { SharedModule } from '../shared/shared.module';
 import { DashboradModule } from './dashborad/dashborad.module';
 import { RequestModule } from './request/request.module';
 import { ResourcesModule } from './resources/resources.module';
+import { PlantResourcesModule } from './plant-resources/plant-resources.module';
 import { SitesModule } from './sites/sites.module';
 import { PlannerModule } from './planner/planner.module';
 
@@ -22,6 +23,7 @@ import { PlannerModule } from './planner/planner.module';
     DashboradModule,
     RequestModule,
     ResourcesModule,
+    PlantResourcesModule,
     SitesModule,
     LayoutModule,
     SharedModule,

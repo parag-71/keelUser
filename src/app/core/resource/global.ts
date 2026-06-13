@@ -32,6 +32,16 @@ export const userCompetenciesList = environment.API_ENDPOINT + "userCompetencies
 
 
 
+//Plant Resource API
+export const addPlant = environment.API_ENDPOINT + "addPlant"
+export const plantList = environment.API_ENDPOINT + "plantList"
+export const plantDetails = environment.API_ENDPOINT + "plantDetails"
+export const updatePlant = environment.API_ENDPOINT + "updatePlant"
+export const plantNameList = environment.API_ENDPOINT + "plantNameList"
+export const deletePlant = environment.API_ENDPOINT + "deletePlant"
+export const updatePlantResourceLicences = environment.API_ENDPOINT + "updatePlantResourceLicences"
+export const plantResourceLicencesList = environment.API_ENDPOINT + "plantResourceLicencesList"
+
 //role API
 export const roleList = environment.API_ENDPOINT + "roleList"
 
@@ -97,6 +107,10 @@ export const addOrUpdateCompanyCompetencies = environment.API_ENDPOINT + "addOrU
 export const companyCompetenciesList = environment.API_ENDPOINT + "companyCompetenciesList"
 export const deleteCompanyCompetencies = environment.API_ENDPOINT + "deleteCompanyCompetencies"
 
+//Plant Licences
+export const addOrUpdateCompanyPlantLicences = environment.API_ENDPOINT + "addOrUpdateCompanyPlantLicences"
+export const companyPlantLicencesList = environment.API_ENDPOINT + "companyPlantLicencesList"
+export const deleteCompanyPlantLicences = environment.API_ENDPOINT + "deleteCompanyPlantLicences"
 
 
 

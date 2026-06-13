@@ -22,15 +22,15 @@ export class SettingComponent {
     public SettingsService:SettingService
   ) {}
   ngOnInit() {
-      this.inputList = ['Role','Training Record','Licences','Competencies']
+      this.inputList = ['Role','Training Record','People Licences','Plant Licences','Competencies']
       this.SettingsService.settingType(this.selectedItem,'getList')
   }
   selectItem(item: string) {
     this.selectedItem = (this.selectedItem === item) ? this.selectedItem  : item;
     this.addNewRole = false
     this.SettingsService.settingType(this.selectedItem,'getList')
-    this.ParamName = item == 'Role' ? 'roleName' : item == 'Training Record' ? 'trName' : item == 'Licences' ? 'licName' : item == 'Competencies' ? 'comptName' : ''
-    this.settingId = item == 'Role' ? 'roleId' : item == 'Training Record' ? 'trId' : item == 'Licences' ? 'licId' : item == 'Competencies' ? 'comptId' : ''
+    this.ParamName = item == 'Role' ? 'roleName' : item == 'Training Record' ? 'trName' : item == 'People Licences' ? 'licName' : item == 'Plant Licences' ? 'cplName' : item == 'Competencies' ? 'comptName' : ''
+    this.settingId = item == 'Role' ? 'roleId' : item == 'Training Record' ? 'trId' : item == 'People Licences' ? 'licId' : item == 'Plant Licences' ? 'cplId' : item == 'Competencies' ? 'comptId' : ''
   }
   openAddSettingPopup(){
     this.addNewRole = true

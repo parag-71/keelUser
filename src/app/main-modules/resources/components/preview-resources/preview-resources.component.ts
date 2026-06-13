@@ -10,7 +10,7 @@ import { EndUserService } from 'src/app/core/services/end-user.service';
   styleUrls: ['./preview-resources.component.scss']
 })
 export class PreviewResourcesComponent {
-  public tabName:any = 'Resource'
+  public tabName:any = 'People Resource'
   public preSelectedTabIndex:any = 0
   baseUrl = Global.environment.BASE_URL
   public resourceDetails:any
@@ -35,7 +35,7 @@ export class PreviewResourcesComponent {
   
     tabChange($event:any){
       this.tabName = $event.tab.textLabel
-      this.preSelectedTabIndex == 0 ? this.tabName = 'Resource' : this.tabName = $event.tab.textLabel
+      this.preSelectedTabIndex == 0 ? this.tabName = 'People Resource' : this.tabName = $event.tab.textLabel
     }
     edit(){
       this.resourceService.selectedTabIndex = this.preSelectedTabIndex

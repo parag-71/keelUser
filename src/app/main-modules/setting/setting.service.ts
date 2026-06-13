@@ -34,8 +34,11 @@ export class SettingService {
       case 'Training Record':
         this.addTraining(value)
         break;
-      case 'Licences':
+      case 'People Licences':
         this.addLicences(value)
+        break;
+      case 'Plant Licences':
+        this.addPlantLicences(value)
         break;
       case 'Competencies':
         this.addCompetencies(value)
@@ -51,8 +54,11 @@ export class SettingService {
       case 'Training Record':
         this.deleteTraining(value)
         break;
-      case 'Licences':
+      case 'People Licences':
         this.deleteLicences(value)
+        break;
+      case 'Plant Licences':
+        this.deletePlantLicences(value)
         break;
       case 'Competencies':
         this.deleteCompetencies(value)
@@ -67,8 +73,11 @@ export class SettingService {
       case 'Training Record':
         this.getTrainingList()
         break;
-      case 'Licences':
+      case 'People Licences':
         this.getLicencesList()
+        break;
+      case 'Plant Licences':
+        this.getPlantLicencesList()
         break;
       case 'Competencies':
         this.getCompetenciesList()
@@ -190,6 +199,38 @@ export class SettingService {
   }
   getCompetenciesList(){
     this.endUserService.companyCompetenciesList({}).subscribe((result:any)=>{
+      if (result.status == 200){
+        this.allSettingList = result.data
+      }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+
+  addPlantLicences(value:any){
+    this.endUserService.addOrUpdateCompanyPlantLicences({cplName:value.settingName.trim(),cplId:value.settingId ? value.settingId : ''}).subscribe((result:any)=>{
+      if (result.status == 200){
+        this.getPlantLicencesList()
+        this.commonService.successAlert(result.message)
+      }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+
+  deletePlantLicences(value:any){
+    this.endUserService.deleteCompanyPlantLicences({cplId:value.cplId}).subscribe((result:any)=>{
+      if (result.status == 200){
+        this.getPlantLicencesList()
+        this.commonService.successAlert(result.message)
+      }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+
+  getPlantLicencesList(){
+    this.endUserService.companyPlantLicencesList({}).subscribe((result:any)=>{
       if (result.status == 200){
         this.allSettingList = result.data
       }else{

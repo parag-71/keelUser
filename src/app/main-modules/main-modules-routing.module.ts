@@ -26,6 +26,10 @@ const routes: Routes = [
         loadChildren: () => import('./resources/resources.module').then(x => x.ResourcesModule),
       },
       {
+        path: 'plant-resources',
+        loadChildren: () => import('./plant-resources/plant-resources.module').then(x => x.PlantResourcesModule),
+      },
+      {
         path: 'request',
         loadChildren: () => import('./request/request.module').then(x => x.RequestModule),
       },

@@ -1,0 +1,156 @@
+<div class="popupParent" [ngStyle]="{'height':from === 'add' ? '547px' : '510px' }">
+    <h4 mat-dialog-title class="modal-header text-center">
+        <span class="header_text">
+           {{this.from == 'edit' ? 'Update Plant Resource' : 'Add Plant Resource'}}
+        </span>
+        <mat-icon class="close" matTooltip="close" (click)="closeDialog()" >close</mat-icon>
+    </h4>
+
+    <mat-tab-group [ngClass]="from == 'add' ? 'forAdd' : 'forUpdate'" [(selectedIndex)]="selectedTabIndex">
+        <!-- ============ Tab 1 : Plant Details ============ -->
+        <mat-tab label="Plant Details">
+            <form [formGroup]="addUpdatePlantGrp">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 file-upload-wapper">
+                            <span class="text">Upload plant image</span>
+                            <div class="file-upload">
+                                <div class="position-relative">
+                                    <label class="logo">
+                                        <img for="file-input" [ngClass]="{'after-upload' : imageUrl || EditImages}"
+                                            [src]="imageUrl ? imageUrl : EditImages ? EditImages : 'assets/images/Add Image.png'" alt="Logo">
+                                        <input id="file-input" type="file" (change)="onFileSelected($event)">
+                                    </label>
+                                    <span class="remove-icon" (click)="removeImage()" *ngIf="imageUrl || EditImages">
+                                        <mat-icon class="close" matTooltip="close" (click)="removeImage()">close</mat-icon>
+                                    </span>
+                                </div>
+                                <mat-error *ngIf="imageSizeOverOneMB">Image size must be less than 2MB</mat-error>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row inpu_field_box">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="p-0">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Title</mat-label>
+                                    <input matInput formControlName="pltTitle">
+                                    <mat-error *ngIf="(addUpdatePlantGrp.get('pltTitle').invalid && addUpdatePlantGrp.get('pltTitle').touched)">{{getErrorMessage('pltTitle')}}</mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <div class="p-0">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Plant ID</mat-label>
+                                    <input matInput formControlName="pltCode">
+                                    <mat-error *ngIf="(addUpdatePlantGrp.get('pltCode').invalid && addUpdatePlantGrp.get('pltCode').touched)">{{getErrorMessage('pltCode')}}</mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <div class="p-0">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Company</mat-label>
+                                    <input matInput formControlName="pltCompany">
+                                    <mat-error *ngIf="(addUpdatePlantGrp.get('pltCompany').invalid && addUpdatePlantGrp.get('pltCompany').touched)">{{getErrorMessage('pltCompany')}}</mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <mat-form-field appearance="outline" class="matSelectPadding">
+                                <mat-label>Current site</mat-label>
+                                <mat-select formControlName="siteId">
+                                    <mat-option *ngFor="let site of dashboradService.siteList" [value]="site.siteId">
+                                        {{site.siteName}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="(addUpdatePlantGrp.get('siteId').invalid && addUpdatePlantGrp.get('siteId').touched)">{{getErrorMessage('siteId')}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-12 col-xs-12">
+                            <div class="p-0">
+                                <mat-form-field appearance="outline" class="textarea-field">
+                                    <mat-label>Attachments</mat-label>
+                                    <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="3" cdkAutosizeMaxRows="4" formControlName="pltAttachment"></textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-xs-12">
+                            <div class="p-0">
+                                <mat-form-field appearance="outline" class="textarea-field">
+                                    <mat-label>Service notes</mat-label>
+                                    <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="3" cdkAutosizeMaxRows="4" formControlName="pltServiceNote"></textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="col-12 chips_col">
+                            <div class="chips-input">
+                                <span class="chip" *ngFor="let s of safety; let i = index">
+                                    {{s}}<span class="chip-x" (click)="removeSafety(i)">&times;</span>
+                                </span>
+                                <input class="chip-field" [(ngModel)]="safetyInput" [ngModelOptions]="{standalone:true}"
+                                    (keydown.enter)="addSafety($event)" (keydown.backspace)="onSafetyBackspace($event)" (blur)="addSafety($event)"
+                                    placeholder="Add safety / licence and press Enter">
+                            </div>
+                        </div>
+                        <div class="col-12 chips_col">
+                            <div class="chips-input">
+                                <span class="chip" *ngFor="let tag of tags; let i = index">
+                                    {{tag}}<span class="chip-x" (click)="removeTag(i)">&times;</span>
+                                </span>
+                                <input class="chip-field" [(ngModel)]="tagInput" [ngModelOptions]="{standalone:true}"
+                                    (keydown.enter)="addTag($event)" (keydown.backspace)="onTagBackspace($event)" (blur)="addTag($event)"
+                                    placeholder="Add tag and press Enter">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </mat-tab>
+
+        <!-- ============ Tab 2 : Safety & Licences ============ -->
+        <mat-tab label="Licences">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <p-table [value]="plantResourceService.safetyList" [(selection)]="selectedSafety" class="record_table">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Licence</th>
+                                    <th>Expiry</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowIndex="rowIndex" let-rowData>
+                                <tr>
+                                    <td class="record_td">
+                                        <p-tableCheckbox (click)="selectRow($event,rowData)" [value]="rowData"></p-tableCheckbox>
+                                        <span>{{rowData.cplName}}</span>
+                                    </td>
+                                    <td>
+                                        <div class="custom-date-input">
+                                            <mat-form-field appearance="outline">
+                                                <input matInput [disabled]="rowData.isRowSelected" [matDatepicker]="picker2" placeholder="DD  /  MM  /  YYYY" (dateChange)="selectDate($event,rowData)" [(ngModel)]="rowData.pltExpiredate" [ngModelOptions]="{standalone:true}">
+                                                <mat-datepicker [disabled]="rowData.isRowSelected" #picker2></mat-datepicker>
+                                            </mat-form-field>
+                                            <img src="assets/images/calendar.png" (click)="openDatepicker(picker2)" alt="">
+                                            <mat-checkbox class="checkbox" [disabled]="rowData.isRowSelected" (change)='selectCheckbox($event,rowData)' [(ngModel)]="rowData.pltNeverExpire" [ngModelOptions]="{standalone:true}">No expiration date</mat-checkbox>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <div *ngIf="plantResourceService.safetyList?.length == 0" class="noSafetyText">
+                            <span>No plant safety &amp; licences configured. Add them under Settings &gt; Input.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+
+    <div class="position-sticky col-md-12 col-xs-12 pb-2 add_btn_box py-2">
+        <button type="button" class="cancel_btn me-2" (click)="closeDialog()">Cancel</button>
+        <button class="add_btn" (click)="AddUpdatePlantData(addUpdatePlantGrp.value,'close')">{{selectedTabIndex == 1 ? (from == 'edit' ? 'Update Licences' : 'Add Licences') : (from == 'edit' ? 'Update Plant Resource' : 'Add Plant Resource')}}</button>
+    </div>
+</div>

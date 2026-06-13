@@ -23,7 +23,13 @@
             <span>
                 <img src="assets/images/resources-black.png" />
             </span>
-            <span class="text">Resources</span>
+            <span class="text">People Resource</span>
+        </mat-list-item>
+        <mat-list-item [routerLink]="['/plant-resources']" (click)="hideNav()" class="list_item" routerLinkActive="activeLink">
+            <span>
+                <mat-icon class="plantMenuIcon">forklift</mat-icon>
+            </span>
+            <span class="text">Plant Resource</span>
         </mat-list-item>
         <mat-list-item [routerLink]="['/request']" (click)="hideNav()" class="list_item" routerLinkActive="activeLink">
             <span>

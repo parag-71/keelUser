@@ -141,6 +141,56 @@ export class EndUserService {
   }
 
 
+  //Plant Resource API Fn
+  addPlant(paramData:any):any{
+    return this.http.post(
+			Global.addPlant,
+			paramData
+		);
+  }
+  plantList(paramData:any):any{
+    return this.http.post(
+			Global.plantList,
+			paramData
+		);
+  }
+  plantDetails(paramData:any):any{
+    return this.http.post(
+			Global.plantDetails,
+			paramData
+		);
+  }
+  updatePlant(paramData:any):any{
+    return this.http.post(
+			Global.updatePlant,
+			paramData
+		);
+  }
+  plantNameList(paramData:any):any{
+    return this.http.post(
+			Global.plantNameList,
+			paramData
+		);
+  }
+  deletePlant(paramData:any):any{
+    return this.http.post(
+			Global.deletePlant,
+			paramData
+		);
+  }
+  updatePlantResourceLicences(paramData:any):any{
+    return this.http.post(
+			Global.updatePlantResourceLicences,
+			paramData
+		);
+  }
+  plantResourceLicencesList(paramData:any):any{
+    return this.http.post(
+			Global.plantResourceLicencesList,
+			paramData
+		);
+  }
+
   // Role API
   roleList(paramData:any):any{
     return this.http.post(
@@ -376,6 +426,26 @@ export class EndUserService {
 			paramData
 		);
   }
+
+  addOrUpdateCompanyPlantLicences(paramData:any):any{
+    return this.http.post(
+			Global.addOrUpdateCompanyPlantLicences,
+			paramData
+		);
+  }
+  companyPlantLicencesList(paramData:any):any{
+    return this.http.post(
+			Global.companyPlantLicencesList,
+			paramData
+		);
+  }
+  deleteCompanyPlantLicences(paramData:any):any{
+    return this.http.post(
+			Global.deleteCompanyPlantLicences,
+			paramData
+		);
+  }
+
 }
 
 

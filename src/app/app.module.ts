@@ -15,6 +15,7 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 import { ResourceService } from './main-modules/resources/add-resources-service/resource.service';
+import { PlantResourceService } from './main-modules/plant-resources/plant-resource-service/plant-resource.service';
 import { DatePipe } from '@angular/common';
 import { RequestService } from './main-modules/request/request-service/request.service';
 
@@ -49,6 +50,7 @@ const app_routes: Routes = [
   ],
   providers: [
     ResourceService,
+    PlantResourceService,
     RequestService,
     DatePipe,
     { provide: MatDialogRef, useValue: {} },

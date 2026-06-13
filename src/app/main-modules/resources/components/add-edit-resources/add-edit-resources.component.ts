@@ -48,7 +48,7 @@ export class AddEditResourcesComponent {
   public selectedTrainingRecords:any
   public selectedLicences:any
   public selectedCompetencies:any
-  public tabName:any = 'Resource'
+  public tabName:any = 'People Resource'
   public userLicencesListSubjDestroy:any
   public userTrainingListSubjDestroy:any
   public userCompetenciesListSubjDestroy:any
@@ -206,7 +206,7 @@ export class AddEditResourcesComponent {
         this.commonService.markFormGroupTouched(this.addUpdateUserGrp)
 			});
     }
-     this.resourceService.selectedTabIndex == 0 ? this.tabName = 'Resource' : this.tabName = $event.tab.textLabel
+     this.resourceService.selectedTabIndex == 0 ? this.tabName = 'People Resource' : this.tabName = $event.tab.textLabel
   }
 
   isFormSave(){

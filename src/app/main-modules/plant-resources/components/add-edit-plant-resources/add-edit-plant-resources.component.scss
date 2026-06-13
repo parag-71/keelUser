@@ -1,0 +1,382 @@
+@import '../../../../shared/scss/default_variables.scss';
+
+
+.forAdd{
+  ::ng-deep .mat-mdc-tab-body {
+    min-height: 425px !important;
+    max-height: 425px !important;
+    overflow-y: auto;
+  }
+}
+.forUpdate{
+  ::ng-deep .mat-mdc-tab-body {
+    min-height: 385px !important;
+    max-height: 385px !important;
+    overflow-y: auto;
+  }
+}
+
+::ng-deep{
+  //tabs
+  .mat-mdc-tab-body{
+    padding-top: 16px;
+  }
+  .mat-mdc-tab.mdc-tab {
+    font-size: 13px !important;
+    height: 30px !important;
+  }
+  .mat-mdc-tab-labels{
+    padding-top: 5px;
+  }
+  .mdc-tab--active {
+    font-weight: bold;
+  }
+  .mat-mdc-tab:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label{
+    color: $primary-color ;
+    font-size: 13px;
+  }
+  .mat-mdc-tab:not(.mat-mdc-tab-disabled) .mdc-tab-indicator__content--underline{
+    border-color: $primary-color ;
+  }
+  .mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs>.mat-mdc-tab-header .mat-mdc-tab{
+    flex-grow: 1 !important;
+  }
+
+  //checkbox
+  .mat-mdc-checkbox label  {
+    color: #676C6F !important;
+  }
+  .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not([data-indeterminate=true])~.mdc-checkbox__background{
+    border-color: #CED4DA !important;
+    width: 15px !important;
+    height: 15px !important;
+  }
+  .mdc-checkbox__ripple{
+    display: none;
+  }
+  .mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background{
+    width: 15px !important;
+    height: 15px !important;
+  }
+  .mdc-list-item__primary-text{
+    font-size: 13px !important;
+  }
+}
+
+.inpu_field_box {
+  padding-top: 10px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  mat-form-field{
+    width: 100%;
+    ::ng-deep{
+      .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above{
+        --mat-mdc-form-field-label-transform:translateY( -22.75px) scale(var(--mat-mdc-form-field-floating-label-scale, 0.75));
+        color:$primary-color;
+      }
+      .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input{
+        position: absolute;
+        top: 11px !important;
+        font-size: 14px;
+      }
+      .mat-mdc-form-field-error-wrapper{
+        top: -3px;
+        left: 3px;
+        padding: 0;
+      }
+      .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label{
+        top: 15px !important;
+        font-size: 13px !important;
+      }
+      .mat-mdc-text-field-wrapper{
+        height: 40px !important;
+      }
+      .mat-mdc-input-element{
+        top: -10px !important;
+        position: relative;
+      }
+      .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__leading,
+      .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__notch,
+      .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__trailing{
+        border-color: $secondary-color;
+        border-width: 1px;
+      }
+      .mat-mdc-select-value{
+        position: relative;
+        top: -9px;
+      }
+      .mat-mdc-select-arrow{
+        top: -9px;
+      }
+    }
+  }
+
+  // Multi-line free text fields (Attachments / Service notes) need a taller, auto-height wrapper.
+  .textarea-field{
+    ::ng-deep{
+      .mat-mdc-text-field-wrapper{
+        height: auto !important;
+      }
+      .mat-mdc-input-element{
+        top: 0 !important;
+        position: relative;
+      }
+      .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input{
+        position: relative;
+        top: 0 !important;
+        font-size: 14px;
+      }
+      textarea.mat-mdc-input-element{
+               resize: none;
+      }
+    }
+  }
+}
+
+// ===== Chip fields (safetyArray + tagArray) =====
+.chips_col{
+  margin-bottom: 14px;
+  .chips-input{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 9px;
+    border: 1px solid #c4c4c4;
+    border-radius: 4px;
+    padding: 9px 12px;
+    min-height: 42px;
+    .chip{
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      background-color: $primary-color;
+      color: #fff;
+      font-size: 12px;
+      line-height: 24px;
+      border-radius: 14px;
+      padding: 0 12px;
+      white-space: nowrap;
+      .chip-x{
+        position: absolute;
+        top: -6px;
+        right: -5px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #fff;
+        color: $primary-color;
+        border: 1px solid $primary-color;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        font-size: 11px;
+        line-height: 1;
+        cursor: pointer;
+        box-shadow: 0 1px 2px rgba(0,0,0,.18);
+      }
+    }
+    .chip-field{
+      border: none;
+      outline: none;
+      flex: 1;
+      min-width: 170px;
+      height: 24px;
+      font-size: 13px;
+      background: transparent;
+    }
+  }
+}
+
+// ===== Plant Safety & Licences table (People-licence parity) =====
+.record_table {
+  ::ng-deep .p-datatable>.p-datatable-wrapper{
+    overflow:hidden;
+  }
+  background-color: #FDFDFD;
+  .record_td{
+    span{
+      font-size: 12px;
+    }
+  }
+  tr>th:nth-child(2){
+    width: 55%;
+  }
+  tr>th {
+    border: 1px solid #BBC5CB;
+    box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.05);
+    color: black;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5rem;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  tr>td {
+    color: #5E6366;
+    font-size: 12px;
+    font-weight: 400;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    img{
+      cursor: pointer;
+      height: auto;
+      width: 26px;
+    }
+  }
+
+  ::ng-deep{
+    .p-checkbox {
+      vertical-align: text-top;
+    }
+    .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover{
+      border-color: $primary-color !important ;
+    }
+    .p-checkbox .p-checkbox-box.p-highlight {
+      border-color: $primary-color !important;
+      background-color: $primary-color !important;
+    }
+    .p-checkbox .p-checkbox-box{
+      width: 15px;
+      height:  15px;
+      border-radius: 0;
+    }
+  }
+
+  .custom-date-input {
+    display: flex;
+    align-items: center;
+    mat-form-field{
+      padding-top: 5px;
+      ::ng-deep{
+        .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above{
+          --mat-mdc-form-field-label-transform:translateY( -22.75px) scale(var(--mat-mdc-form-field-floating-label-scale, 0.75));
+          color:$primary-color;
+        }
+        .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label{
+          top: 15px !important;
+          font-size: 13px !important;
+        }
+        .mat-mdc-text-field-wrapper{
+          height: 27px !important;
+          width: 129px !important;
+          background-color: #F4F4F4;
+        }
+        .mat-mdc-input-element{
+          top: -13px !important;
+          left: -10px;
+          position: relative;
+          color: #000000cc;
+          font-size: 13px;
+        }
+        .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input::placeholder{
+          color: #AFAFAF;
+        }
+        .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__leading,
+        .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__notch,
+        .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__trailing{
+          border: none;
+        }
+        .mdc-text-field--outlined.mdc-text-field:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
+        .mdc-text-field--outlined.mdc-text-field:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
+        .mdc-text-field--outlined.mdc-text-field:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing{
+          border: none;
+        }
+        .mdc-text-field--outlined{
+          padding-right: 0;
+        }
+        .mat-mdc-form-field-subscript-wrapper{
+          height: 5px !important;
+        }
+      }
+    }
+    .checkbox {
+      margin-left: 10px;
+      ::ng-deep {
+        .mat-mdc-checkbox .mdc-checkbox {
+          padding-bottom: 10px !important;
+        }
+        .mdc-checkbox{
+          padding-right: 0 !important;
+        }
+        .mdc-checkbox .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background {
+          background-color: $primary-color;
+          border: 1px solid $primary-color;
+        }
+        .mat-ripple{
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+.noSafetyText{
+  font-size: 12px;
+  color: #9a9a9a;
+  padding: 8px 0;
+  text-align: center;
+}
+
+@media only screen and (min-width: 1024px) {
+  .add_btn_box{
+    padding-right: 2rem;
+  }
+}
+@media only screen and (min-width: 600px) {
+  .add_btn_box{
+    padding-right: 1rem;
+  }
+}
+
+.file-upload-wapper {
+  display: inline-block;
+  display: flex;
+  align-items: center;
+  .file-upload{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .text {
+    margin: 0px 10px 0 25px;
+    display: flex;
+    align-items: center;
+    color: #4f4f4f;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 5rem;
+    stroke-width: 1px;
+    height: 5rem;
+    border: 1px solid #dadada;
+  }
+  #file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+  }
+}
+
+.after-upload {
+  border-radius: 50%;
+  width: 5.1875rem;
+  height: 5.1875rem;
+  width: 100%;
+  height: 100%;
+}
+
+.matSelectPadding{
+  @-moz-document url-prefix() {
+    .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+      padding-top: 7px;
+    }
+  }
+}

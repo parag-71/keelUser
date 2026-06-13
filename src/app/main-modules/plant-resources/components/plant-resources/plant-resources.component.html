@@ -1,0 +1,58 @@
+<div class="container-fluid">
+    <div class="row" *ngIf="commonService.loginUserDetail.usrType != 3">
+        <div class="col-12 btn_box">
+            <button class="add_btn" (click)="openAddUpdatePlant('','add')">Add Plant Resource</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 table_box" [ngStyle]="{'padding-top': commonService.loginUserDetail.usrType == 3 ? '35px' : '' }">
+            <p-table class="table" [resizableColumns]="true" [columns]="cols" [value]="plantResourceService.plantList" >
+                <ng-template pTemplate="header" let-columns>
+                    <tr>
+                        <th *ngFor="let col of columns" pResizableColumn>
+                            {{col.header}}
+                        </th>
+                        <th pResizableColumn>Action</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-plant let-rowIndex="rowIndex" let-columns="columns">
+                    <tr>
+                        <td *ngFor="let col of columns" [ngSwitch]="col.field">
+                            <div class="text-center" *ngSwitchCase="'Sno'">
+                                {{plant['index']}}
+                            </div>
+                            <span *ngSwitchCase="'pltTitle'">
+                                <span *ngIf="plant.imageUrl">
+                                    <img class="plantImg" [src]="baseUrl + plant.imageUrl" alt="plant">
+                                </span>
+                                <span>
+                                    {{plant[col.field]}}
+                                </span>
+                            </span>
+                            <span *ngSwitchDefault>
+                                {{plant[col.field]}}
+                            </span>
+                        </td>
+                        <td class="actionTd">
+                            <span>
+                                <img (click)="previewPlant(plant)" class="eyeIcon" src="assets/images/seen_6497663.png" alt="preview">
+                            </span>
+                            <span *ngIf="commonService.loginUserDetail.usrType != 3" class="px-1">
+                                <img (click)="deletePlantAlert(plant)" class="addEditIcon" src="assets/images/delete.png" alt="delete" matTooltip="Delete Plant">
+                            </span>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <mat-paginator *ngIf="plantResourceService.plantsCount > 0" (page)="onPageChange($event)"  [length]="plantResourceService.plantsCount"
+                [pageSize]="plantResourceService.pagination.limit"
+                [pageSizeOptions]="[25, 50, 100, 150,200]"
+                [pageIndex]="plantResourceService.pagination.index/plantResourceService.pagination.limit"
+                >
+            </mat-paginator>
+            <div *ngIf="plantResourceService.plantList == 0 && plantResourceService.visibleNoDataFound" class="noDataText py-4">
+                <span>Data not found</span>
+            </div>
+        </div>
+    </div>
+</div>
