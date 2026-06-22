@@ -1,14 +1,13 @@
-
 <div class="container-fluid" >
-    <div class="row align-items-center" [ngClass]="(commonService.usrpermission.usrType == 2 || commonService.usrpermission.usrType == 1)
+    <div class="row align-items-center" [ngClass]="(commonService.usrpermission?.usrType == 2 || commonService.usrpermission?.usrType == 1)
                 ? 'justify-content-between' 
                 : 'justify-content-end'">
       <!-- left side dummy preview functionality run only for admin(2) -->
       <div class="col-2 d-flex" *ngIf="commonService?.usrpermission?.usrType == 2 || commonService?.usrpermission?.usrType == 1">
         <ng-container >
-          <button *ngIf="!pendingChanges.length" class="cancel_btn" style="width: auto;cursor:default">Preview Mode</button>
-          <button *ngIf="pendingChanges.length > 0" class="cancel_btn" (click)="cancelChanges()">Cancel</button>
-          <button *ngIf="pendingChanges.length > 0" class="add_btn" (click)="saveChanges()">Save Changes</button>
+          <button *ngIf="!pendingChanges.length && !plantPendingChanges.length" class="cancel_btn" style="width: auto;cursor:default">Preview Mode</button>
+          <button *ngIf="pendingChanges.length > 0 || plantPendingChanges.length > 0" class="cancel_btn" (click)="cancelChanges()">Cancel</button>
+          <button *ngIf="pendingChanges.length > 0 || plantPendingChanges.length > 0" class="add_btn" (click)="saveChanges()">Save Changes</button>
         </ng-container>
       </div>
   
@@ -36,8 +35,10 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-sm-12">
-      <div cdkDropListGroup class="main_box">
+    <div class="col-sm-12 boardArea">
+      <!-- ===== People Resources (top 50%) ===== -->
+      <div class="boardLabel">People Resources <span class="cnt">Total: {{commonService.userCount}}</span></div>
+      <div cdkDropListGroup class="main_box halfBoard">
         <div class="example-container" *ngFor="let site of dashboradService.displaySiteData" >
           <div class="siteName" (click)="redirectToSite(site)">
             <span>
@@ -62,6 +63,39 @@
                 <div class="text-Section" [ngClass]="{'centerText': !user.roleName}">
                   <div class="userName">{{user.usrFirstname}} {{user.usrLastname}} </div>
                   <div class="role" *ngIf="user.roleName">{{user.roleName}}</div>
+                </div>
+              </div>
+            </div>
+         </div>
+        </div>
+      </div>
+
+      <!-- ===== Plant Resources (bottom 50%) ===== -->
+      <div class="boardLabel">Plant Resources <span class="cnt">Total: {{commonService.plantCount}}</span></div>
+      <div cdkDropListGroup class="main_box halfBoard plantBoard">
+        <div class="example-container" *ngFor="let site of dashboradService.displayPlantSiteData" >
+          <div class="siteName" (click)="redirectToSite(site)">
+            <span>
+              {{site.siteName}}
+            </span>
+          </div>
+           <div div [id]="site.siteId+'_'+ site.usrId+'_'+site.siteName+'_plant'" cdkDropList [cdkDropListData]="site.plantData"
+            [cdkDropListConnectedTo]="[ site.siteId+'_'+ site.usrId+'_'+site.siteName+'_plant']" (cdkDropListDropped)="plantDrop($event)"
+            class="example-list">
+            <div class="userBox" *ngFor="let plant of site.plantData;trackBy: trackByPlantId">
+              <div class="imgBox"
+                (cdkDragStarted)="onPlantDragStarted($event)" [cdkDragData]="plant" cdkDrag>
+                <div class="incoming-section" *ngIf="plant.spStatus  == 1">
+                  Incoming
+                </div>
+                <div class="outging-section" *ngIf="plant.spStatus == 3">
+                  Outgoing
+                </div>
+                <img *ngIf="plant.imageUrl" class="userImg" [src]="baseUrl+plant.imageUrl" loading="lazy" decoding="async"
+                  class="img-fluid" alt="plantImg" >
+                <div *ngIf="!plant.imageUrl" class="plantIcon"><mat-icon>forklift</mat-icon></div>
+                <div class="text-Section centerText">
+                  <div class="userName">{{plant.pltTitle}}</div>
                 </div>
               </div>
             </div>

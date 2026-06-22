@@ -1,18 +1,20 @@
-
 <div class="cardBox">
   <mat-card class="card" *ngFor="let user of requestService.sendList">
     <div class="userImg">
-        <img class="img-fluid"  mat-card-image [ngClass]="{'backColor': !user?.imageUrl}" [src]="user?.imageUrl ?  baseUrl+user?.imageUrl : 'assets/images/User02.png'" alt="Photo of a Shiba Inu"> 
+        <div *ngIf="requestService.resourceType == 'plant' && !user?.imageUrl" class="plantReqIcon">
+          <mat-icon>precision_manufacturing</mat-icon>
+        </div>
+        <img *ngIf="!(requestService.resourceType == 'plant' && !user?.imageUrl)" class="img-fluid" mat-card-image [ngClass]="{'backColor': !user?.imageUrl}" [src]="user?.imageUrl ?  baseUrl+user?.imageUrl : 'assets/images/User02.png'" alt="resource image">
     </div>
     <mat-card-content class="mat_card_content">
     <div class="container">
       <div class="row">
-      <div class="username col-12">{{user.usrFirstname}} {{user.usrLastname}}</div>
+      <div class="username col-12">{{ requestService.resourceType == 'plant' ? user.pltTitle : (user.usrFirstname + ' ' + user.usrLastname) }}</div>
       <div class="company col-12">
         <span><img class="company-icon" src="assets/images/company-icon.png" alt=""></span>
-        <span class="comapnyName">{{user.compName}} </span>
+        <span class="comapnyName">{{ requestService.resourceType == 'plant' ? user.pltCompany : user.compName }} </span>
       </div>
-      <div class="company col-12">
+      <div class="company col-12" *ngIf="requestService.resourceType != 'plant'">
         <span><img class="company-icon " src="assets/images/user-icon.png" alt=""></span>
         <span class="comapnyName">{{user.roleName}}</span>
       </div>
@@ -30,17 +32,17 @@
         </div>
       </div>
       <div class="col-12">
-        <div class="requestDate">Request {{requestType == 0 ? 'sent' : 'received'}}: {{user.suCreatedate | date: 'dd/MM/yyyy'}} </div>
+        <div class="requestDate">Request {{requestType == 0 ? 'sent' : 'received'}}: {{ (requestService.resourceType == 'plant' ? user.spCreatedate : user.suCreatedate) | date: 'dd/MM/yyyy' }} </div>
       </div>
     </div>
     </div>
     </mat-card-content>
     <mat-card-actions *ngIf="requestType == 0"  class="matCardAction">
-      <button class="add_btn" (click)="withdrawReq(user.suId)">Withdraw request</button>
+      <button class="add_btn" (click)="withdrawReq(user)">Withdraw request</button>
     </mat-card-actions>
     <mat-card-actions *ngIf="requestType == 1"  class="matCardAction">
       <button class="accBtn" (click)="acceptReqest(user)" >Accept</button>
-      <button class="RejBtn" (click)="withdrawReq(user.suId)">Reject</button>
+      <button class="RejBtn" (click)="withdrawReq(user)">Reject</button>
     </mat-card-actions>
   </mat-card>
 </div>

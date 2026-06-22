@@ -21,6 +21,7 @@ export class DashboradComponent {
     siteIds:[]
   }
   pendingChanges: any[] = [];
+  plantPendingChanges: any[] = [];
   constructor(
     public dashboradService:DashboradService,
     public dialog: MatDialog,
@@ -41,6 +42,7 @@ export class DashboradComponent {
       }
     });
     this.dashboradService.getAllSitesUserList(this.pagination)
+    this.dashboradService.getAllSitesPlantList(this.pagination)
   }
   drop(event: CdkDragDrop<string[]> | any) {
     var assignId = event.previousContainer.data[event.previousIndex].assignId
@@ -91,8 +93,55 @@ export class DashboradComponent {
     }
   }
 
+  plantDrop(event: CdkDragDrop<string[]> | any) {
+    var assignId = event.previousContainer.data[event.previousIndex].assignId
+    var senderId = event.previousContainer.data[event.previousIndex].senderId
+    var assignName = event.previousContainer.data[event.previousIndex].pltTitle
+    var preSiteId = event.previousContainer.id.split('_', 3)[0]
+    var siteId = event.container.id.split('_', 1)[0]
+    var receiverId = event.container.id.split('_', 2)[1]
+    var siteName = event.container.id.split('_', 3)[2]
+
+    if (this.commonService?.usrpermission.usrType == 2 || this.commonService?.usrpermission.usrType == 1) {
+      if (preSiteId !== siteId) {
+        if (event.previousContainer !== event.container) {
+          transferArrayItem(
+            event.previousContainer.data,
+            event.container.data,
+            event.previousIndex,
+            event.currentIndex
+          );
+        }
+        const existingIndex = this.plantPendingChanges.findIndex(
+          (c) => c.assignId === assignId
+        );
+        if (existingIndex > -1) {
+          this.plantPendingChanges[existingIndex] = { siteId, receiverId, assignId, preSiteId, senderId };
+        } else {
+          this.plantPendingChanges.push({ siteId, receiverId, assignId, preSiteId, senderId });
+        }
+      }
+    } else if (event.previousContainer.id.split('_', 3)[1] == this.commonService?.usrpermission.usrId) {
+      if (event.previousContainer != event.container) {
+        Swal.fire({
+          icon: 'warning',
+          text: `Do you want to move ${assignName} to ${siteName} site`,
+          width: '27rem',
+          confirmButtonText: 'Yes',
+          confirmButtonColor: 'rgb(223,129,62)',
+          cancelButtonText: 'No',
+          showCancelButton: true,
+        }).then((result) => {
+          if (result.isConfirmed && event.previousContainer != event.container) {
+            this.dashboradService.assignPlantInSite(siteId, receiverId, assignId, preSiteId);
+          }
+        });
+      }
+    }
+  }
+
   saveChanges() {
-    if (!this.pendingChanges.length) {
+    if (!this.pendingChanges.length && !this.plantPendingChanges.length) {
       this.commonService.Alert('No changes to save.', 'info');
       return;
     }
@@ -107,7 +156,8 @@ export class DashboradComponent {
       confirmButtonColor: 'rgb(223,129,62)',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.assignUsersInSitesByAdmin()
+        if (this.pendingChanges.length) this.assignUsersInSitesByAdmin()
+        if (this.plantPendingChanges.length) this.assignPlantsInSitesByAdmin()
       }
     });
   }
@@ -121,6 +171,21 @@ export class DashboradComponent {
         this.commonService.successAlert(result.message);
         this.dashboradService.originalSiteData = JSON.parse(JSON.stringify(this.dashboradService.displaySiteData));
         this.pendingChanges = [];
+      } else {
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+
+  assignPlantsInSitesByAdmin() {
+    const paramData = {
+      plantSiteData: this.plantPendingChanges
+    };
+    this.endUserService.assignPlantsInSitesByAdmin(paramData).subscribe((result: any) => {
+      if (result.status == '200') {
+        this.commonService.successAlert(result.message);
+        this.dashboradService.originalPlantSiteData = JSON.parse(JSON.stringify(this.dashboradService.displayPlantSiteData));
+        this.plantPendingChanges = [];
       } else {
         this.commonService.ApiErrAlert(result)
       }
@@ -142,7 +207,11 @@ export class DashboradComponent {
         this.dashboradService.displaySiteData = JSON.parse(
           JSON.stringify(this.dashboradService.originalSiteData)
         );
+        this.dashboradService.displayPlantSiteData = JSON.parse(
+          JSON.stringify(this.dashboradService.originalPlantSiteData)
+        );
         this.pendingChanges = [];
+        this.plantPendingChanges = [];
       }
     });
   }
@@ -158,6 +227,17 @@ export class DashboradComponent {
   
   trackByUserId(index: number, user: any) {
     return user.usrId;
+  }
+  trackByPlantId(index: number, plant: any) {
+    return plant.pltId;
+  }
+  onPlantDragStarted(event: CdkDragStart): void {
+    if(event.source.data.spStatus == 1){
+      this.commonService.Alert('This plant is pending for approval','error')
+    }
+    if(event.source.data.spStatus == 3){
+      this.commonService.Alert('The plant is already assigned to a site and pending for approval.','error')
+    }
   }
   trackBySiteId(index: number, site: any){
     return site.siteId
@@ -212,6 +292,7 @@ export class DashboradComponent {
       localStorage.setItem('slectSite',JSON.stringify(localSiteList))
     }
     this.dashboradService.getAllSitesUserList(this.pagination)
+    this.dashboradService.getAllSitesPlantList(this.pagination)
   }
   compareFn(site1: any, site2: any): boolean {
     return site1 && site2 ? site1.siteId === site2.siteId  : site1 === site2;
@@ -229,7 +310,10 @@ export class DashboradComponent {
   ngOnDestroy() {
     this.dashboradService.allSiteData =[]
 	  this.dashboradService.displaySiteData = []
+    this.dashboradService.allPlantSiteData = []
+    this.dashboradService.displayPlantSiteData = []
     this.commonService.userCount = ''
+    this.commonService.plantCount = ''
     this.dashboradService.setinitialData()
   }
 }

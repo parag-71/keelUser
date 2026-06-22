@@ -21,6 +21,7 @@ export class RequestComponent {
   ){} 
   ngOnInit(){
     this.requestService.DashSelectIndex = 0
+    this.requestService.resourceType = 'people'
     this.userDetails = this.utiObj.getLoginUser()
     this.requestService.requestTypeSubject.next(this.requestService.DashSelectIndex)
     if(this.requestService.DashSelectIndex == 0 ){
@@ -39,11 +40,23 @@ export class RequestComponent {
       this.dashboradService.siteNameList(this.userDetails.usrId)
     }
   }
+  changeResource(type:any){
+    if(this.requestService.resourceType == type) return
+    this.requestService.resourceType = type
+    this.requestService.sendList = []
+    this.sites = 'all'
+    this.requestService.requestTypeSubject.next(this.requestService.DashSelectIndex)
+    if(this.requestService.DashSelectIndex == 0 ){
+      this.requestService.sentRequestSiteNameList()
+    }else{
+      this.dashboradService.siteNameList(this.userDetails.usrId)
+    }
+  }
   changeSite(){
     if(this.sites == 'all'){
-      this.requestService.siteUserRequestList(this.requestService.DashSelectIndex+1,this.commonService.siteIdList)
+      this.requestService.loadRequestList(this.requestService.DashSelectIndex+1,this.commonService.siteIdList)
     }else{
-      this.requestService.siteUserRequestList(this.requestService.DashSelectIndex+1,[this.sites])
+      this.requestService.loadRequestList(this.requestService.DashSelectIndex+1,[this.sites])
     }
   }
   ngOnDestroy() {

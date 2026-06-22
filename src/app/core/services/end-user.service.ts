@@ -252,6 +252,27 @@ export class EndUserService {
 		);
   }
 
+  allSitesPlantList(paramData:any):any{
+    return this.http.post(
+			Global.allSitesPlantList,
+			paramData
+		);
+  }
+
+  assignPlantInSite(paramData:any):any{
+    return this.http.post(
+			Global.assignPlantInSite,
+			paramData
+		);
+  }
+
+  assignPlantsInSitesByAdmin(paramData:any):any{
+    return this.http.post(
+			Global.assignPlantsInSitesByAdmin,
+			paramData
+		);
+  }
+
   //Request
   acceptSiteUser(paramData:any):any{
     return this.http.post(
@@ -272,6 +293,23 @@ export class EndUserService {
 			Global.cancelSiteUserRequest,
 			paramData
 		);
+  }
+  sitePlantRequestList(paramData: any): any {
+    return this.http.post(
+      Global.sitePlantRequestList,
+      paramData
+    );
+  }
+  acceptSitePlant(paramData: any): any {
+    return this.http.post(
+      Global.acceptSitePlant,
+      paramData
+    );
+  }
+  cancelSitePlantRequest(paramData: any): any {
+    return this.http.post(
+      Global.cancelSitePlantRequest, 
+      paramData);
   }
   sentRequestSiteNameList(paramData:any):any{
     return this.http.post(

@@ -19,6 +19,7 @@ export class CommonService {
   public loginUserDetail:any
   public siteIdList:any
   public userCount:any
+  public plantCount:any
   public requestCount:any
   public userSiteList:any
   public searchSiteList:any

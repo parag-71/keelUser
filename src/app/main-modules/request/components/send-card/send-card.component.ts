@@ -18,10 +18,18 @@ export class SendCardComponent {
       this.requestType = res
     })
   }
-  withdrawReq(suId:any){
-    this.requestService.cancelSiteUserRequest(suId)
+  withdrawReq(item:any){
+    if(this.requestService.resourceType == 'plant'){
+      this.requestService.cancelSitePlantRequest(item.spId)
+    }else{
+      this.requestService.cancelSiteUserRequest(item.suId)
+    }
   }
-  acceptReqest(user:any){ 
-    this.requestService.acceptSiteUser(user)
+  acceptReqest(item:any){
+    if(this.requestService.resourceType == 'plant'){
+      this.requestService.acceptSitePlant(item)
+    }else{
+      this.requestService.acceptSiteUser(item)
+    }
   }
 }

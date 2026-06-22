@@ -22,6 +22,9 @@ export class DashboradService {
   removeFilterLabel: Subject<any> = new Subject()
   public dashboardFilterChips:any = []
   public originalSiteData: any[] = [];
+  public allPlantSiteData: any
+  public displayPlantSiteData: any
+  public originalPlantSiteData: any[] = [];
 	public filterItem: any = [
 		{ searchType: '1', siteName: [] },
 		{ searchType: '2', roleName: [] },
@@ -87,6 +90,38 @@ export class DashboradService {
     })
   }
 
+  // ---- Plant board (mirror of the user methods above) ----
+  getAllSitesPlantList(pagination:any){
+    this.endUserService.allSitesPlantList(pagination).subscribe((result:any)=>{
+      if (result.status == '200' ){
+        this.allPlantSiteData = result.data
+        this.updatePlantSpStatus(this.allPlantSiteData)
+        this.displayPlantSiteData = JSON.parse(JSON.stringify(this.allPlantSiteData))
+        this.originalPlantSiteData = JSON.parse(JSON.stringify(this.allPlantSiteData))
+        this.commonService.plantCount = this.allPlantSiteData.reduce((total:any, site:any) => {
+          const filteredPlants = (site.plantData || []).filter((plant:any) => plant.spStatus !== 1);
+          return total + filteredPlants.length;
+        }, 0);
+      }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+  assignPlantInSite(siteId:any,receiverId:any,assignId:any,preSiteId:any){
+    this.endUserService.assignPlantInSite({siteId:siteId,receiverId:receiverId,assignId:assignId,preSiteId:preSiteId}).subscribe((result:any)=>{
+      if (result.status == '200' ){
+        this.commonService.successAlert(result.message)
+        const localSiteList:any = JSON.parse(localStorage.getItem('slectSite') || '[]')
+        localSiteList.forEach((item: any) => {
+          if (item.siteId) { this.pagination.siteIds.push(item.siteId); }
+        });
+        this.currentRouteName == 'dashboard' ? this.getAllSitesPlantList(this.pagination) : ''
+      }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+
   setinitialData(){
     this.resourceService.roleList = ''
     this.resourceService.trainingList = ''
@@ -127,7 +162,7 @@ export class DashboradService {
         this.siteList.map((res:any)=>{
           this.commonService.siteIdList.push(res.siteId)
         })
-        this.currentRouteName == 'request' ? this.commonService.siteIdList.length ? this.requestService.siteUserRequestList(this.requestService.DashSelectIndex+1,this.commonService.siteIdList) : '' : ''
+        this.currentRouteName == 'request' ? this.commonService.siteIdList.length ? this.requestService.loadRequestList(this.requestService.DashSelectIndex+1,this.commonService.siteIdList) : '' : ''
         this.currentRouteName == 'dashboard' ? this.filterDashboardSite() : ''
       }else{
         this.commonService.ApiErrAlert(result)
@@ -148,6 +183,24 @@ export class DashboradService {
             const { assignId, suStatus } = user;
             if (assignIdCounts[assignId] >= 2 && suStatus === 2) {
                 user.suStatus = 3;
+            }
+        });
+    });
+  }
+  updatePlantSpStatus(plantsArray:any){
+    let assignIdCounts:any = {};
+    plantsArray.forEach((site:any) => {
+        site.plantData.forEach((plant:any) => {
+            const { assignId } = plant;
+            assignIdCounts[assignId] = (assignIdCounts[assignId] || 0) + 1;
+        });
+    });
+
+    plantsArray.forEach((site:any) => {
+        site.plantData.forEach((plant:any) => {
+            const { assignId, spStatus } = plant;
+            if (assignIdCounts[assignId] >= 2 && spStatus === 2) {
+                plant.spStatus = 3;
             }
         });
     });

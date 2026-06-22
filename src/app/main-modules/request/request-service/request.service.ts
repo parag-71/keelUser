@@ -12,6 +12,7 @@ export class RequestService {
   public siteList:any
   public requestTypeSubject = new Subject<void>();
   public DashSelectIndex:any = 0 
+  public resourceType:any = 'people'
   requestTypeSubject$ = this.requestTypeSubject.asObservable();
   public sentSiteList:any
   constructor(
@@ -29,11 +30,50 @@ export class RequestService {
     })
   }
 
+  // Dispatcher: load the right list based on the active resource toggle.
+  loadRequestList(type:any, siteId:any){
+    if(this.resourceType == 'plant'){
+      this.sitePlantRequestList(type, siteId)
+    }else{
+      this.siteUserRequestList(type, siteId)
+    }
+  }
+
+  sitePlantRequestList(type:any,siteId:any){
+    this.endUserService.sitePlantRequestList({type :type,siteIds:siteId}).subscribe((result:any)=>{
+      if (result.status == '200' ){
+        this.sendList = result.data
+      }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+  cancelSitePlantRequest(spId:any){
+    this.endUserService.cancelSitePlantRequest({spId :spId}).subscribe((result:any)=>{
+      if (result.status == '200' ){
+        this.commonService.successAlert(result.message)
+        this.commonService.siteIdList.length ? this.sitePlantRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : ''
+      }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+  acceptSitePlant(plantData:any){
+    this.endUserService.acceptSitePlant({spId:plantData.spId,assignId:plantData.assignId}).subscribe((result:any)=>{
+      if (result.status == '200' ){
+        this.commonService.successAlert(result.message)
+        this.commonService.siteIdList.length ? this.sitePlantRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : ''
+      }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+
   cancelSiteUserRequest(suId:any){
     this.endUserService.cancelSiteUserRequest({suId :suId}).subscribe((result:any)=>{
       if (result.status == '200' ){
         this.commonService.successAlert(result.message)
-        this.commonService.siteIdList.length ? this.siteUserRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : '' 
+        this.commonService.siteIdList.length ? this.loadRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : ''
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -43,7 +83,7 @@ export class RequestService {
     this.endUserService.acceptSiteUser({suId:userData.suId,assignId:userData.assignId}).subscribe((result:any)=>{
       if (result.status == '200' ){
         this.commonService.successAlert(result.message)
-        this.commonService.siteIdList.length ? this.siteUserRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : '' 
+        this.commonService.siteIdList.length ? this.loadRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : ''
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -57,7 +97,7 @@ export class RequestService {
         this.sentSiteList.map((res:any)=>{
           this.commonService.siteIdList.push(res.siteId)
         })
-        this.commonService.siteIdList.length ? this.siteUserRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : '' 
+        this.commonService.siteIdList.length ? this.loadRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : '' 
       }else{
         this.commonService.ApiErrAlert(result)
       }

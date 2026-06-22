@@ -116,3 +116,22 @@
 .backColor{
   background-color: #D9D9D9;;
 }
+
+.plantReqIcon{
+  height: 100px;
+  width: 100px;
+  margin-top: 10px;
+  background: #D9D9D9;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mat-icon{
+    color: #000;
+    font-size: 54px;
+    width: 54px;
+    height: 54px;
+    line-height: 54px;
+    overflow: visible;
+  }
+}

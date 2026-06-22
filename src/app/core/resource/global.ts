@@ -59,13 +59,18 @@ export const allSitesUserList = environment.API_ENDPOINT + "allSitesUserList"
 export const assignUserInSite = environment.API_ENDPOINT + "assignUserInSite"
 export const siteNameList = environment.API_ENDPOINT + "siteNameList"
 export const assignUsersInSitesByAdmin = environment.API_ENDPOINT + "assignUsersInSitesByAdmin"
-
+export const allSitesPlantList = environment.API_ENDPOINT + "allSitesPlantList"
+export const assignPlantInSite = environment.API_ENDPOINT + "assignPlantInSite"
+export const assignPlantsInSitesByAdmin = environment.API_ENDPOINT + "assignPlantsInSitesByAdmin"
 
 //request API 
 export const acceptSiteUser = environment.API_ENDPOINT + "acceptSiteUser"
 export const siteUserRequestList = environment.API_ENDPOINT + "siteUserRequestList"
 export const cancelSiteUserRequest = environment.API_ENDPOINT + "cancelSiteUserRequest"
 export const sentRequestSiteNameList = environment.API_ENDPOINT + "sentRequestSiteNameList"
+export const sitePlantRequestList = environment.API_ENDPOINT + "sitePlantRequestList"
+export const acceptSitePlant = environment.API_ENDPOINT + "acceptSitePlant"
+export const cancelSitePlantRequest = environment.API_ENDPOINT + "cancelSitePlantRequest"
 
 //Forget Password
 export const forgotPassword = environment.API_ENDPOINT + "forgotPassword"

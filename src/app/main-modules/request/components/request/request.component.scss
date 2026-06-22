@@ -125,3 +125,20 @@
     }
   }
 }
+
+.resourceToggle{
+  width: 100%;
+  margin-bottom: 12px;
+  button{
+    border: 1px solid $primary-color;
+    background: #fff;
+    color: $primary-color;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 24px;
+    cursor: pointer;
+    &:first-child{ border-radius: 6px 0 0 6px; border-right: none; }
+    &:last-child{ border-radius: 0 6px 6px 0; }
+    &.active{ background: $primary-color; color: #fff; }
+  }
+}
