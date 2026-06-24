@@ -22,6 +22,7 @@ export class DashboradComponent {
   }
   pendingChanges: any[] = [];
   plantPendingChanges: any[] = [];
+  resourceView: 'people' | 'plant' | 'both' = 'people';
   constructor(
     public dashboradService:DashboradService,
     public dialog: MatDialog,
@@ -246,6 +247,9 @@ export class DashboradComponent {
     const keys = ['siteName', 'roleName', 'licName', 'trName', 'comptName'];
     return keys[index];
   }
+  setResourceView(view: 'people' | 'plant' | 'both') {
+    this.resourceView = view;
+  }
   previewUser(user:any,site:any){
     const dialogRef = this.dialog.open(PreviewDashboardUserComponent, {
       data:{user: user, site : site},
@@ -258,8 +262,8 @@ export class DashboradComponent {
       this.dashboradService.userDetails = ''
     })
   }
-  redirectToSite(site:any){
-    this.router.navigate(['sites/preview-site-user',site.siteId]);
+  redirectToSite(site:any, type:string = 'people'){
+    this.router.navigate(['sites/preview-site-user', site.siteId], { queryParams: { type } });
   }
   selectSite(site:any){
     var localSiteList:any = JSON.parse(localStorage.getItem('slectSite') || '[]')

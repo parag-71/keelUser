@@ -17,18 +17,22 @@ export class SiteUserPreviewComponent {
   }
   baseUrl = Global.environment.BASE_URL
   public siteId:any
+  public resourceType:string = 'people'
   constructor(
     public dashboradService:DashboradService,
     private route: ActivatedRoute,
     public dialog: MatDialog,
     ) {}
 
-   ngOnInit(){
-    this.route.params.subscribe((params:any) => {
-      this.siteId = params.siteId
-    });
-    this.dashboradService.getAllSitesUserList({},this.siteId)
-   } 
+  ngOnInit() {
+    this.siteId = this.route.snapshot.params['siteId']
+    this.resourceType = this.route.snapshot.queryParams['type'] === 'plant' ? 'plant' : 'people'
+    if (this.resourceType === 'plant') {
+      this.dashboradService.getAllSitesPlantList({}, this.siteId)
+    } else {
+      this.dashboradService.getAllSitesUserList({}, this.siteId)
+    }
+  }
    previewUser(user:any,site:any){
     const dialogRef = this.dialog.open(PreviewDashboardUserComponent, {
       data:{user: user, site : site},
@@ -45,7 +49,9 @@ export class SiteUserPreviewComponent {
     this.dashboradService.removeFilterLabel.next({item,index})
   }
 
-   ngOnDestroy(){
+  ngOnDestroy() {
     this.dashboradService.allSiteData = []
-   }
+    this.dashboradService.allPlantSiteData = []
+    this.dashboradService.displayPlantSiteData = []
+  }
 }

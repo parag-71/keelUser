@@ -1,64 +1,87 @@
 <div class="container-fluid">
-    <div class="row">
-      <div class="col-12" >
-        <ng-container *ngIf="dashboradService.dashboardFilterChips.length">
+  <div class="row">
+    <!-- Filter chips (people only) -->
+    <div class="col-12">
+      <ng-container *ngIf="resourceType === 'people' && dashboradService.dashboardFilterChips.length">
         <mat-chip-listbox class="filterLabel ms-2">
           <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[1].roleName">
             <span>{{item}}</span>
             <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,1)">cancel</mat-icon>
-         </mat-chip>
+          </mat-chip>
         </mat-chip-listbox>
         <mat-chip-listbox class="filterLabel ms-2">
           <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[2].licName">
             <span>{{item}}</span>
             <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,2)">cancel</mat-icon>
-         </mat-chip>
+          </mat-chip>
         </mat-chip-listbox>
         <mat-chip-listbox class="filterLabel ms-2">
           <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[3].trName">
             <span>{{item}}</span>
             <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,3)">cancel</mat-icon>
-         </mat-chip>
-        </mat-chip-listbox> 
+          </mat-chip>
+        </mat-chip-listbox>
         <mat-chip-listbox class="filterLabel ms-2">
           <mat-chip *ngFor="let item of dashboradService.dashboardFilterChips[4].comptName">
             <span>{{item}}</span>
             <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item,4)">cancel</mat-icon>
-         </mat-chip>
-        </mat-chip-listbox>   
+          </mat-chip>
+        </mat-chip-listbox>
       </ng-container>
     </div>
-      <div class="col-sm-12">
-        <div class="main_box" *ngFor="let site of dashboradService.displaySiteData">
-          <div class="example-container" >
-            <div class="siteName">
-              <span>
-                {{site.siteName}}
-              </span>
-            </div>
+
+    <!-- People resources (people header se aane par) -->
+    <div class="col-sm-12" *ngIf="resourceType === 'people'">
+      <div class="main_box" *ngFor="let site of dashboradService.displaySiteData">
+        <div class="example-container" >
+          <div class="siteName">
+            <span>{{site.siteName}}</span>
           </div>
-          <div class="example-list" *ngIf="site.userData.length != 0">
-              <div class="userBox" *ngFor="let user of site.userData" (click)="previewUser(user,site)">
-                <div [ngClass]="{'expiry': user.expired > 0,'expirySoon': user.expiredSoon > 0 && user.expired == 0}" class="imgBox">
-                  <div class="incoming-section" *ngIf="user.suStatus == 1">
-                    Incoming
-                   </div>
-                   <div class="outging-section" *ngIf="user.suStatus == 3">
-                     Outgoing
-                   </div>
-                  <img [ngClass]="user.imageUrl ? 'userImg' : 'customImg'" [src]="user.imageUrl ? baseUrl+user.imageUrl : 'assets/images/User02.png'"
-                    class="img-fluid" alt="userImg">
-                  <div class="text-Section" [ngClass]="{'centerText': !user.roleName}">
-                    <div class="userName">{{user.usrFirstname}} {{user.usrLastname}}</div>
-                    <div class="role">{{user.roleName}}</div>
-                  </div>
-                </div> 
+        </div>
+        <div class="example-list" *ngIf="site.userData.length != 0">
+          <div class="userBox" *ngFor="let user of site.userData" (click)="previewUser(user,site)">
+            <div [ngClass]="{'expiry': user.expired > 0,'expirySoon': user.expiredSoon > 0 && user.expired == 0}" class="imgBox">
+              <div class="incoming-section" *ngIf="user.suStatus == 1">Incoming</div>
+              <div class="outging-section" *ngIf="user.suStatus == 3">Outgoing</div>
+              <img [ngClass]="user.imageUrl ? 'userImg' : 'customImg'" [src]="user.imageUrl ? baseUrl+user.imageUrl : 'assets/images/User02.png'" class="img-fluid" alt="userImg">
+              <div class="text-Section" [ngClass]="{'centerText': !user.roleName}">
+                <div class="userName">{{user.usrFirstname}} {{user.usrLastname}}</div>
+                <div class="role">{{user.roleName}}</div>
               </div>
             </div>
-            <div *ngIf="site.userData.length == 0" class="noDataText py-4">
-              <span>User not found</span>
+          </div>
+        </div>
+        <div *ngIf="site.userData.length == 0" class="noDataText py-4">
+          <span>User not found</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plant resources (plant header se aane par) -->
+    <div class="col-sm-12" *ngIf="resourceType === 'plant'">
+      <div class="main_box plantBoard" *ngFor="let site of dashboradService.displayPlantSiteData">
+        <div class="example-container" >
+          <div class="siteName">
+            <span>{{site.siteName}}</span>
+          </div>
+        </div>
+        <div class="example-list" *ngIf="site.plantData.length != 0">
+          <div class="userBox" *ngFor="let plant of site.plantData">
+            <div class="imgBox">
+              <div class="incoming-section" *ngIf="plant.spStatus == 1">Incoming</div>
+              <div class="outging-section" *ngIf="plant.spStatus == 3">Outgoing</div>
+              <img *ngIf="plant.imageUrl" class="userImg img-fluid" [src]="baseUrl+plant.imageUrl" alt="plantImg">
+              <div *ngIf="!plant.imageUrl" class="plantIcon"><mat-icon>forklift</mat-icon></div>
+              <div class="text-Section centerText">
+                <div class="userName">{{plant.pltTitle}}</div>
+              </div>
             </div>
+          </div>
+        </div>
+        <div *ngIf="site.plantData.length == 0" class="noDataText py-4">
+          <span>Plant not found</span>
         </div>
       </div>
     </div>
   </div>
+</div>

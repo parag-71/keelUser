@@ -1,42 +1,50 @@
 <div class="container-fluid" >
-    <div class="row align-items-center" [ngClass]="(commonService.usrpermission?.usrType == 2 || commonService.usrpermission?.usrType == 1)
-                ? 'justify-content-between' 
-                : 'justify-content-end'">
-      <!-- left side dummy preview functionality run only for admin(2) -->
-      <div class="col-2 d-flex" *ngIf="commonService?.usrpermission?.usrType == 2 || commonService?.usrpermission?.usrType == 1">
-        <ng-container >
-          <button *ngIf="!pendingChanges.length && !plantPendingChanges.length" class="cancel_btn" style="width: auto;cursor:default">Preview Mode</button>
-          <button *ngIf="pendingChanges.length > 0 || plantPendingChanges.length > 0" class="cancel_btn" (click)="cancelChanges()">Cancel</button>
-          <button *ngIf="pendingChanges.length > 0 || plantPendingChanges.length > 0" class="add_btn" (click)="saveChanges()">Save Changes</button>
-        </ng-container>
-      </div>
-  
-    <!-- Middle Section (Filter Chips) -->
-    <div class="col-7" *ngIf="dashboradService.dashboardFilterChips.length > 0">
-      <div class="d-flex flex-wrap align-items-center">
-        <mat-chip-listbox class="filterLabel"
-          *ngFor="let chipGroup of dashboradService.dashboardFilterChips; let i = index">
-          <mat-chip *ngFor="let item of chipGroup[getChipKey(i)]">
-            <span>{{ item }}</span>
-            <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item, i)">cancel</mat-icon>
-          </mat-chip>
-        </mat-chip-listbox>
-      </div>
-    </div>
-  
-    <div class="col-3 userSelectBox">
-      <div>Select Site:</div>
-      <mat-form-field appearance="outline">
-        <mat-select [(ngModel)]="dashboradService.selectedSite"  [compareWith]="compareFn" multiple>
-            <mat-select-trigger >{{ getSelectedLabel() }}</mat-select-trigger>
-          <mat-option *ngFor="let site of dashboradService.siteList;trackBy: trackBySiteId" (click)="selectSite(site)" [value]="site" >{{site.siteName}}</mat-option>
-        </mat-select>
-      </mat-form-field>
+    <!-- Top action bar : (admin actions + view toggle) | (site select) -->
+<div class="dashTopBar">
+  <div class="dashTopBar__left d-flex align-items-center">
+    <ng-container *ngIf="commonService?.usrpermission?.usrType == 2 || commonService?.usrpermission?.usrType == 1">
+      <button *ngIf="!pendingChanges.length && !plantPendingChanges.length" class="cancel_btn" style="width: auto;cursor:default">Preview Mode</button>
+      <button *ngIf="pendingChanges.length > 0 || plantPendingChanges.length > 0" class="cancel_btn" (click)="cancelChanges()">Cancel</button>
+      <button *ngIf="pendingChanges.length > 0 || plantPendingChanges.length > 0" class="add_btn" (click)="saveChanges()">Save Changes</button>
+    </ng-container>
+
+    <!-- resource view toggle (default = People) -->
+    <div class="viewToggle" role="group" aria-label="Resource view">
+      <button type="button" class="viewToggle__btn" [class.active]="resourceView === 'people'" (click)="setResourceView('people')">People</button>
+      <button type="button" class="viewToggle__btn" [class.active]="resourceView === 'plant'" (click)="setResourceView('plant')">Plant</button>
+      <button type="button" class="viewToggle__btn" [class.active]="resourceView === 'both'" (click)="setResourceView('both')">Both</button>
     </div>
   </div>
+
+  <div class="dashTopBar__right userSelectBox">
+    <div>Select Site:</div>
+    <mat-form-field appearance="outline">
+      <mat-select [(ngModel)]="dashboradService.selectedSite" [compareWith]="compareFn" multiple>
+        <mat-select-trigger>{{ getSelectedLabel() }}</mat-select-trigger>
+        <mat-option *ngFor="let site of dashboradService.siteList;trackBy: trackBySiteId" (click)="selectSite(site)" [value]="site">{{site.siteName}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>
+
+<!-- Filter chips (full width, only when active) -->
+<div class="row" *ngIf="dashboradService.dashboardFilterChips.length > 0">
+  <div class="col-12 dashChips">
+    <div class="d-flex flex-wrap align-items-center">
+      <mat-chip-listbox class="filterLabel"
+        *ngFor="let chipGroup of dashboradService.dashboardFilterChips; let i = index">
+        <mat-chip *ngFor="let item of chipGroup[getChipKey(i)]">
+          <span>{{ item }}</span>
+          <mat-icon class="close" matChipRemove matTooltip="remove" (click)="removeFilter(item, i)">cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-listbox>
+    </div>
+  </div>
+</div>
   <div class="row">
     <div class="col-sm-12 boardArea">
       <!-- ===== People Resources (top 50%) ===== -->
+      <ng-container *ngIf="resourceView === 'people' || resourceView === 'both'">
       <div class="boardLabel">People Resources <span class="cnt">Total: {{commonService.userCount}}</span></div>
       <div cdkDropListGroup class="main_box halfBoard">
         <div class="example-container" *ngFor="let site of dashboradService.displaySiteData" >
@@ -69,12 +77,13 @@
          </div>
         </div>
       </div>
-
+        </ng-container>
       <!-- ===== Plant Resources (bottom 50%) ===== -->
+      <ng-container *ngIf="resourceView === 'plant' || resourceView === 'both'">
       <div class="boardLabel">Plant Resources <span class="cnt">Total: {{commonService.plantCount}}</span></div>
       <div cdkDropListGroup class="main_box halfBoard plantBoard">
         <div class="example-container" *ngFor="let site of dashboradService.displayPlantSiteData" >
-          <div class="siteName" (click)="redirectToSite(site)">
+          <div class="siteName" (click)="redirectToSite(site, 'plant')">
             <span>
               {{site.siteName}}
             </span>
@@ -102,6 +111,7 @@
          </div>
         </div>
       </div>
+      </ng-container>
     </div>
   </div>
 </div>

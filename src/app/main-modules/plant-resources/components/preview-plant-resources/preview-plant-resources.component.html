@@ -1,87 +1,84 @@
-<div class="popupParent" *ngIf="plantDetails">
-    <h4 mat-dialog-title class="modal-header text-center">
-        <span class="header_text">
-           Preview Plant Resource
-        </span>
-        <mat-icon class="close" matTooltip="close" (click)="closeDialog()" matDialogClose>close</mat-icon>
-    </h4>
+<div class="popupParent plantPreview" *ngIf="plantDetails">
 
-    <div class="hero">
-        <div class="avatar">
-            <img *ngIf="plantDetails.imageUrl" [src]="baseUrl+plantDetails.imageUrl" alt="">
-            <mat-icon *ngIf="!plantDetails.imageUrl">forklift</mat-icon>
-        </div>
-        <div class="hero-text">
-            <div class="ttl">{{plantDetails.pltTitle}}</div>
-            <div class="meta">
+    <!-- HEADER (brand orange) -->
+    <div class="pp-head">
+        <div class="pp-head-main">
+            <div class="pp-ttl">{{plantDetails.pltTitle}}</div>
+            <div class="pp-sub">
+                <span *ngIf="plantDetails.pltCode">Plant ID: {{plantDetails.pltCode}}</span>
+                <span class="pp-dot" *ngIf="plantDetails.pltCode && plantDetails.pltCompany">·</span>
                 <span *ngIf="plantDetails.pltCompany">{{plantDetails.pltCompany}}</span>
-                <span class="dot" *ngIf="plantDetails.pltCompany && plantDetails.siteName"></span>
-                <span *ngIf="plantDetails.siteName">{{plantDetails.siteName}}</span>
-                <span class="pill" *ngIf="plantDetails.pltCode">ID: {{plantDetails.pltCode}}</span>
             </div>
+        </div>
+        <span class="pp-badge" *ngIf="plantDetails.siteName">On Site · {{plantDetails.siteName}}</span>
+        <!-- <mat-icon class="pp-close" matTooltip="close" (click)="closeDialog()" matDialogClose>close</mat-icon> -->
+    </div>
+
+    <!-- BODY -->
+    <div class="pp-body">
+        <div class="pp-top">
+            <div class="pp-photo">
+                <img *ngIf="plantDetails.imageUrl" [src]="baseUrl+plantDetails.imageUrl" alt="">
+                <mat-icon *ngIf="!plantDetails.imageUrl">forklift</mat-icon>
+            </div>
+            <div class="pp-info">
+                <div class="pp-blk" *ngIf="plantDetails.pltAttachment">
+                    <div class="pp-lbl">Attachments</div>
+                    <div class="pp-box">{{plantDetails.pltAttachment}}</div>
+                </div>
+                <div class="pp-blk" *ngIf="plantDetails.pltServiceNote">
+                    <div class="pp-lbl">Service Notes</div>
+                    <div class="pp-box">{{plantDetails.pltServiceNote}}</div>
+                </div>
+                <div class="pp-blk pp-empty" *ngIf="!plantDetails.pltAttachment && !plantDetails.pltServiceNote">
+                    <div class="na">No attachments or service notes added.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pp-divider"></div>
+
+        <!-- 3 columns -->
+        <div class="pp-cols">
+            <div class="pp-col">
+                <div class="pp-lbl">Current Site</div>
+                <div class="pp-val" *ngIf="plantDetails.siteName">{{plantDetails.siteName}}</div>
+                <div class="na" *ngIf="!plantDetails.siteName">N/A</div>
+            </div>
+            <div class="pp-col">
+                <div class="pp-lbl">Safety</div>
+                <div class="pp-chips" *ngIf="plantDetails.safetyData?.length">
+                    <span class="pp-chip" *ngFor="let s of plantDetails.safetyData">{{s.ps_safety}}</span>
+                </div>
+                <div class="na" *ngIf="!plantDetails.safetyData?.length">N/A</div>
+            </div>
+            <div class="pp-col">
+                <div class="pp-lbl">Tags</div>
+                <div class="pp-chips" *ngIf="plantDetails.tagData?.length">
+                    <span class="pp-chip" *ngFor="let tag of plantDetails.tagData">{{tag.pt_tag}}</span>
+                </div>
+                <div class="na" *ngIf="!plantDetails.tagData?.length">N/A</div>
+            </div>
+        </div>
+
+        <div class="pp-divider"></div>
+
+        <!-- Licences -->
+        <div class="pp-blk">
+            <div class="pp-lbl">Licences</div>
+            <div *ngIf="plantDetails.licData?.length">
+                <div class="pp-lic-row" *ngFor="let lic of plantDetails.licData">
+                    <span class="name">{{lic.cplName}}</span>
+                    <span class="exp" *ngIf="lic.plNeverExpire == 1">No Expiry Date</span>
+                    <span class="exp" *ngIf="lic.plNeverExpire != 1">{{lic.plExpiredate | date:'dd-MM-yyyy'}}</span>
+                </div>
+            </div>
+            <div class="na" *ngIf="!plantDetails.licData?.length">N/A</div>
         </div>
     </div>
 
-    <mat-tab-group [(selectedIndex)]="preSelectedTabIndex">
-        <mat-tab label="Plant Details">
-            <div class="pbody">
-                <div class="blk" *ngIf="plantDetails.pltAttachment">
-                    <div class="lbl">Attachments</div>
-                    <div class="box">{{plantDetails.pltAttachment}}</div>
-                </div>
-                <div class="blk" *ngIf="plantDetails.pltServiceNote">
-                    <div class="lbl">Service notes</div>
-                    <div class="box">{{plantDetails.pltServiceNote}}</div>
-                </div>
-                <div class="blk">
-                    <div class="lbl">Safety</div>
-                    <div class="chips" *ngIf="plantDetails.safetyData?.length">
-                        <span class="chip" *ngFor="let s of plantDetails.safetyData">{{s.ps_safety}}</span>
-                    </div>
-                    <div class="na" *ngIf="!plantDetails.safetyData?.length">N/A</div>
-                </div>
-                <div class="blk">
-                    <div class="lbl">Tags</div>
-                    <div class="chips" *ngIf="plantDetails.tagData?.length">
-                        <span class="chip" *ngFor="let tag of plantDetails.tagData">{{tag.pt_tag}}</span>
-                    </div>
-                    <div class="na" *ngIf="!plantDetails.tagData?.length">N/A</div>
-                </div>
-            </div>
-        </mat-tab>
-        <mat-tab label="Licences">
-            <div class="pbody">
-                <p-table [value]="plantDetails.licData" class="record_table" *ngIf="plantDetails.licData?.length">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>Licence</th>
-                            <th>Expiry Date</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-rowData>
-                        <tr>
-                            <td>
-                                <span>{{rowData.cplName}}</span>
-                            </td>
-                            <td>
-                                <ng-container *ngIf="rowData.plNeverExpire == 1">
-                                    No Expiry Date
-                                </ng-container>
-                                <ng-container *ngIf="rowData.plNeverExpire != 1">
-                                    {{rowData.plExpiredate | date:'dd-MM-yyyy'}}
-                                </ng-container>
-                            </td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-                <div *ngIf="!plantDetails.licData?.length" class="noDataText py-4">
-                    <span>Data not found</span>
-                </div>
-            </div>
-        </mat-tab>
-    </mat-tab-group>
-
-    <div class="position-sticky col-md-12 col-xs-12 pb-2 pt-1 pe-3 add_btn_box">
+    <!-- FOOTER -->
+    <div class="pp-foot">
         <button class="cancel_btn" (click)="closeDialog()">{{commonService.loginUserDetail.usrType != 3 ? 'Cancel' : 'Close'}}</button>
         <button class="add_btn" *ngIf="commonService.loginUserDetail.usrType != 3" (click)="edit()">Update Plant</button>
     </div>

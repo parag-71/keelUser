@@ -91,11 +91,14 @@ export class DashboradService {
   }
 
   // ---- Plant board (mirror of the user methods above) ----
-  getAllSitesPlantList(pagination:any){
-    this.endUserService.allSitesPlantList(pagination).subscribe((result:any)=>{
-      if (result.status == '200' ){
+  getAllSitesPlantList(pagination: any, siteId?: any) {
+    this.endUserService.allSitesPlantList(pagination).subscribe((result: any) => {
+      if (result.status == '200') {
         this.allPlantSiteData = result.data
         this.updatePlantSpStatus(this.allPlantSiteData)
+        if (siteId) {
+          this.allPlantSiteData = this.allPlantSiteData.filter((val: any) => val.siteId == siteId);
+        }
         this.displayPlantSiteData = JSON.parse(JSON.stringify(this.allPlantSiteData))
         this.originalPlantSiteData = JSON.parse(JSON.stringify(this.allPlantSiteData))
         this.commonService.plantCount = this.allPlantSiteData.reduce((total:any, site:any) => {

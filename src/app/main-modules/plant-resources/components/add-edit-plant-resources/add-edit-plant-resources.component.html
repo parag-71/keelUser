@@ -6,7 +6,7 @@
         <mat-icon class="close" matTooltip="close" (click)="closeDialog()" >close</mat-icon>
     </h4>
 
-    <mat-tab-group [ngClass]="from == 'add' ? 'forAdd' : 'forUpdate'" [(selectedIndex)]="selectedTabIndex">
+    <mat-tab-group [ngClass]="from == 'add' ? 'forAdd' : 'forUpdate'" (selectedTabChange)="tabChange($event)" [(selectedIndex)]="selectedTabIndex">
         <!-- ============ Tab 1 : Plant Details ============ -->
         <mat-tab label="Plant Details">
             <form [formGroup]="addUpdatePlantGrp">

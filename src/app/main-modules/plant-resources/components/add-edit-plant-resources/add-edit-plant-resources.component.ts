@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonService } from 'src/app/core/services/common.service';
 import { PlantResourceService } from '../../plant-resource-service/plant-resource.service';
@@ -247,6 +248,22 @@ export class AddEditPlantResourcesComponent {
       return
     }
     this.plantResourceService.updatePlantResourceLicences(licencesData, pltId, type)
+  }
+
+  // Restrict moving to the Licences tab until Plant Details are filled & saved (same as People).
+  tabChange($event:any){
+    if(!this.addUpdatePlantGrp.valid || !this.plantResourceService.plantId){
+      this.selectedTabIndex = 0
+      Swal.fire({
+        icon: "error",
+        text: 'Please first fill and save plant details',
+        width: '27rem',
+        confirmButtonText:'Ok',
+        confirmButtonColor: 'rgb(223,129,62)',
+      }).then((result) => {
+        this.commonService.markFormGroupTouched(this.addUpdatePlantGrp)
+      });
+    }
   }
 
   AddUpdatePlantData(value: any, type: any) {
