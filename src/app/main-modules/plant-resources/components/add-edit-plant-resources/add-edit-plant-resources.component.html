@@ -97,11 +97,13 @@
                         <div class="col-12 chips_col">
                             <div class="chips-input">
                                 <span class="chip" *ngFor="let tag of tags; let i = index">
-                                    {{tag}}<span class="chip-x" (click)="removeTag(i)">&times;</span>
+                                    {{tag.tagName}}<span class="chip-x" (click)="removeTag(i)">&times;</span>
                                 </span>
-                                <input class="chip-field" [(ngModel)]="tagInput" [ngModelOptions]="{standalone:true}"
-                                    (keydown.enter)="addTag($event)" (keydown.backspace)="onTagBackspace($event)" (blur)="addTag($event)"
-                                    placeholder="Add tag and press Enter">
+                                <input class="chip-field" [(ngModel)]="tagInput" [ngModelOptions]="{standalone:true}" [matAutocomplete]="tagAuto"
+                                    (keydown.enter)="addTag($event)" (keydown.backspace)="onTagBackspace($event)" placeholder="Search or add tag">
+                                <mat-autocomplete #tagAuto="matAutocomplete" (optionSelected)="onTagSelected($event)">
+                                    <mat-option *ngFor="let ct of filteredCompanyTags()" [value]="tagNameOf(ct)">{{tagNameOf(ct)}}</mat-option>
+                                </mat-autocomplete>
                             </div>
                         </div>
                     </div>

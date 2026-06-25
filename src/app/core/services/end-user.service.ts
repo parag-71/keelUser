@@ -484,6 +484,13 @@ export class EndUserService {
 		);
   }
 
+  companyTagList(paramData: any): any {
+    return this.http.post(Global.companyTagList, paramData);
+  }
+  addOrUpdateCompanyTag(paramData: any): any {
+    return this.http.post(Global.addOrUpdateCompanyTag, paramData);
+  }
+
 }
 
 

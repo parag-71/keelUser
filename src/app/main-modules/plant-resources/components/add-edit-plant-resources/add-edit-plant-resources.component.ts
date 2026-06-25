@@ -48,6 +48,7 @@ export class AddEditPlantResourcesComponent {
   public safetyInput:any = ''
   public tags:any = []
   public tagInput:any = ''
+  public companyTags:any = [] 
   public originalSafety:any = []
   public originalTags:any = []
   utilObj = new Util();
@@ -81,15 +82,17 @@ export class AddEditPlantResourcesComponent {
     // change during the dialog's first change-detection pass — avoids NG0100.
     setTimeout(() => {
       this.dashboradService.siteNameList()
-      if (this.from == 'edit') {
-        this.plantResourceService.plantId = this.plantEditData.pltId
-        this.getPlantSafetyList(() => {
-          this.getPlantDetails(this.plantEditData.pltId)
-          this.getPlantAssignedLicences(this.plantEditData.pltId)
-        })
-      } else {
-        this.getPlantSafetyList()
-      }
+      this.getCompanyTagList(() => {
+        if (this.from == 'edit') {
+          this.plantResourceService.plantId = this.plantEditData.pltId
+          this.getPlantSafetyList(() => {
+            this.getPlantDetails(this.plantEditData.pltId)
+            this.getPlantAssignedLicences(this.plantEditData.pltId)
+          })
+        } else {
+          this.getPlantSafetyList()
+        }
+      })
     }, 0)
   }
 
@@ -101,6 +104,21 @@ export class AddEditPlantResourcesComponent {
         }))
         afterLoad ? afterLoad() : ''
       }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+
+  // id/name ko flexibly read karta hai, exact API field name ki tension nahi
+  tagIdOf(t: any) { return t?.tagId ?? t?.id ?? t?.ct_id ?? t?.companyTagId ?? t?.pt_tag_id }
+  tagNameOf(t: any) { return t?.tagName ?? t?.tag ?? t?.ct_tag ?? t?.name ?? t?.pt_tag }
+
+  getCompanyTagList(afterLoad?: any) {
+    this.endUserService.companyTagList({}).subscribe((result: any) => {
+      if (result.status == '200') {
+        this.companyTags = result.data || []
+        afterLoad ? afterLoad() : ''
+      } else {
         this.commonService.ApiErrAlert(result)
       }
     })
@@ -120,10 +138,16 @@ export class AddEditPlantResourcesComponent {
           pltServiceNote: details.pltServiceNote,
         })
         details.imageUrl ? this.EditImages = this.baseUrl+details.imageUrl : ''
-        this.tags = Array.isArray(details.tagData) ? details.tagData.map((t:any)=> t.pt_tag) : []
-        this.safety = Array.isArray(details.safetyData) ? details.safetyData.map((s:any)=> s.ps_safety) : []
+        // this.tags = Array.isArray(details.tagData) ? details.tagData.map((t:any)=> t.pt_tag) : []
+        this.safety = Array.isArray(details.safetyData) ? details.safetyData.map((s:any)=> s.ps_safety || s.psSafety) : []
         this.originalSafety = [...this.safety]
-        this.originalTags = [...this.tags]
+        // this.originalTags = [...this.tags]
+        const plantTagNames = Array.isArray(details.tagData) ? details.tagData.map((t: any) => this.tagNameOf(t)) : []
+        this.tags = plantTagNames.map((name: any) => {
+          const m = this.companyTags.find((ct: any) => String(this.tagNameOf(ct) || '').toLowerCase() === String(name || '').toLowerCase())
+          return m ? { tagId: this.tagIdOf(m), tagName: this.tagNameOf(m) } : { tagId: null, tagName: name }
+        })
+        this.originalTags = this.tags.map((t: any) => String(t.tagId))
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -187,13 +211,53 @@ export class AddEditPlantResourcesComponent {
     return dateString ? moment(dateString, ['YYYY-MM-DD','DD-MM-YYYY']).toDate() : '';
   }
 
-  addTag(event:any){
+  // Dropdown list: search se match hote existing company tags; jo already select ho gaye wo hide
+  filteredCompanyTags() {
+    const q = String(this.tagInput || '').toLowerCase()
+    const selected = (this.tags || []).map((t: any) => String(t.tagName || '').toLowerCase())
+    return (this.companyTags || []).filter((ct: any) => {
+      const name = String(this.tagNameOf(ct) || '').toLowerCase()
+      if (!name) return false
+      if (selected.indexOf(name) != -1) return false   // already added -> hide
+      return q ? name.indexOf(q) != -1 : true          // search filter
+    })
+  }
+
+  // dropdown se existing tag pick kiya
+  onTagSelected(event: any) {
+    const name = event?.option?.value
+    if (name && !this.tags.some((t: any) => String(t.tagName || '').toLowerCase() === String(name).toLowerCase())) {
+      const existing = this.companyTags.find((ct: any) => String(this.tagNameOf(ct) || '').toLowerCase() === String(name).toLowerCase())
+      if (existing) { this.tags.push({ tagId: this.tagIdOf(existing), tagName: this.tagNameOf(existing) }) }
+    }
+    // mat-autocomplete picked value ko input me likhta hai; isse next tick pe clear karte hain
+    setTimeout(() => { this.tagInput = '' }, 0)
+  }
+
+  addTag(event: any) {
     event && event.preventDefault ? event.preventDefault() : ''
     const value = (this.tagInput || '').trim()
-    if(value && this.tags.indexOf(value) == -1){
-      this.tags.push(value)
-    }
     this.tagInput = ''
+    if (!value) return
+    // is plant pe pehle se hai?
+    if (this.tags.some((t: any) => String(t.tagName || '').toLowerCase() === value.toLowerCase())) return
+    // company list me hai? -> uski id use karo
+    const existing = this.companyTags.find((ct: any) => String(this.tagNameOf(ct) || '').toLowerCase() === value.toLowerCase())
+    if (existing) {
+      this.tags.push({ tagId: this.tagIdOf(existing), tagName: this.tagNameOf(existing) })
+      return
+    }
+    // nahi mila -> pehle company tag banao, fir refreshed list se id lo
+    this.endUserService.addOrUpdateCompanyTag({ tagName: value }).subscribe((res: any) => {
+      if (res.status == '200') {
+        this.getCompanyTagList(() => {
+          const created = this.companyTags.find((ct: any) => String(this.tagNameOf(ct) || '').toLowerCase() === value.toLowerCase())
+          if (created) { this.tags.push({ tagId: this.tagIdOf(created), tagName: this.tagNameOf(created) }) }
+        })
+      } else {
+        this.commonService.ApiErrAlert(res)
+      }
+    })
   }
 
   removeTag(index:any){
@@ -308,12 +372,14 @@ export class AddEditPlantResourcesComponent {
         fd.append('deleteSafety','1')
       }
     }
-    const tagsChanged = JSON.stringify([...(this.tags||[])].sort()) !== JSON.stringify([...(this.originalTags||[])].sort())
-    if(tagsChanged){
-      if(this.tags && this.tags.length){
-        this.tags.forEach((t:any)=> fd.append('tagArray[]', t))
-      }else{
-        fd.append('deleteTag','1')
+    // Tags ab id carry karte hain; tagArray[] me ids jaate hain like ["2","3","5"]
+    const tagIds = (this.tags || []).map((t: any) => String(t.tagId)).filter((id: any) => id && id !== 'null')
+    const tagsChanged = JSON.stringify([...tagIds].sort()) !== JSON.stringify([...(this.originalTags || [])].sort())
+    if (tagsChanged) {
+      if (tagIds.length) {
+        tagIds.forEach((id: any) => fd.append('tagArray[]', id))
+      } else {
+        fd.append('deleteTag', '1')
       }
     }
 

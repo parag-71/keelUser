@@ -117,6 +117,8 @@ export const addOrUpdateCompanyPlantLicences = environment.API_ENDPOINT + "addOr
 export const companyPlantLicencesList = environment.API_ENDPOINT + "companyPlantLicencesList"
 export const deleteCompanyPlantLicences = environment.API_ENDPOINT + "deleteCompanyPlantLicences"
 
+export const companyTagList = environment.API_ENDPOINT + "companyTagList"
+export const addOrUpdateCompanyTag = environment.API_ENDPOINT + "addOrUpdateCompanyTag"
 
 
 

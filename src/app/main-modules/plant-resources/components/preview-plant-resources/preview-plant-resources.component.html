@@ -48,14 +48,14 @@
             <div class="pp-col">
                 <div class="pp-lbl">Safety</div>
                 <div class="pp-chips" *ngIf="plantDetails.safetyData?.length">
-                    <span class="pp-chip" *ngFor="let s of plantDetails.safetyData">{{s.ps_safety}}</span>
+                    <span class="pp-chip" *ngFor="let s of plantDetails.safetyData">{{s.ps_safety || s.psSafety}}</span>
                 </div>
                 <div class="na" *ngIf="!plantDetails.safetyData?.length">N/A</div>
             </div>
             <div class="pp-col">
                 <div class="pp-lbl">Tags</div>
                 <div class="pp-chips" *ngIf="plantDetails.tagData?.length">
-                    <span class="pp-chip" *ngFor="let tag of plantDetails.tagData">{{tag.pt_tag}}</span>
+                    <span class="pp-chip" *ngFor="let tag of plantDetails.tagData">{{tag.tagName || tag.pt_tag}}</span>
                 </div>
                 <div class="na" *ngIf="!plantDetails.tagData?.length">N/A</div>
             </div>
