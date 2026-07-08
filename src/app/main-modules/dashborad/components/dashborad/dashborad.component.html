@@ -14,6 +14,14 @@
       <button type="button" class="viewToggle__btn" [class.active]="resourceView === 'plant'" (click)="setResourceView('plant')">Plant</button>
       <button type="button" class="viewToggle__btn" [class.active]="resourceView === 'both'" (click)="setResourceView('both')">Both</button>
     </div>
+    <span class="resourceCountBadges">
+      <span class="countChip" *ngIf="resourceView === 'people' || resourceView === 'both'">
+        <mat-icon>person</mat-icon> People <b>{{commonService.userCount || 0}}</b>
+      </span>
+      <span class="countChip plantChip" *ngIf="resourceView === 'plant' || resourceView === 'both'">
+        <mat-icon>forklift</mat-icon> Plant <b>{{commonService.plantCount || 0}}</b>
+      </span>
+    </span>
   </div>
 
   <div class="dashTopBar__right userSelectBox">
@@ -41,77 +49,85 @@
     </div>
   </div>
 </div>
+
+  <!-- ===================================================================
+       Unified board: People / Plant / Both all render through ONE
+       drop-list per site + ONE card template (person or plant), instead
+       of three separate near-duplicate blocks. `visibleSiteData` (in the
+       component) filters the already-memoized combined data by the
+       active resourceView, so the drop-list identity / connectedTo array
+       stays stable across tabs and mid-drag change-detection cycles.
+       =================================================================== -->
   <div class="row">
     <div class="col-sm-12 boardArea">
-      <!-- ===== People Resources (top 50%) ===== -->
-      <ng-container *ngIf="resourceView === 'people' || resourceView === 'both'">
-      <div class="boardLabel">People Resources <span class="cnt">Total: {{commonService.userCount}}</span></div>
-      <div cdkDropListGroup class="main_box halfBoard">
-        <div class="example-container" *ngFor="let site of dashboradService.displaySiteData" >
-          <div class="siteName" (click)="redirectToSite(site)">
-            <span>
-              {{site.siteName}}
-            </span>
-          </div>
-           <div div [id]="site.siteId+'_'+ site.usrId+'_'+site.siteName" cdkDropList [cdkDropListData]="site.userData"
-            [cdkDropListConnectedTo]="[ site.siteId+'_'+ site.usrId+'_'+site.siteName]" (cdkDropListDropped)="drop($event)"
-            class="example-list">
-            <div class="userBox" *ngFor="let user of site.userData;trackBy: trackByUserId">
-              <div [ngClass]="{'expiry': user.expired > 0,'expirySoon': user.expiredSoon > 0 && user.expired == 0}" class="imgBox"
-                (click)="previewUser(user,site)" (cdkDragStarted)="onDragStarted($event)" [cdkDragData]="user" cdkDrag>
-                <div class="incoming-section" *ngIf="user.suStatus == 1">
-                  Incoming
-                </div>
-                <div class="outging-section" *ngIf="user.suStatus == 3">
-                  Outgoing
-                </div>
-                <img [ngClass]="user.imageUrl ? 'userImg' : 'customImg'"
-                  [src]="user.imageUrl ? baseUrl+user.imageUrl : 'assets/images/User02.png'" loading="lazy" decoding="async"
-                  class="img-fluid" alt="userImg" >
-                <div class="text-Section" [ngClass]="{'centerText': !user.roleName}">
-                  <div class="userName">{{user.usrFirstname}} {{user.usrLastname}} </div>
-                  <div class="role" *ngIf="user.roleName">{{user.roleName}}</div>
-                </div>
-              </div>
-            </div>
-         </div>
-        </div>
-      </div>
+      <div class="boardLabel">
+        <ng-container [ngSwitch]="resourceView">
+          <span *ngSwitchCase="'people'">People Resources <span class="cnt">Total: {{commonService.userCount}}</span></span>
+          <span *ngSwitchCase="'plant'">Plant Resources <span class="cnt">Total: {{commonService.plantCount}}</span></span>
+          <span *ngSwitchDefault>Resources <span class="cnt">Total: {{commonService.userCount + commonService.plantCount}}</span></span>
         </ng-container>
-      <!-- ===== Plant Resources (bottom 50%) ===== -->
-      <ng-container *ngIf="resourceView === 'plant' || resourceView === 'both'">
-      <div class="boardLabel">Plant Resources <span class="cnt">Total: {{commonService.plantCount}}</span></div>
-      <div cdkDropListGroup class="main_box halfBoard plantBoard">
-        <div class="example-container" *ngFor="let site of dashboradService.displayPlantSiteData" >
-          <div class="siteName" (click)="redirectToSite(site, 'plant')">
-            <span>
-              {{site.siteName}}
-            </span>
+      </div>
+
+      <div cdkDropListGroup class="main_box halfBoard" [class.plantBoard]="resourceView !== 'people'">
+        <div class="example-container" *ngFor="let site of visibleSiteData; trackBy: trackBySiteId">
+          <div class="siteName" (click)="redirectToSite(site, resourceView)">
+            <span>{{site.siteName}}</span>
           </div>
-           <div div [id]="site.siteId+'_'+ site.usrId+'_'+site.siteName+'_plant'" cdkDropList [cdkDropListData]="site.plantData"
-            [cdkDropListConnectedTo]="[ site.siteId+'_'+ site.usrId+'_'+site.siteName+'_plant']" (cdkDropListDropped)="plantDrop($event)"
+
+          <div [id]="site.siteId+'_'+ site.usrId+'_'+site.siteName" cdkDropList [cdkDropListData]="site.visibleData"
+            [cdkDropListConnectedTo]="dropListIds" (cdkDropListDropped)="handleDrop($event)"
             class="example-list">
-            <div class="userBox" *ngFor="let plant of site.plantData;trackBy: trackByPlantId">
-              <div class="imgBox"
-                (cdkDragStarted)="onPlantDragStarted($event)" [cdkDragData]="plant" cdkDrag>
-                <div class="incoming-section" *ngIf="plant.spStatus  == 1">
+            <div class="userBox" *ngFor="let item of site.visibleData; trackBy: trackByCombinedId">
+
+              <!-- Person card -->
+              <div *ngIf="item.type === 'person'"
+                [ngClass]="{'expiry': item.expired > 0,'expirySoon': item.expiredSoon > 0 && item.expired == 0}"
+                class="imgBox"
+                (click)="previewUser(item,site)"
+                (cdkDragStarted)="onItemDragStarted($event)"
+                [cdkDragData]="item"
+                cdkDrag>
+                <div class="incoming-section" *ngIf="item.suStatus == 1">
                   Incoming
                 </div>
-                <div class="outging-section" *ngIf="plant.spStatus == 3">
+                <div class="outging-section" *ngIf="item.suStatus == 3">
                   Outgoing
                 </div>
-                <img *ngIf="plant.imageUrl" class="userImg" [src]="baseUrl+plant.imageUrl" loading="lazy" decoding="async"
-                  class="img-fluid" alt="plantImg" >
-                <div *ngIf="!plant.imageUrl" class="plantIcon"><mat-icon>forklift</mat-icon></div>
-                <div class="text-Section centerText">
-                  <div class="userName">{{plant.pltTitle}}</div>
+                <img [ngClass]="item.imageUrl ? 'userImg' : 'customImg'"
+                  [src]="item.imageUrl ? baseUrl+item.imageUrl : 'assets/images/User02.png'" loading="lazy" decoding="async"
+                  class="img-fluid" alt="userImg" >
+                <div class="text-Section" [ngClass]="{'centerText': !item.roleName}">
+                  <div class="userName">{{item.usrFirstname}} {{item.usrLastname}} </div>
+                  <div class="role" *ngIf="item.roleName">{{item.roleName}}</div>
                 </div>
               </div>
+
+              <!-- Plant card -->
+              <div *ngIf="item.type === 'plant'"
+                class="imgBox"
+                (click)="previewPlant(item,site)"
+                (cdkDragStarted)="onItemDragStarted($event)"
+                [cdkDragData]="item"
+                cdkDrag>
+                <div class="incoming-section" *ngIf="item.spStatus == 1">
+                  Incoming
+                </div>
+                <div class="outging-section" *ngIf="item.spStatus == 3">
+                  Outgoing
+                </div>
+                <div class="plantTag" *ngIf="item.imageUrl && resourceView === 'both'" matTooltip="Plant"><mat-icon>forklift</mat-icon></div>
+                <img *ngIf="item.imageUrl" class="userImg" [src]="baseUrl+item.imageUrl" loading="lazy" decoding="async"
+                  class="img-fluid" alt="plantImg" >
+                <div *ngIf="!item.imageUrl" class="plantIcon"><mat-icon>forklift</mat-icon></div>
+                <div class="text-Section centerText">
+                  <div class="userName">{{item.pltTitle}}</div>
+                </div>
+              </div>
+
             </div>
-         </div>
+          </div>
         </div>
       </div>
-      </ng-container>
     </div>
   </div>
 </div>

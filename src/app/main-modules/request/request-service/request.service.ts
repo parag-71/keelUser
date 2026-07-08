@@ -22,8 +22,15 @@ export class RequestService {
   siteUserRequestList(type:any,siteId:any){
     this.endUserService.siteUserRequestList({type :type,siteIds:siteId}).subscribe((result:any)=>{
       if (result.status == '200' ){
-        this.sendList = result.data 
-        type == 2 ? this.commonService.requestCount = this.sendList.length : ''
+        this.sendList = result.data
+        // FIX: removed `this.commonService.requestCount = this.sendList.length`.
+        // sendList is just the cards shown on THIS page (people-only, and only
+        // for the currently active tab/site filter) - it must not overwrite
+        // the sidebar badge, which is the combined people+plant pending count
+        // maintained independently by CommonService.siteUserRequestList() /
+        // CommonService.sitePlantRequestList(). Overwriting it here is what
+        // caused the badge to drop from the correct combined total (e.g. 3)
+        // down to just the people count (e.g. 1) as soon as this page loaded.
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -53,6 +60,8 @@ export class RequestService {
       if (result.status == '200' ){
         this.commonService.successAlert(result.message)
         this.commonService.siteIdList.length ? this.sitePlantRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : ''
+        // Keep the sidebar badge in sync after an accept/reject/withdraw too.
+        this.commonService.sitePlantRequestList(this.commonService.siteIdList)
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -63,6 +72,7 @@ export class RequestService {
       if (result.status == '200' ){
         this.commonService.successAlert(result.message)
         this.commonService.siteIdList.length ? this.sitePlantRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : ''
+        this.commonService.sitePlantRequestList(this.commonService.siteIdList)
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -74,6 +84,7 @@ export class RequestService {
       if (result.status == '200' ){
         this.commonService.successAlert(result.message)
         this.commonService.siteIdList.length ? this.loadRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : ''
+        this.commonService.siteUserRequestList(this.commonService.siteIdList)
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -84,6 +95,7 @@ export class RequestService {
       if (result.status == '200' ){
         this.commonService.successAlert(result.message)
         this.commonService.siteIdList.length ? this.loadRequestList(this.DashSelectIndex+1,this.commonService.siteIdList) : ''
+        this.commonService.siteUserRequestList(this.commonService.siteIdList)
       }else{
         this.commonService.ApiErrAlert(result)
       }

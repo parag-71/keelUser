@@ -66,7 +66,9 @@
           </div>
         </div>
         <div class="example-list" *ngIf="site.plantData.length != 0">
-          <div class="userBox" *ngFor="let plant of site.plantData">
+          <!-- FIX: added (click)="previewPlant(plant,site)" - this was missing,
+               so plant cards had no way to open the preview popup. -->
+          <div class="userBox" *ngFor="let plant of site.plantData" (click)="previewPlant(plant,site)">
             <div class="imgBox">
               <div class="incoming-section" *ngIf="plant.spStatus == 1">Incoming</div>
               <div class="outging-section" *ngIf="plant.spStatus == 3">Outgoing</div>
@@ -80,6 +82,46 @@
         </div>
         <div *ngIf="site.plantData.length == 0" class="noDataText py-4">
           <span>Plant not found</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Both: People + Plant merged (both header se aane par) -->
+    <div class="col-sm-12" *ngIf="resourceType === 'both'">
+      <div class="main_box plantBoard" *ngFor="let site of combinedSiteData">
+        <div class="example-container" >
+          <div class="siteName">
+            <span>{{site.siteName}}</span>
+          </div>
+        </div>
+        <div class="example-list" *ngIf="site.userData.length != 0 || site.plantData.length != 0">
+          <div class="userBox" *ngFor="let user of site.userData" (click)="previewUser(user,site)">
+            <div [ngClass]="{'expiry': user.expired > 0,'expirySoon': user.expiredSoon > 0 && user.expired == 0}" class="imgBox">
+              <div class="incoming-section" *ngIf="user.suStatus == 1">Incoming</div>
+              <div class="outging-section" *ngIf="user.suStatus == 3">Outgoing</div>
+              <img [ngClass]="user.imageUrl ? 'userImg' : 'customImg'" [src]="user.imageUrl ? baseUrl+user.imageUrl : 'assets/images/User02.png'" class="img-fluid" alt="userImg">
+              <div class="text-Section" [ngClass]="{'centerText': !user.roleName}">
+                <div class="userName">{{user.usrFirstname}} {{user.usrLastname}}</div>
+                <div class="role">{{user.roleName}}</div>
+              </div>
+            </div>
+          </div>
+          <!-- FIX: added (click)="previewPlant(plant,site)" here too -->
+          <div class="userBox" *ngFor="let plant of site.plantData" (click)="previewPlant(plant,site)">
+            <div class="imgBox">
+              <div class="incoming-section" *ngIf="plant.spStatus == 1">Incoming</div>
+              <div class="outging-section" *ngIf="plant.spStatus == 3">Outgoing</div>
+              <div class="plantTag" *ngIf="plant.imageUrl" matTooltip="Plant"><mat-icon>forklift</mat-icon></div>
+              <img *ngIf="plant.imageUrl" class="userImg img-fluid" [src]="baseUrl+plant.imageUrl" alt="plantImg">
+              <div *ngIf="!plant.imageUrl" class="plantIcon"><mat-icon>forklift</mat-icon></div>
+              <div class="text-Section centerText">
+                <div class="userName">{{plant.pltTitle}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="site.userData.length == 0 && site.plantData.length == 0" class="noDataText py-4">
+          <span>No resources found</span>
         </div>
       </div>
     </div>

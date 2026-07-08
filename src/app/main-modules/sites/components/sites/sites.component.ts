@@ -44,8 +44,10 @@ export class SitesComponent {
       result == 'success' ? this.siteService.getSiteList('') : ''
     })
   }
-  preSiteUser(site:any){
-    this.router.navigate(['sites/preview-site-user',site.siteId]);
+  preSiteUser(site: any) {
+    this.router.navigate(['sites/preview-site-user', site.siteId], {
+      queryParams: { type: 'both' }   // Show both People + Plant resources
+    });
   }
   getSiteList(){
     this.siteService.getSiteList('')

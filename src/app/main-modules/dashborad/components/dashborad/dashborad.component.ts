@@ -4,11 +4,13 @@ import { DashboradService } from '../../dashborad-service/dashborad.service';
 import * as Global from '../../../../../environments/environment'
 import { MatDialog } from '@angular/material/dialog';
 import { PreviewDashboardUserComponent } from '../preview-dashboard-user/preview-dashboard-user.component';
+import { PreviewDashboardPlantComponent } from '../preview-dashboard-plant/preview-dashboard-plant.component';
 import Swal from 'sweetalert2';
 import { CommonService } from 'src/app/core/services/common.service';
 import { Router } from '@angular/router';
 import { Util } from 'src/app/core/resource/utils';
 import { EndUserService } from 'src/app/core/services/end-user.service';
+import { forkJoin, of } from 'rxjs';
 @Component({
   selector: 'app-dashborad',
   templateUrl: './dashborad.component.html',
@@ -45,35 +47,143 @@ export class DashboradComponent {
     this.dashboradService.getAllSitesUserList(this.pagination)
     this.dashboradService.getAllSitesPlantList(this.pagination)
   }
-  drop(event: CdkDragDrop<string[]> | any) {
-    var assignId = event.previousContainer.data[event.previousIndex].assignId
-    var senderId = event.previousContainer.data[event.previousIndex].senderId
-    var assignName = event.previousContainer.data[event.previousIndex].usrFirstname
+
+  // =========================================================================
+  // Unified People / Plant / Both handling
+  // -------------------------------------------------------------------------
+  // Every card (person or plant) is normalized into a common shape with a
+  // `type: 'person' | 'plant'` tag. combinedSiteData holds ALL items per
+  // site; visibleSiteData just filters that by the active resourceView.
+  // This means there is exactly ONE drop-list per site, ONE drop handler,
+  // and ONE drag-start handler regardless of which tab is active - the
+  // People/Plant/Both tabs used to duplicate this logic three times.
+  // =========================================================================
+
+  private _combinedCache: { peopleRef: any[] | null; plantRef: any[] | null; data: any[]; ids: string[] } = {
+    peopleRef: null,
+    plantRef: null,
+    data: [],
+    ids: []
+  };
+
+  private rebuildCombinedCache(): void {
+    const peopleSites = this.dashboradService.displaySiteData || [];
+    const plantSites = this.dashboradService.displayPlantSiteData || [];
+    const siteMap = new Map<any, any>();
+
+    peopleSites.forEach((site: any) => {
+      siteMap.set(site.siteId, {
+        siteId: site.siteId,
+        siteName: site.siteName,
+        usrId: site.usrId,
+        userData: site.userData || [],
+        plantData: [],
+        combinedData: (site.userData || []).map((item: any) => ({ ...item, type: 'person' }))
+      });
+    });
+
+    plantSites.forEach((site: any) => {
+      const existing = siteMap.get(site.siteId);
+      const plantItems = (site.plantData || []).map((item: any) => ({ ...item, type: 'plant' }));
+      if (existing) {
+        existing.plantData = site.plantData || [];
+        existing.combinedData.push(...plantItems);
+      } else {
+        siteMap.set(site.siteId, {
+          siteId: site.siteId,
+          siteName: site.siteName,
+          usrId: site.usrId,
+          userData: [],
+          plantData: site.plantData || [],
+          combinedData: plantItems
+        });
+      }
+    });
+
+    const data = Array.from(siteMap.values());
+    this._combinedCache = {
+      peopleRef: peopleSites,
+      plantRef: plantSites,
+      data,
+      ids: data.map((site: any) => `${site.siteId}_${site.usrId}_${site.siteName}`)
+    };
+  }
+
+  // Call whenever the REAL source arrays are mutated in-place (splice/push),
+  // since that alone won't change the top-level array reference the cache keys off.
+  private invalidateCombinedCache(): void {
+    this._combinedCache.peopleRef = null;
+    this._combinedCache.plantRef = null;
+  }
+
+  get combinedSiteData(): any[] {
+    const peopleSites = this.dashboradService.displaySiteData || [];
+    const plantSites = this.dashboradService.displayPlantSiteData || [];
+    if (this._combinedCache.peopleRef !== peopleSites || this._combinedCache.plantRef !== plantSites) {
+      this.rebuildCombinedCache();
+    }
+    return this._combinedCache.data;
+  }
+
+  // Single drop-list id list, used for cdkDropListConnectedTo in ALL three tabs.
+  get dropListIds(): string[] {
+    this.combinedSiteData; // ensures cache is fresh
+    return this._combinedCache.ids;
+  }
+
+  // What the template actually loops over: combinedData filtered by the active tab.
+  get visibleSiteData(): any[] {
+    return this.combinedSiteData.map((site: any) => ({
+      ...site,
+      visibleData: this.resourceView === 'both'
+        ? site.combinedData
+        : site.combinedData.filter((item: any) => item.type === (this.resourceView === 'people' ? 'person' : 'plant'))
+    }));
+  }
+
+  // ---- Single drop handler for People / Plant / Both ----
+  handleDrop(event: CdkDragDrop<any[]> | any) {
+    const dropped: any = event.previousContainer.data[event.previousIndex];
+    if (!dropped || !dropped.type) return;
+    const isPerson = dropped.type === 'person';
+
+    // FIX: always use assignId/senderId off the item (matches original drop()/plantDrop()).
+    // Do NOT substitute usrId for people — that was sending the wrong ID to the backend.
+    var assignId = dropped.assignId;
+    var senderId = dropped.senderId;
+    var assignName = isPerson ? dropped.usrFirstname : dropped.pltTitle;
     var preSiteId = event.previousContainer.id.split('_', 3)[0]
     var siteId = event.container.id.split('_', 1)[0]
     var receiverId = event.container.id.split('_', 2)[1]
     var siteName = event.container.id.split('_', 3)[2]
 
     if (this.commonService?.usrpermission.usrType == 2 || this.commonService?.usrpermission.usrType == 1) {
-      // ✅ Check if dropped into another site (not the same one)
       if (preSiteId !== siteId) {
-        if (event.previousContainer !== event.container) {
-          transferArrayItem(
-            event.previousContainer.data,
-            event.container.data,
-            event.previousIndex,
-            event.currentIndex
-          );
+        // FIX: removed transferArrayItem() on the transient visibleData arrays.
+        // The real source of truth is displaySiteData/displayPlantSiteData below;
+        // mutating those + invalidating the cache is enough to re-render correctly.
+        const realSites = isPerson ? this.dashboradService.displaySiteData : this.dashboradService.displayPlantSiteData;
+        const destSite = (realSites || []).find((s: any) => String(s.siteId) === String(siteId));
+        const srcSite = (realSites || []).find((s: any) => String(s.siteId) === String(preSiteId));
+        if (destSite && srcSite) {
+          const srcArray = isPerson ? (srcSite.userData = srcSite.userData || []) : (srcSite.plantData = srcSite.plantData || []);
+          const destArray = isPerson ? (destSite.userData = destSite.userData || []) : (destSite.plantData = destSite.plantData || []);
+          const srcIndex = srcArray.findIndex((item: any) => item.assignId === assignId);
+          if (srcIndex > -1) {
+            const [movedItem] = srcArray.splice(srcIndex, 1);
+            const { type, ...cleanItem } = movedItem;
+            destArray.push(cleanItem);
+          }
         }
-        const existingIndex = this.pendingChanges.findIndex(
-          (c) => c.assignId === assignId
-        );
 
+        const changes = isPerson ? this.pendingChanges : this.plantPendingChanges;
+        const existingIndex = changes.findIndex((c) => c.assignId === assignId);
         if (existingIndex > -1) {
-          this.pendingChanges[existingIndex] = { siteId, receiverId, assignId, preSiteId, senderId };
+          changes[existingIndex] = { siteId, receiverId, assignId, preSiteId, senderId };
         } else {
-          this.pendingChanges.push({ siteId, receiverId, assignId, preSiteId, senderId });
+          changes.push({ siteId, receiverId, assignId, preSiteId, senderId });
         }
+        this.invalidateCombinedCache();
       }
     } else if (event.previousContainer.id.split('_', 3)[1] == this.commonService?.usrpermission.usrId) {
       if (event.previousContainer != event.container) {
@@ -87,58 +197,43 @@ export class DashboradComponent {
           showCancelButton: true,
         }).then((result) => {
           if (result.isConfirmed && event.previousContainer != event.container) {
-            this.dashboradService.assignUserInSite(siteId, receiverId, assignId, preSiteId);
+            if (isPerson) {
+              this.dashboradService.assignUserInSite(siteId, receiverId, assignId, preSiteId);
+            } else {
+              this.dashboradService.assignPlantInSite(siteId, receiverId, assignId, preSiteId);
+            }
+            this.invalidateCombinedCache();
           }
         });
       }
     }
   }
 
-  plantDrop(event: CdkDragDrop<string[]> | any) {
-    var assignId = event.previousContainer.data[event.previousIndex].assignId
-    var senderId = event.previousContainer.data[event.previousIndex].senderId
-    var assignName = event.previousContainer.data[event.previousIndex].pltTitle
-    var preSiteId = event.previousContainer.id.split('_', 3)[0]
-    var siteId = event.container.id.split('_', 1)[0]
-    var receiverId = event.container.id.split('_', 2)[1]
-    var siteName = event.container.id.split('_', 3)[2]
-
-    if (this.commonService?.usrpermission.usrType == 2 || this.commonService?.usrpermission.usrType == 1) {
-      if (preSiteId !== siteId) {
-        if (event.previousContainer !== event.container) {
-          transferArrayItem(
-            event.previousContainer.data,
-            event.container.data,
-            event.previousIndex,
-            event.currentIndex
-          );
-        }
-        const existingIndex = this.plantPendingChanges.findIndex(
-          (c) => c.assignId === assignId
-        );
-        if (existingIndex > -1) {
-          this.plantPendingChanges[existingIndex] = { siteId, receiverId, assignId, preSiteId, senderId };
-        } else {
-          this.plantPendingChanges.push({ siteId, receiverId, assignId, preSiteId, senderId });
-        }
-      }
-    } else if (event.previousContainer.id.split('_', 3)[1] == this.commonService?.usrpermission.usrId) {
-      if (event.previousContainer != event.container) {
-        Swal.fire({
-          icon: 'warning',
-          text: `Do you want to move ${assignName} to ${siteName} site`,
-          width: '27rem',
-          confirmButtonText: 'Yes',
-          confirmButtonColor: 'rgb(223,129,62)',
-          cancelButtonText: 'No',
-          showCancelButton: true,
-        }).then((result) => {
-          if (result.isConfirmed && event.previousContainer != event.container) {
-            this.dashboradService.assignPlantInSite(siteId, receiverId, assignId, preSiteId);
-          }
-        });
-      }
+  // ---- Single drag-start handler for People / Plant / Both ----
+  onItemDragStarted(event: CdkDragStart): void {
+    const data = event.source.data;
+    const isPerson = data.type === 'person';
+    if (data.suStatus == 1 || data.spStatus == 1) {
+      this.commonService.Alert(
+        isPerson ? 'This user is pending for approval' : 'This plant is pending for approval',
+        'error'
+      );
     }
+    if (data.suStatus == 3 || data.spStatus == 3) {
+      this.commonService.Alert(
+        isPerson
+          ? 'The user is already assigned to a site and pending for approval.'
+          : 'The plant is already assigned to a site and pending for approval.',
+        'error'
+      );
+    }
+  }
+
+  trackByCombinedId(index: number, item: any) {
+    return (item.type === 'person' ? item.usrId : item.assignId) + '_' + item.type;
+  }
+  trackBySiteId(index: number, site: any){
+    return site.siteId
   }
 
   saveChanges() {
@@ -151,47 +246,71 @@ export class DashboradComponent {
       icon: 'warning',
       text: 'Do you want to save all changes?',
       width: '27rem',
-      confirmButtonText:'Yes',
-      cancelButtonText:'No',
-      showCancelButton:true,
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+      showCancelButton: true,
       confirmButtonColor: 'rgb(223,129,62)',
     }).then((result) => {
-      if (result.isConfirmed) {
-        if (this.pendingChanges.length) this.assignUsersInSitesByAdmin()
-        if (this.plantPendingChanges.length) this.assignPlantsInSitesByAdmin()
-      }
+      if (!result.isConfirmed) return;
+
+      const userCall$ = this.pendingChanges.length
+        ? this.endUserService.assignUsersInSitesByAdmin({ userSiteData: this.pendingChanges })
+        : of(null);
+      const plantCall$ = this.plantPendingChanges.length
+        ? this.endUserService.assignPlantsInSitesByAdmin({ plantSiteData: this.plantPendingChanges })
+        : of(null);
+
+      forkJoin([userCall$, plantCall$]).subscribe(([userResult, plantResult]: any) => {
+        const userOk = !userResult || userResult.status == '200';
+        const plantOk = !plantResult || plantResult.status == '200';
+
+        if (userResult) {
+          userOk
+            ? (this.dashboradService.originalSiteData = JSON.parse(JSON.stringify(this.dashboradService.displaySiteData)), this.pendingChanges = [])
+            : this.commonService.ApiErrAlert(userResult);
+        }
+        if (plantResult) {
+          plantOk
+            ? (this.dashboradService.originalPlantSiteData = JSON.parse(JSON.stringify(this.dashboradService.displayPlantSiteData)), this.plantPendingChanges = [])
+            : this.commonService.ApiErrAlert(plantResult);
+        }
+        if (userOk && plantOk) {
+          this.commonService.successAlert('Changes saved successfully.');
+        }
+        this.invalidateCombinedCache();
+      });
     });
   }
 
-  assignUsersInSitesByAdmin() {
-    const paramData = {
-      userSiteData: this.pendingChanges
-    };
-    this.endUserService.assignUsersInSitesByAdmin(paramData).subscribe((result: any) => {
-      if (result.status == '200') {
-        this.commonService.successAlert(result.message);
-        this.dashboradService.originalSiteData = JSON.parse(JSON.stringify(this.dashboradService.displaySiteData));
-        this.pendingChanges = [];
-      } else {
-        this.commonService.ApiErrAlert(result)
-      }
-    })
-  }
+  // assignUsersInSitesByAdmin() {
+  //   const paramData = {
+  //     userSiteData: this.pendingChanges
+  //   };
+  //   this.endUserService.assignUsersInSitesByAdmin(paramData).subscribe((result: any) => {
+  //     if (result.status == '200') {
+  //       this.commonService.successAlert(result.message);
+  //       this.dashboradService.originalSiteData = JSON.parse(JSON.stringify(this.dashboradService.displaySiteData));
+  //       this.pendingChanges = [];
+  //     } else {
+  //       this.commonService.ApiErrAlert(result)
+  //     }
+  //   })
+  // }
 
-  assignPlantsInSitesByAdmin() {
-    const paramData = {
-      plantSiteData: this.plantPendingChanges
-    };
-    this.endUserService.assignPlantsInSitesByAdmin(paramData).subscribe((result: any) => {
-      if (result.status == '200') {
-        this.commonService.successAlert(result.message);
-        this.dashboradService.originalPlantSiteData = JSON.parse(JSON.stringify(this.dashboradService.displayPlantSiteData));
-        this.plantPendingChanges = [];
-      } else {
-        this.commonService.ApiErrAlert(result)
-      }
-    })
-  }
+  // assignPlantsInSitesByAdmin() {
+  //   const paramData = {
+  //     plantSiteData: this.plantPendingChanges
+  //   };
+  //   this.endUserService.assignPlantsInSitesByAdmin(paramData).subscribe((result: any) => {
+  //     if (result.status == '200') {
+  //       this.commonService.successAlert(result.message);
+  //       this.dashboradService.originalPlantSiteData = JSON.parse(JSON.stringify(this.dashboradService.displayPlantSiteData));
+  //       this.plantPendingChanges = [];
+  //     } else {
+  //       this.commonService.ApiErrAlert(result)
+  //     }
+  //   })
+  // }
 
   cancelChanges() {
     Swal.fire({
@@ -213,36 +332,11 @@ export class DashboradComponent {
         );
         this.pendingChanges = [];
         this.plantPendingChanges = [];
+        this.invalidateCombinedCache();
       }
     });
   }
 
-  onDragStarted(event: CdkDragStart): void {
-    if(event.source.data.suStatus == 1){
-      this.commonService.Alert('This user is pending for approval','error')
-    }
-    if(event.source.data.suStatus == 3){
-      this.commonService.Alert('The user is already assigned to a site and pending for approval.','error')
-    }
-  }
-  
-  trackByUserId(index: number, user: any) {
-    return user.usrId;
-  }
-  trackByPlantId(index: number, plant: any) {
-    return plant.pltId;
-  }
-  onPlantDragStarted(event: CdkDragStart): void {
-    if(event.source.data.spStatus == 1){
-      this.commonService.Alert('This plant is pending for approval','error')
-    }
-    if(event.source.data.spStatus == 3){
-      this.commonService.Alert('The plant is already assigned to a site and pending for approval.','error')
-    }
-  }
-  trackBySiteId(index: number, site: any){
-    return site.siteId
-  }
   getChipKey(index: number): string {
     const keys = ['siteName', 'roleName', 'licName', 'trName', 'comptName'];
     return keys[index];
@@ -250,16 +344,28 @@ export class DashboradComponent {
   setResourceView(view: 'people' | 'plant' | 'both') {
     this.resourceView = view;
   }
-  previewUser(user:any,site:any){
+  previewUser(user: any, site: any) {
     const dialogRef = this.dialog.open(PreviewDashboardUserComponent, {
-      data:{user: user, site : site},
-      width: '43rem',
-      autoFocus: false,
-      disableClose: true,
+      data: { user: user, site: site }, width: '43rem', autoFocus: false, disableClose: true,
     })
     dialogRef.afterClosed().subscribe(result => {
-      result == 'success' ? this.dashboradService.getAllSitesUserList(this.pagination) : ''
+      if (result == 'success') {
+        this.dashboradService.getAllSitesUserList(this.pagination);
+        this.invalidateCombinedCache();
+      }
       this.dashboradService.userDetails = ''
+    })
+  }
+  previewPlant(plant: any, site: any) {
+    const dialogRef = this.dialog.open(PreviewDashboardPlantComponent, {
+      data: { plant: plant, site: site }, width: '43rem', autoFocus: false, disableClose: true,
+    })
+    dialogRef.afterClosed().subscribe(result => {
+      if (result == 'success') {
+        this.dashboradService.getAllSitesPlantList(this.pagination);
+        this.invalidateCombinedCache();
+      }
+      this.dashboradService.plantDetails = ''
     })
   }
   redirectToSite(site:any, type:string = 'people'){

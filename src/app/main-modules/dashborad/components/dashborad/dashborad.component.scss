@@ -100,6 +100,39 @@
 .viewToggle__btn:last-child{ border-right:none; }
 .viewToggle__btn:hover:not(.active){ background:$thid-color; }
 .viewToggle__btn.active{ background:$primary-color; color:$white-color; }
+.resourceCountBadges{
+  display:inline-flex;
+  gap:8px;
+  margin-left:10px;
+}
+.countChip{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  height:30px;
+  padding:0 12px;
+  border-radius:15px;
+  background:$thid-color;
+  color:$primary-color;
+  font-size:12px;
+  font-weight:500;
+  white-space:nowrap;
+  mat-icon{
+    font-size:16px;
+    width:16px;
+    height:16px;
+    line-height:16px;
+    overflow:visible;
+  }
+  b{
+    font-weight:700;
+  }
+}
+.countChip.plantChip{
+  background:#EFEFEF;
+  color:#6b6b6b;
+  mat-icon{ color:#8a8a8a; }
+}
 
 .dashChips{ padding-top:4px; }
 
@@ -274,6 +307,41 @@
     flex: 1 1 auto;
     min-height: 0;
     max-height: none;
+  }
+}
+/* NOTE: "Both" view previously rendered TWO separate ".mergedGroup"
+   cdkDropLists (people + plant) per site, styled with "display: contents"
+   so both would visually sit inside the same grid. That rule is removed:
+   display:contents strips an element's own layout box entirely, so CDK's
+   pointer hit-testing (which relies on getBoundingClientRect() of the
+   drop-list host) could not reliably tell which of the two overlapping,
+   boxless containers a drag was actually over - this is what broke
+   cross-site assignment specifically in "Both" mode.
+   Fix: "Both" view now uses a single real cdkDropList container per site
+   (same .example-list this file already styles for People/Plant), holding
+   both person and plant cards together. No extra CSS needed - .userBox
+   items already lay out correctly in the existing .example-list grid. */
+/* Small corner badge so plant cards with a photo are still identifiable
+   as plant (cards without a photo already use the grey forklift icon). */
+.plantTag{
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  mat-icon{
+    color: #fff;
+    font-size: 11px;
+    width: 11px;
+    height: 11px;
+    line-height: 11px;
+    overflow: visible;
   }
 }
 .plantBoard .plantIcon{

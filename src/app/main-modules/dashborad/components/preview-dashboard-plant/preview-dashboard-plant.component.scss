@@ -1,0 +1,135 @@
+.modal-header {
+    height: 2.5rem;
+    padding: 0;
+    display: flex;
+    .header_text{
+        padding-left: 15px;
+        width: 80%;
+        text-align: left;
+    }
+    .close{
+        text-align: right;
+        width: 20%;
+        padding-right: 15px;
+    }
+    }
+    .preMainBox{
+        min-height: 235px;
+        max-height: 320px;
+        overflow-y: auto;
+        .preDetail {
+            padding-top: 20px;
+          
+            .imgBox {
+                display: flex;
+        
+                .userImg {
+                    width: 100px;
+                    height: 100px;
+                    background-color: #D9D9D9;
+                }
+                .plantIcon{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 4px;
+                    mat-icon{
+                        color: #999999;
+                        font-size: 40px;
+                        width: 40px;
+                        height: 40px;
+                        line-height: 40px;
+                        overflow: visible;
+                    }
+                }
+            }
+        
+            .label {
+                color: #000;
+                font-size: 12px;
+                font-weight: 500;
+            }
+        
+            .text {
+                padding-right: 5px;
+                display: inline-block; 
+                color: #484848;
+                font-size: 12px;
+                font-weight: 400;
+            }
+        }
+
+        .chipGroup{
+            padding-top: 15px;
+            .header{
+                color: #DF813E;
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 0.4px;
+                text-transform: uppercase;
+                padding-bottom: 6px;
+            }
+            .notesBox{
+                background: #F5F5F5;
+                border-radius: 6px;
+                padding: 10px 12px;
+                max-height: 90px;
+                overflow-y: auto;
+                white-space: pre-line;
+                font-size: 12px;
+                color: #484848;
+                line-height: 18px;
+            }
+            .chips{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                .chip{
+                    background: #DF813E;
+                    color: #fff;
+                    font-size: 11px;
+                    font-weight: 500;
+                    padding: 3px 10px;
+                    border-radius: 12px;
+                    white-space: nowrap;
+                }
+                .text{
+                    color: #999;
+                    font-size: 12px;
+                    padding: 0;
+                }
+            }
+            .licList{
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                li{
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 6px 0;
+                    border-bottom: 1px solid #eee;
+                    font-size: 12px;
+                    color: #484848;
+                }
+                li:last-child{
+                    border-bottom: none;
+                }
+                .expiry{
+                    color: #999;
+                }
+            }
+        }
+    }
+
+.add_btn{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 105px;
+    color: #FFF;
+    font-size: 12px;
+}
+
+.mat-mdc-menu-content , .mdc-list{
+    padding: 0px  !important;
+}

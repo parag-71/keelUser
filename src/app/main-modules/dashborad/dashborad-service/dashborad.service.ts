@@ -36,6 +36,7 @@ export class DashboradService {
     siteIds:[]
   }
   public userDetails:any
+  public plantDetails:any
   public siteList:any
   utiObj = new Util();
   constructor(
@@ -152,6 +153,16 @@ export class DashboradService {
       if (result.status == '200' ){
         this.userDetails = result.data
       }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+
+  getPlantDetails(pltId: any) {
+    this.endUserService.plantDetails({ pltId: pltId }).subscribe((result: any) => {
+      if (result.status == '200') {
+        this.plantDetails = result.data
+      } else {
         this.commonService.ApiErrAlert(result)
       }
     })

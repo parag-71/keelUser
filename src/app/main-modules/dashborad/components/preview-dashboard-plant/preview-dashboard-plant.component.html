@@ -1,0 +1,91 @@
+<div class="popupParent " >
+    <div mat-dialog-title class="modal-header" >
+        <div class="header_text">
+           {{dashboradService.plantDetails?.pltTitle}}
+        </div>
+            <mat-icon class="close" matTooltip="close"  matDialogClose>close</mat-icon>
+        </div>
+    </div>
+    <div class="container preMainBox" >
+        <div class="row preDetail">
+            <div class="col-md-3 col-xs-12 imgBox">
+                    <img *ngIf="dashboradService.plantDetails?.imageUrl" [src]="baseUrl+dashboradService.plantDetails.imageUrl" alt="" class="userImg">
+                    <div *ngIf="!dashboradService.plantDetails?.imageUrl" class="userImg plantIcon"><mat-icon>forklift</mat-icon></div>
+            </div>
+            <div class="col-md-9 col-xs-12">
+                <div class="row">
+                    <div  class="col-md-4 col-sm-6 pb-3 px-0">
+                        <div class="label">Company</div>
+                        <div class="text">{{dashboradService.plantDetails?.pltCompany}}</div>
+                    </div>
+                    <div  class="col-md-4 col-sm-6 pb-3 px-0">
+                        <div class="label">Plant ID</div>
+                        <div class="text">{{dashboradService.plantDetails?.pltCode}}</div>
+                    </div>
+                    <div  class="col-md-4 col-sm-6 pb-3 px-0">
+                        <div class="label">Current site</div>
+                        <div class="text">{{dashboradService.plantDetails?.siteName}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="dashboradService.plantDetails?.pltAttachment">
+            <div class="col-12 chipGroup">
+                <div class="header">Attachments</div>
+                <div class="notesBox">{{dashboradService.plantDetails.pltAttachment}}</div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="dashboradService.plantDetails?.pltServiceNote">
+            <div class="col-12 chipGroup">
+                <div class="header">Service Notes</div>
+                <div class="notesBox">{{dashboradService.plantDetails.pltServiceNote}}</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 col-sm-6 col-12 chipGroup">
+                <div class="header">Safety</div>
+                <div class="chips">
+                    <span class="chip" *ngFor="let safetyData of dashboradService.plantDetails?.safetyData">{{safetyData.ps_safety || safetyData.psSafety}}</span>
+                    <span class="text" *ngIf="!dashboradService.plantDetails?.safetyData?.length">N/A</span>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-12 chipGroup">
+                <div class="header">Tags</div>
+                <div class="chips">
+                    <span class="chip" *ngFor="let tagData of dashboradService.plantDetails?.tagData">{{tagData.tagName || tagData.pt_tag}}</span>
+                    <span class="text" *ngIf="!dashboradService.plantDetails?.tagData?.length">N/A</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="dashboradService.plantDetails?.licData?.length">
+            <div class="col-12 chipGroup">
+                <div class="header">Licences</div>
+                <ul class="licList">
+                    <li *ngFor="let licData of dashboradService.plantDetails.licData">
+                        <span>{{licData.cplName}}</span>
+                        <span class="expiry">{{licData.plNeverExpire == 1 ? 'No Expiry Date' : (licData.plExpiredate | date:'dd-MM-yyyy')}}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+    <div class="row">
+        <div class="col-12 position-sticky add_btn_box py-2">
+            <button class="add_btn" [matMenuTriggerFor]="menu">Send to
+                <img src="assets/images/Expand Arrow.png" alt="">
+            </button>
+                <mat-menu class="menu p-0" #menu="matMenu">
+                    <ng-container *ngFor="let item of dashboradService.siteList">
+                        <button *ngIf="item.siteName != 'All'" (click)="assginPlant(item)" class="menuBtn" mat-menu-item > {{item.siteName}}</button>
+                    </ng-container>
+                    
+                </mat-menu>
+        </div>
+    </div>
+    </div>
+<div>

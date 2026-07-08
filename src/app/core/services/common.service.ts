@@ -21,6 +21,12 @@ export class CommonService {
   public userCount:any
   public plantCount:any
   public requestCount:any
+  // NEW: track people-requests and plant-requests separately, then combine
+  // into `requestCount` (the value the sidebar badge is bound to). Previously
+  // only userRequestCount was ever fetched, so plant re-assignments never
+  // moved the badge.
+  public userRequestCount:any = 0
+  public plantRequestCount:any = 0
   public userSiteList:any
   public searchSiteList:any
   public search:any
@@ -91,7 +97,12 @@ export class CommonService {
         result.data.map((val:any)=> {
           site.push(val.siteId)
         })
-        site.length ? this.siteUserRequestList(site) : ''
+        // FIX: fetch plant request count alongside user request count,
+        // so the badge reflects BOTH pending people moves and plant moves.
+        if(site.length){
+          this.siteUserRequestList(site)
+          this.sitePlantRequestList(site)
+        }
         site = []
       }else{
         this.ApiErrAlert(result)
@@ -112,11 +123,31 @@ export class CommonService {
   siteUserRequestList(siteId:any){
     this.endUserService.siteUserRequestList({type :2,siteIds:siteId}).subscribe((result:any)=>{
       if (result.status == '200' ){
-        this.requestCount = result.data.length
+        this.userRequestCount = result.data.length
+        this.updateCombinedRequestCount()
       }else{
         this.ApiErrAlert(result)
       }
     })
+  }
+
+  // NEW: mirrors siteUserRequestList() but for pending PLANT site-transfer
+  // requests. Uses the same endUserService.sitePlantRequestList() method
+  // RequestService already calls elsewhere - it just was never wired into
+  // the sidebar badge before.
+  sitePlantRequestList(siteId:any){
+    this.endUserService.sitePlantRequestList({type :2,siteIds:siteId}).subscribe((result:any)=>{
+      if (result.status == '200' ){
+        this.plantRequestCount = result.data.length
+        this.updateCombinedRequestCount()
+      }else{
+        this.ApiErrAlert(result)
+      }
+    })
+  }
+
+  private updateCombinedRequestCount(){
+    this.requestCount = (this.userRequestCount || 0) + (this.plantRequestCount || 0)
   }
 
   updateLocalStorage(data: any) {

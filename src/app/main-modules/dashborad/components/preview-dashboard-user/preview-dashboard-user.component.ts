@@ -32,8 +32,24 @@ export class PreviewDashboardUserComponent {
     this.dashboradService.getUserDetails(this.data.user.assignId ? this.data.user.assignId :this.data.user.usrId ? this.data.user.usrId : '')
     this.dashboradService.siteNameList()
   }
+  // FIX: same authorization fix as PreviewDashboardPlantComponent.assginPlant() -
+  // uses commonService.usrpermission (admin 1/2, or source-site leader) instead
+  // of the mismatched commonService.loginUserDetail.usrType == 2-only check.
   assginUser(siteData:any){
-      if((this.data.site.usrId == this.commonService.loginUserDetail.usrId || this.data.user.assignId == this.data.site.usrId) && this.commonService.loginUserDetail.usrType == 2 && this.data.user.suStatus != 3){
+      const perm = this.commonService.usrpermission;
+      const isAdmin = perm?.usrType == 2 || perm?.usrType == 1;
+      const isSourceSiteLeader = this.data.site.usrId == perm?.usrId;
+      const hasPendingTransfer = this.data.user.suStatus == 3 || this.data.user.suStatus == 1;
+
+      if(!(isAdmin || isSourceSiteLeader)){
+        // FIX: this message should ONLY show when the actual reason is a
+        // permission failure, not when the resource simply has a pending
+        // incoming/outgoing transfer. Previously both cases were merged
+        // into one condition and always showed this same misleading text.
+        this.commonService.Alert('Sorry, only site leaders are authorized to assign users from one site to another.','error')
+      }else if(hasPendingTransfer){
+        this.commonService.Alert('This user already has a pending transfer request. Please resolve it before reassigning.','error')
+      }else{
         Swal.fire({
           icon: 'warning',
           text: `Do you want to move ${this.data.user.usrFirstname} to ${siteData.siteName} site`,
@@ -48,8 +64,6 @@ export class PreviewDashboardUserComponent {
               this.dialogRef.close('success')
           }
         });
-      }else{
-        this.commonService.Alert('Sorry, only site leaders are authorized to assign users from one site to another.','error')
       }
   }
   closeDialog(){
