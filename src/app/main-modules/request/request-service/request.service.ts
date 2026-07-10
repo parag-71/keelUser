@@ -102,7 +102,8 @@ export class RequestService {
     })
   }
   sentRequestSiteNameList(){
-    this.endUserService.sentRequestSiteNameList({}).subscribe((result:any)=>{
+    const payload:any = this.resourceType == 'plant' ? { requestFor: 2 } : {}
+    this.endUserService.sentRequestSiteNameList(payload).subscribe((result:any)=>{
       if (result.status == '200' ){
         this.sentSiteList = result.data
         this.commonService.siteIdList = []

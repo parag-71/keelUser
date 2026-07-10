@@ -7,10 +7,10 @@
                     <button type="button" [class.active]="requestService.resourceType == 'plant'" (click)="changeResource('plant')">Plant</button>
                 </div>
                 <mat-tab-group class="request_tab" (selectedTabChange)="tabChange($event)" [(selectedIndex)]="requestService.DashSelectIndex">
-                    <mat-tab label="Sent">
+                    <mat-tab label="Sent to Site">
                         <app-send-card></app-send-card>
                     </mat-tab>
-                    <mat-tab label="Received">
+                    <mat-tab label="Received on Site">
                         <app-send-card ></app-send-card>
                     </mat-tab>                   
                 </mat-tab-group>               
