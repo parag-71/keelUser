@@ -29,12 +29,8 @@ export class SiteUserPreviewComponent {
     this.siteId = this.route.snapshot.params['siteId']
     const type = this.route.snapshot.queryParams['type']
     this.resourceType = type === 'plant' ? 'plant' : type === 'both' ? 'both' : 'people'
-    if (this.resourceType === 'plant' || this.resourceType === 'both') {
-      this.dashboradService.getAllSitesPlantList({}, this.siteId)
-    }
-    if (this.resourceType === 'people' || this.resourceType === 'both') {
-      this.dashboradService.getAllSitesUserList({}, this.siteId)
-    }
+    // Single call populates both People and Plant boards from one response.
+    this.dashboradService.getAllSitesUserList({}, this.siteId)
   }
   // "Both" view: this page is already filtered to a single siteId, so this
   // just pairs that site's userData (from displaySiteData) with its
@@ -83,8 +79,8 @@ export class SiteUserPreviewComponent {
 
   ngOnDestroy() {
     this.dashboradService.allSiteData = []
+    this.dashboradService.displaySiteData = []
     this.dashboradService.allPlantSiteData = []
-    this.dashboradService.displayPlantSiteData = []
     this.dashboradService.displayPlantSiteData = []
   }
 }

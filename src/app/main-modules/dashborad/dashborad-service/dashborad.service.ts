@@ -16,6 +16,8 @@ export class DashboradService {
   public displaySiteData: any
   public currentRouteName:any
   public dashboardFilterSite:any
+  // Plant-board mirror of dashboardFilterSite: site-filtered, pre-search base.
+  public dashboardFilterPlantSite:any
   public selectedSite:any = []
   public allUserSiteList = new Subject<void>();
   allUserSiteList$ = this.allUserSiteList.asObservable();
@@ -53,6 +55,8 @@ export class DashboradService {
       });
    }
 
+  // allSitesUserList already returns userData[] AND plantData[] per site, so
+  // one call populates both the People and Plant boards.
   getAllSitesUserList(pagination:any,siteId?:any){
     this.endUserService.allSitesUserList(pagination).subscribe(async (result:any)=>{
       if (result.status == '200' ){
@@ -63,12 +67,20 @@ export class DashboradService {
         }
         this.currentRouteName == 'resources' ? this.allUserSiteList.next() : ''
         this.dashboardFilterSite = this.allSiteData
-		    this.displaySiteData = JSON.parse(JSON.stringify(this.allSiteData))
-        this.originalSiteData = JSON.parse(JSON.stringify(this.allSiteData));
-        this.commonService.userCount = this.allSiteData.reduce((total:any, site:any) => {
-          const filteredUsers = site.userData.filter((user:any) => user.suStatus !== 1);
-          return total + filteredUsers.length;
-        }, 0);
+	    this.displaySiteData = this.clone(this.allSiteData)
+        this.originalSiteData = this.clone(this.allSiteData)
+        this.commonService.userCount = this.countActive(this.allSiteData, 'userData', 'suStatus')
+
+        // Plant board derived from the SAME response (no separate API call).
+        this.allPlantSiteData = this.clone(this.allSiteData)
+        this.updatePlantSpStatus(this.allPlantSiteData)
+        this.dashboardFilterPlantSite = this.allPlantSiteData
+        this.displayPlantSiteData = this.clone(this.allPlantSiteData)
+        this.originalPlantSiteData = this.clone(this.allPlantSiteData)
+        this.commonService.plantCount = this.countActive(this.allPlantSiteData, 'plantData', 'spStatus');
+
+        // Re-apply any active header search on top of this freshly loaded data.
+        (this.currentRouteName == 'dashboard' || this.currentRouteName == 'preview-site-user') ? this.applyHeaderSearch(this.commonService.search) : ''
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -91,25 +103,10 @@ export class DashboradService {
     })
   }
 
-  // ---- Plant board (mirror of the user methods above) ----
+  // Alias kept for existing callers - getAllSitesUserList() alone already
+  // populates the Plant board too (no separate allSitesPlantList API call).
   getAllSitesPlantList(pagination: any, siteId?: any) {
-    this.endUserService.allSitesPlantList(pagination).subscribe((result: any) => {
-      if (result.status == '200') {
-        this.allPlantSiteData = result.data
-        this.updatePlantSpStatus(this.allPlantSiteData)
-        if (siteId) {
-          this.allPlantSiteData = this.allPlantSiteData.filter((val: any) => val.siteId == siteId);
-        }
-        this.displayPlantSiteData = JSON.parse(JSON.stringify(this.allPlantSiteData))
-        this.originalPlantSiteData = JSON.parse(JSON.stringify(this.allPlantSiteData))
-        this.commonService.plantCount = this.allPlantSiteData.reduce((total:any, site:any) => {
-          const filteredPlants = (site.plantData || []).filter((plant:any) => plant.spStatus !== 1);
-          return total + filteredPlants.length;
-        }, 0);
-      }else{
-        this.commonService.ApiErrAlert(result)
-      }
-    })
+    this.getAllSitesUserList(pagination, siteId)
   }
   assignPlantInSite(siteId:any,receiverId:any,assignId:any,preSiteId:any){
     this.endUserService.assignPlantInSite({siteId:siteId,receiverId:receiverId,assignId:assignId,preSiteId:preSiteId}).subscribe((result:any)=>{
@@ -230,5 +227,91 @@ export class DashboradService {
       this.selectedSite = JSON.parse(localSiteList)
       this.selectedSite.length != this.siteList.length ? this.selectedSite = this.selectedSite.filter((site:any)=>site.siteId != '') : this.selectedSite.unshift({ siteId: '', siteName: 'All' })
     }
+  }
+
+  // =====================================================================
+  // Dashboard search & filter pipeline (People + Plant), non-mutating:
+  //   1) applySiteNameFilter()  -> "Sites" tab of the advanced popup
+  //   2) role/licence/etc.      -> search-filter.component.ts (people only)
+  //   3) applyHeaderSearch()    -> header search box (people + plant)
+  // Layer 3 always reads from dashboardFilterSite/dashboardFilterPlantSite
+  // (the output of layers 1+2), not the raw allSiteData/allPlantSiteData, so
+  // search and the site filter compose instead of overwriting each other.
+  // =====================================================================
+
+  private clone<T>(data: T): T {
+    return JSON.parse(JSON.stringify(data));
+  }
+
+  private countActive(sites: any[], listKey: 'userData' | 'plantData', statusKey: 'suStatus' | 'spStatus'): number {
+    return (sites || []).reduce((total: number, site: any) =>
+      total + (site[listKey] || []).filter((item: any) => item[statusKey] !== 1).length, 0);
+  }
+
+  // "Sites" tab of the advanced filter popup - shared by People + Plant boards.
+  applySiteNameFilter(sites: any[], selectedSiteNames: string[]): any[] {
+    const cloned = this.clone(sites || []);
+    return selectedSiteNames?.length ? cloned.filter((site: any) => selectedSiteNames.includes(site.siteName)) : cloned;
+  }
+
+  // Plant-board base for the advanced filter popup. Role/Licence/Training/
+  // Competency are PEOPLE-ONLY attributes - a plant can never match any of
+  // them - so if any of those are selected, no plant can satisfy the same
+  // AND-across-all-filters rule the People side uses, and the Plant board
+  // must show nothing. Only when none of those are active does the "Sites"
+  // selection apply on its own.
+  computePlantFilterBase(sites: any[], filterItem: any[]): any[] {
+    const hasPeopleOnlyFilter = filterItem[1].roleName.length || filterItem[2].licName.length
+      || filterItem[3].trName.length || filterItem[4].comptName.length;
+    return hasPeopleOnlyFilter ? [] : this.applySiteNameFilter(sites, filterItem[0].siteName);
+  }
+
+  // Header search - People: matches first name + last name + role name.
+  filterPeopleBySearchTerm(sites: any[], searchText: string): any[] {
+    const term = (searchText || '').toLowerCase().replace(/\s/g, '');
+    if (!term) { return this.clone(sites || []); }
+    return this.clone(sites || [])
+      .map((site: any) => ({
+        ...site,
+        userData: (site.userData || []).filter((user: any) =>
+          `${user.usrFirstname}${user.usrLastname}${user.roleName}`.toLowerCase().replace(/\s/g, '').includes(term))
+      }))
+      .filter((site: any) => site.userData.length > 0);
+  }
+
+  // Header search - Plant: matches title, id/code, company, site name, tags.
+  filterPlantsBySearchTerm(sites: any[], searchText: string): any[] {
+    const term = (searchText || '').trim().toLowerCase();
+    if (!term) { return this.clone(sites || []); }
+    return this.clone(sites || [])
+      .map((site: any) => ({
+        ...site,
+        plantData: (site.plantData || []).filter((plant: any) => this.plantMatchesSearchTerm(plant, site.siteName, term))
+      }))
+      .filter((site: any) => site.plantData.length > 0);
+  }
+
+  private plantMatchesSearchTerm(plant: any, siteName: any, term: string): boolean {
+    // pltId = internal DB key, pltCode = the "Plant ID" shown to the user.
+    return [plant.pltTitle, plant.pltId, plant.pltCode, plant.pltCompany, siteName, this.plantTagsText(plant)]
+      .map((val: any) => (val ?? '').toString())
+      .join(' ')
+      .toLowerCase()
+      .includes(term);
+  }
+
+  // Tags may come through under different keys/shapes depending on the endpoint.
+  private plantTagsText(plant: any): string {
+    const tags = [plant.tagData, plant.tags, plant.plantTagData, plant.tagList, plant.plantTags]
+      .find((c: any) => Array.isArray(c) && c.length) || [];
+    return tags.map((t: any) => (typeof t === 'string' ? t : (t?.tagName ?? t?.pt_tag ?? t?.tag ?? t?.ct_tag ?? t?.name ?? ''))).join(' ');
+  }
+
+  // Single entry point for the header search box: layers `searchText` on top
+  // of the current site/advanced-filter base (not the raw, unfiltered data),
+  // so search + site filter compose instead of overwriting each other.
+  applyHeaderSearch(searchText: string): void {
+    this.displaySiteData = this.filterPeopleBySearchTerm(this.dashboardFilterSite || this.allSiteData || [], searchText);
+    this.displayPlantSiteData = this.filterPlantsBySearchTerm(this.dashboardFilterPlantSite || this.allPlantSiteData || [], searchText);
   }
 }

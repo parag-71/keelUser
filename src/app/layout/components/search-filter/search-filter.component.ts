@@ -109,6 +109,22 @@ export class SearchFilterComponent {
     !filterUserData ?  this.dashboradService.displaySiteData = this.dashboradService.displaySiteData.filter((obj: any) => obj.userData.length > 0) : ''
     this.dashboradService.dashboardFilterChips = JSON.parse(JSON.stringify(this.dashboradService.filterItem))
     this.checkDateIsExpired()
+
+    // Persist as the pre-search base so header search layers on top of it
+    // instead of overwriting it (this is what makes search + site filter compose).
+    this.dashboradService.dashboardFilterSite = JSON.parse(JSON.stringify(this.dashboradService.displaySiteData))
+
+    // Same "Sites" selection applied to the Plant board - but if a
+    // Role/Licence/Training/Competency filter is active, no plant can ever
+    // match it, so the Plant board must show nothing in that case.
+    this.dashboradService.dashboardFilterPlantSite = this.dashboradService.computePlantFilterBase(
+      this.dashboradService.allPlantSiteData || [],
+      this.dashboradService.filterItem
+    )
+
+    // Re-layer any active header search term on top of the new base (people + plant).
+    this.dashboradService.applyHeaderSearch(this.commonService.search)
+
     this.dataEvent.emit(false);
   }
   areAllElementsPresent(arr1:any, arr2:any) {

@@ -44,20 +44,14 @@ export class DashboradComponent {
         this.pagination.siteIds.push(item.siteId);
       }
     });
+    // getAllSitesUserList() alone populates both People and Plant boards
+    // (allSitesUserList already returns userData[] + plantData[] per site).
     this.dashboradService.getAllSitesUserList(this.pagination)
-    this.dashboradService.getAllSitesPlantList(this.pagination)
   }
 
-  // =========================================================================
-  // Unified People / Plant / Both handling
-  // -------------------------------------------------------------------------
-  // Every card (person or plant) is normalized into a common shape with a
-  // `type: 'person' | 'plant'` tag. combinedSiteData holds ALL items per
-  // site; visibleSiteData just filters that by the active resourceView.
-  // This means there is exactly ONE drop-list per site, ONE drop handler,
-  // and ONE drag-start handler regardless of which tab is active - the
-  // People/Plant/Both tabs used to duplicate this logic three times.
-  // =========================================================================
+  // Unified People/Plant/Both: every card is normalized to { type: 'person' | 'plant' }.
+  // combinedSiteData holds all items per site; visibleSiteData filters by the active tab.
+  // One drop-list/drop-handler/drag-handler serves all three tabs.
 
   private _combinedCache: { peopleRef: any[] | null; plantRef: any[] | null; data: any[]; ids: string[] } = {
     peopleRef: null,
@@ -131,14 +125,25 @@ export class DashboradComponent {
     return this._combinedCache.ids;
   }
 
-  // What the template actually loops over: combinedData filtered by the active tab.
+  // True when a header search or any advanced popup filter is active.
+  private get isDashboardFilterActive(): boolean {
+    return !!this.commonService.search
+      || this.dashboradService.filterItem.some((f: any) => Object.values(f).some((v: any) => Array.isArray(v) && v.length > 0));
+  }
+
   get visibleSiteData(): any[] {
-    return this.combinedSiteData.map((site: any) => ({
-      ...site,
-      visibleData: this.resourceView === 'both'
-        ? site.combinedData
-        : site.combinedData.filter((item: any) => item.type === (this.resourceView === 'people' ? 'person' : 'plant'))
-    }));
+    return this.combinedSiteData
+      .map((site: any) => ({
+        ...site,
+        visibleData: this.resourceView === 'both'
+          ? site.combinedData
+          : site.combinedData.filter((item: any) => item.type === (this.resourceView === 'people' ? 'person' : 'plant'))
+      }))
+      // combinedSiteData is a UNION of people- and plant-matched sites, so
+      // while a filter is active, drop sites with nothing to show on this
+      // tab (e.g. matched only via a plant tag while on the People tab).
+      // With no filter active, keep every site as a drag-drop target.
+      .filter((site: any) => !this.isDashboardFilterActive || site.visibleData.length > 0);
   }
 
   // ---- Single drop handler for People / Plant / Both ----
@@ -147,8 +152,7 @@ export class DashboradComponent {
     if (!dropped || !dropped.type) return;
     const isPerson = dropped.type === 'person';
 
-    // FIX: always use assignId/senderId off the item (matches original drop()/plantDrop()).
-    // Do NOT substitute usrId for people — that was sending the wrong ID to the backend.
+    // Always use assignId/senderId off the item - do not substitute usrId for people.
     var assignId = dropped.assignId;
     var senderId = dropped.senderId;
     var assignName = isPerson ? dropped.usrFirstname : dropped.pltTitle;
@@ -159,9 +163,8 @@ export class DashboradComponent {
 
     if (this.commonService?.usrpermission.usrType == 2 || this.commonService?.usrpermission.usrType == 1) {
       if (preSiteId !== siteId) {
-        // FIX: removed transferArrayItem() on the transient visibleData arrays.
-        // The real source of truth is displaySiteData/displayPlantSiteData below;
-        // mutating those + invalidating the cache is enough to re-render correctly.
+        // Mutate the real source arrays (not the transient visibleData) and
+        // invalidate the cache - that alone is enough to re-render correctly.
         const realSites = isPerson ? this.dashboradService.displaySiteData : this.dashboradService.displayPlantSiteData;
         const destSite = (realSites || []).find((s: any) => String(s.siteId) === String(siteId));
         const srcSite = (realSites || []).find((s: any) => String(s.siteId) === String(preSiteId));
@@ -401,8 +404,8 @@ export class DashboradComponent {
       this.dashboradService.selectedSite.length+1 != this.dashboradService.siteList.length ? this.dashboradService.selectedSite = this.dashboradService.selectedSite.filter((site:any)=>site.siteId != '') : this.dashboradService.selectedSite =localSiteList
       localStorage.setItem('slectSite',JSON.stringify(localSiteList))
     }
+    // Single call - populates both People and Plant boards.
     this.dashboradService.getAllSitesUserList(this.pagination)
-    this.dashboradService.getAllSitesPlantList(this.pagination)
   }
   compareFn(site1: any, site2: any): boolean {
     return site1 && site2 ? site1.siteId === site2.siteId  : site1 === site2;

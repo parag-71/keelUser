@@ -74,6 +74,13 @@ export class HeaderComponent {
   }
 
   searchCustomer(){
+    // Dashboard/site-preview filtering is client-side only - no min-length
+    // gate needed there (unlike the server-searched routes below, where a
+    // 3-char minimum avoids firing an API call on every keystroke).
+    if (this.currentRouteName == 'dashboard' || this.currentRouteName == 'preview-site-user') {
+      this.callSearchListApi(this.currentRouteName)
+      return
+    }
     if(this.commonService.search.length >= 3){
       this.pagination.search = this.commonService.search
       this.resourcesPagination.search = this.commonService.search
@@ -92,27 +99,9 @@ export class HeaderComponent {
     this.pagination.search = ''
     this.resourcesPagination.search = ''
     this.plantResourcesPagination.search = ''
-    switch (this.currentRouteName) {
-      case "sites":
-        this.siteService.getSiteList(this.pagination)
-        return ''
-      case "resources":
-        this.resourceService.getUserList(this.resourcesPagination)
-      return ''
-      case "plant-resources":
-        this.plantResourceService.getPlantList(this.plantResourcesPagination)
-      return ''
-      case "dashboard":
-      case "preview-site-user":
-        this.dashboradService.displaySiteData = this.dashboradService.dashboardFilterSite
-        this.dashboradService.setinitialData()
-      return ''
-      case "planner":
-        this.commonService.resourcePlannerSub.next('')
-        return ''
-      default:
-				return '';
-    }
+    // Search is already reset above, so re-running the same per-route logic
+    // in callSearchListApi() clears everything without duplicating it here.
+    this.callSearchListApi(this.currentRouteName)
   }
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
@@ -145,23 +134,9 @@ export class HeaderComponent {
       return ''
       case "dashboard":
       case "preview-site-user":
-      if(this.commonService.search == ''){
-        this.dashboradService.displaySiteData = this.dashboradService.dashboardFilterSite
-       this.dashboradService.setinitialData()
-      }else{
-        this.dashboradService.displaySiteData =
-          this.dashboradService.dashboardFilterSite
-            .map((obj: any) => ({
-              ...obj,
-              userData: obj.userData.filter(
-                (user: any) => {
-                  var name = `${user.usrFirstname}${user.usrLastname}${user.roleName}`;
-                  return name.toLowerCase().split(" ").join("").search(this.commonService.search.toLowerCase().split(" ").join("")) != -1
-                  }
-              ),
-            }))
-            .filter((obj: any) => obj.userData.length > 0); 
-      }
+      // Layers the search term on top of the current site/advanced filter
+      // for BOTH People and Plant boards - see DashboradService.applyHeaderSearch().
+      this.dashboradService.applyHeaderSearch(this.commonService.search)
       return ''
       case "planner":
       this.commonService.resourcePlannerSub.next(this.commonService.search)                                                     
