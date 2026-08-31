@@ -119,8 +119,9 @@
                 <img *ngIf="item.imageUrl" class="userImg" [src]="baseUrl+item.imageUrl" loading="lazy" decoding="async"
                   class="img-fluid" alt="plantImg" >
                 <div *ngIf="!item.imageUrl" class="plantIcon"><mat-icon>forklift</mat-icon></div>
-                <div class="text-Section centerText">
+                <div class="text-Section" [ngClass]="{'centerText': !item.pltCode}">
                   <div class="userName">{{item.pltTitle}}</div>
+                  <div class="role" *ngIf="item.pltCode">{{item.pltCode}}</div>
                 </div>
               </div>
 
