@@ -153,6 +153,9 @@
 
     <div class="position-sticky col-md-12 col-xs-12 pb-2 add_btn_box py-2">
         <button type="button" class="cancel_btn me-2" (click)="closeDialog()">Cancel</button>
-        <button class="add_btn" (click)="AddUpdatePlantData(addUpdatePlantGrp.value,'close')">{{selectedTabIndex == 1 ? (from == 'edit' ? 'Update Licences' : 'Add Licences') : (from == 'edit' ? 'Update Plant Resource' : 'Add Plant Resource')}}</button>
+        <!-- EDIT: single contextual save; tabs can be switched freely (same as People) -->
+        <button *ngIf="from == 'edit'" class="add_btn" (click)="AddUpdatePlantData(addUpdatePlantGrp.value,'close')">{{selectedTabIndex == 1 ? 'Update Licences' : 'Update Plant Resource'}}</button>
+        <!-- ADD: Plant Details -> "Add & Next" saves and moves to Licences; Licences -> saves & closes -->
+        <button *ngIf="from == 'add'" class="add_btn ms-2" (click)="AddUpdatePlantData(addUpdatePlantGrp.value, selectedTabIndex == 1 ? 'close' : 'next')">{{selectedTabIndex == 1 ? 'Add Licences' : 'Add & Next'}}</button>
     </div>
 </div>

@@ -54,7 +54,13 @@ export class PreviewDashboardPlantComponent {
           showCancelButton: true,
         }).then((result) => {
           if (result.isConfirmed) {
-              this.dashboradService.assignPlantInSite(siteData.siteId,siteData.usrId,this.data.plant.assignId,this.data.site.siteId)
+              if (isAdmin) {
+                // Direct assign (same as drag-and-drop) - no request, no badge.
+                this.dashboradService.assignPlantByAdmin(siteData.siteId,siteData.usrId,this.data.plant.assignId,this.data.site.siteId,this.data.plant.senderId)
+              } else {
+                // Site leader -> transfer request (Incoming/Outgoing badge is intended here).
+                this.dashboradService.assignPlantInSite(siteData.siteId,siteData.usrId,this.data.plant.assignId,this.data.site.siteId)
+              }
               this.dialogRef.close('success')
           }
         });

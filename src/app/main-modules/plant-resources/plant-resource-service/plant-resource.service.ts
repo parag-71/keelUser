@@ -18,8 +18,12 @@ export class PlantResourceService {
   public visibleNoDataFound = false
   public addPlantSuccessSubject = new Subject<void>();
   public editPlantSubject = new Subject<void>();
+  // Fired after a successful "Add & Next" save so the open dialog can jump to the Licences tab
+  // (same pattern as People's add flow — no need to close & re-open the plant in edit mode).
+  public plantSavedNextSubject = new Subject<void>();
   editPlantSubject$ = this.editPlantSubject.asObservable();
   addPlantSuccess$ = this.addPlantSuccessSubject.asObservable();
+  plantSavedNext$ = this.plantSavedNextSubject.asObservable();
 
   constructor(
     public endUserService:EndUserService,
@@ -31,11 +35,15 @@ export class PlantResourceService {
     apiCall.subscribe((result:any)=>{
       if(result.status == '200'){
         this.getPlantList('')
-        if(type == 'close'){
-          this.addPlantSuccessSubject.next();
-        }
         this.pageIndex = 1
         result.pltId ? this.plantId = result.pltId : ''
+        if(type == 'close'){
+          this.addPlantSuccessSubject.next();
+        }else{
+          // 'next' -> keep the dialog open and move to the Licences tab. plantId is set above,
+          // so the tabChange guard will now allow the switch.
+          this.plantSavedNextSubject.next();
+        }
         this.commonService.successAlert(result.message);
       }else{
         this.commonService.ApiErrAlert(result)

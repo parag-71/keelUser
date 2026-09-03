@@ -51,6 +51,7 @@ export class AddEditPlantResourcesComponent {
   public companyTags:any = [] 
   public originalSafety:any = []
   public originalTags:any = []
+  private plantSavedNextSub:any
   utilObj = new Util();
   baseUrl = Global.environment.BASE_URL;
   constructor(
@@ -67,6 +68,11 @@ export class AddEditPlantResourcesComponent {
   ngOnInit() {
     this.from = this.data.from
     this.plantEditData = this.data.plantData || {}
+
+    // After "Add & Next" saves the plant details, move to the Licences tab in the same dialog.
+    this.plantSavedNextSub = this.plantResourceService.plantSavedNext$.subscribe(() => {
+      this.selectedTabIndex = 1
+    })
 
     this.addUpdatePlantGrp = this.fb.group({
       pltTitle: [this.from == 'edit' ? this.plantEditData.pltTitle : '', [Validators.required, this.commonService.noWhitespace, Validators.maxLength(100)]],
@@ -459,6 +465,10 @@ export class AddEditPlantResourcesComponent {
 
   closeDialog(){
     this.dialogRef.close()
+  }
+
+  ngOnDestroy(){
+    this.plantSavedNextSub && this.plantSavedNextSub.unsubscribe()
   }
 
   getErrorMessage(type:any) {

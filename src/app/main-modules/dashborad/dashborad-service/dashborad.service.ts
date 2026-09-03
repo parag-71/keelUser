@@ -123,6 +123,21 @@ export class DashboradService {
     })
   }
 
+  // Admin-direct plant assign from the preview popup. Uses the same ByAdmin
+  // endpoint the dashboard drag-and-drop uses, so the plant is moved
+  // immediately instead of raising a transfer request - no Incoming/Outgoing
+  // badge. (assignPlantInSite above is the request path, kept for site leaders.)
+  assignPlantByAdmin(siteId:any,receiverId:any,assignId:any,preSiteId:any,senderId:any){
+    this.endUserService.assignPlantsInSitesByAdmin({ plantSiteData: [{ siteId, receiverId, assignId, preSiteId, senderId }] }).subscribe((result:any)=>{
+      if (result.status == '200' ){
+        this.commonService.successAlert(result.message)
+        this.currentRouteName == 'dashboard' ? this.getAllSitesPlantList(this.pagination) : ''
+      }else{
+        this.commonService.ApiErrAlert(result)
+      }
+    })
+  }
+
   setinitialData(){
     this.resourceService.roleList = ''
     this.resourceService.trainingList = ''
