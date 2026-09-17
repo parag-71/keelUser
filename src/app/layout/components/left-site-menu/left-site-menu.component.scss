@@ -117,3 +117,109 @@
     align-items: center;
   }
 }
+
+/* Vacancy Planner collapsible menu */
+.vacancy_parent_item {
+  /* Trim the global 2.5rem right padding so the label + arrow both fit
+     without the arrow getting squeezed out by flex-shrink. */
+  padding-right: 1.2rem !important;
+
+  ::ng-deep .mdc-list-item__primary-text {
+    width: 100%;
+  }
+
+  .text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .vacancyMenuArrow {
+    flex: 0 0 auto;
+    margin-left: 8px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    color: #000;
+    transition: transform 0.2s ease;
+  }
+
+  .vacancyMenuArrow.open {
+    transform: rotate(180deg);
+  }
+}
+
+.vacancy_sub_panel {
+  // background-color: $secondary-color;
+  padding: 0.3rem 0;
+  margin-bottom: 0.8rem;
+}
+
+.vacancy_sub_item {
+  /* .list_item sets 2.5rem on both sides; the sub-item needs a visible indent
+     without eating the label, so the indent is trimmed and the right padding
+     is released back to the text. */
+  padding-left: 3.1rem !important;
+  padding-right: 0.6rem !important;
+  margin-bottom: 0 !important;
+  /* The global .list_item forces a fixed 30px height, which clips a label
+     that wraps to two lines. Let this row grow to fit its content instead. */
+  height: auto !important;
+  min-height: 30px;
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+
+  ::ng-deep .mdc-list-item__primary-text {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  ::ng-deep .mdc-list-item__primary-text span.text {
+    display: block;
+    width: 100%;
+    font-size: 11px;
+    line-height: 1.3;
+    /* Long labels wrap onto a second line instead of being cut off. */
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
+.vacancySubIcon {
+  margin-right: 0.6rem;
+  margin-top: 1px;
+  font-size: 15px;
+  width: 15px;
+  height: 15px;
+  line-height: 15px;
+  color: $primary-color;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.activeSubLink {
+  /* A soft accent instead of a solid orange fill — the sub-panel is already
+     tinted, so a second solid orange on top of it read as too heavy. */
+  background-color: $white-color;
+  border-left: 3px solid $primary-color;
+  padding-left: calc(3.1rem - 3px) !important;
+
+  .text {
+    color: $primary-color;
+    font-weight: 600;
+  }
+
+  .vacancySubIcon {
+    color: $primary-color;
+  }
+}
+
+.activeLink {
+  .vacancyMenuArrow {
+    color: white;
+  }
+}

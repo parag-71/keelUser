@@ -18,6 +18,14 @@ export class ResourceService {
   public trainingList:any
   public licencesList:any
   public competenciesList:any
+  // Fired whenever the corresponding list has been (re)fetched from the API.
+  // Used by SearchFilterComponent to re-apply the filter popup's checkbox
+  // ("selected") state after a fresh fetch overwrites the array with new
+  // objects that don't carry any previous UI state.
+  public roleListLoaded = new Subject<void>();
+  public licencesListLoaded = new Subject<void>();
+  public trainingListLoaded = new Subject<void>();
+  public competenciesListLoaded = new Subject<void>();
   public userCompetencies:any = []
   public userTrainingRecord:any = []
   public userLicences:any = []
@@ -136,9 +144,11 @@ export class ResourceService {
   }
 
   getRoleList(){
-    this.endUserService.companyRoleList('').subscribe((result:any)=>{
+    // Master list only: roleType 1 keeps planner-only (roleType 2) roles out of the assign-role dropdown.
+    this.endUserService.companyRoleList({roleType:1,search:''}).subscribe((result:any)=>{
       if (result.status == '200' ){
         this.roleList = result.data
+        this.roleListLoaded.next();
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -153,6 +163,7 @@ export class ResourceService {
           tr['isRowSelected'] = true
           tr['type'] = 'trainingData'
         });
+        this.trainingListLoaded.next();
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -166,6 +177,7 @@ export class ResourceService {
         this.licencesList.map((ls:any)=>{
           ls['isRowSelected'] = true
         });
+        this.licencesListLoaded.next();
       }else{
         this.commonService.ApiErrAlert(result)
       }
@@ -179,6 +191,7 @@ export class ResourceService {
         this.competenciesList.map((co:any)=>{
           co['isRowSelected'] = true
         });
+        this.competenciesListLoaded.next();
       }else{
         this.commonService.ApiErrAlert(result)
       }

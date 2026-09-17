@@ -51,7 +51,8 @@ export class PlantResourcesComponent {
   deletePlantAlert(plantData:any){
     Swal.fire({
       icon: "warning",
-      text: 'Are you sure you want to delete this plant?',
+      // Deleting a plant also removes every planner entry that uses it.
+      text: 'Deleting this plant will also delete all the entries related to it in the planner',
       width: '27rem',
       confirmButtonText:'Yes',
       cancelButtonText:'No',

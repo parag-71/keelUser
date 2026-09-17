@@ -368,6 +368,64 @@ export class EndUserService {
 		);
   }
  
+  //Resource (People) Vacancy Planner
+  addOrUpdateResourceVacantPlanner(paramData:any):any{
+    return this.http.post(
+			Global.addOrUpdateResourceVacantPlanner,
+			paramData
+		);
+  }
+  resourceRoleList(paramData:any):any{
+    return this.http.post(
+			Global.resourceRoleList,
+			paramData
+		);
+  }
+  resourceVacantPlannerList(paramData:any):any{
+    return this.http.post(
+			Global.resourceVacantPlannerList,
+			paramData
+		);
+  }
+  deleteResourceVacantPlan(paramData:any):any{
+    return this.http.post(
+			Global.deleteResourceVacantPlan,
+			paramData
+		);
+  }
+
+  //Plant Vacancy Planner
+  addOrUpdatePlantVacantPlanner(paramData:any):any{
+    return this.http.post(
+			Global.addOrUpdatePlantVacantPlanner,
+			paramData
+		);
+  }
+  plantListForVacantPlanner(paramData:any):any{
+    return this.http.post(
+			Global.plantListForVacantPlanner,
+			paramData
+		);
+  }
+  plantVacantPlannerList(paramData:any):any{
+    return this.http.post(
+			Global.plantVacantPlannerList,
+			paramData
+		);
+  }
+  deletePlantVacantPlan(paramData:any):any{
+    return this.http.post(
+			Global.deletePlantVacantPlan,
+			paramData
+		);
+  }
+  addOrUpdatePlannerPlant(paramData:any):any{
+    return this.http.post(
+			Global.addOrUpdatePlannerPlant,
+			paramData
+		);
+  }
+
   //add Dummy Resource
   addOrUpdateDummyUser(paramData:any):any{
     return this.http.post(
@@ -492,8 +550,3 @@ export class EndUserService {
   }
 
 }
-
-
-
-
-

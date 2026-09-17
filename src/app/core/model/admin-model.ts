@@ -8,6 +8,7 @@ export class PaginationModal{
     search:any
     usrType:any
     siteType:any
+    pltType:any
 }
 export class AddUpdateSiteModal{
     siteName:any

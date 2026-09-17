@@ -86,7 +86,8 @@ export class SettingService {
   }
 
   addRole(value:any){
-    this.endUserService.addOrUpdateCompanyRole({roleName:value.settingName.trim(),roleId:value.settingId ? value.settingId : ''}).subscribe((result:any)=>{
+    // roleType 1 = Default/Company Role (master). Planner-only roles use roleType 2 and are added elsewhere.
+    this.endUserService.addOrUpdateCompanyRole({roleName:value.settingName.trim(),roleId:value.settingId ? value.settingId : '',roleType:1}).subscribe((result:any)=>{
       if (result.status == 200){
         this.getRoleList()
         this.commonService.successAlert(result.message)
@@ -106,7 +107,8 @@ export class SettingService {
     })
   }
   getRoleList(){
-    this.endUserService.companyRoleList({}).subscribe((result:any)=>{
+    // Master list only: roleType 1 keeps planner-only (roleType 2) roles out of Settings.
+    this.endUserService.companyRoleList({roleType:1,search:''}).subscribe((result:any)=>{
       if (result.status == 200){
         this.allSettingList = result.data
       }else{

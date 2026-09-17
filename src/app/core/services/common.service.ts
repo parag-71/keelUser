@@ -29,9 +29,14 @@ export class CommonService {
   public plantRequestCount:any = 0
   public userSiteList:any
   public searchSiteList:any
+  // Fired whenever searchSiteList has been (re)fetched. Used by
+  // SearchFilterComponent to re-apply the filter popup's checkbox state
+  // after a fresh fetch overwrites the array with new objects.
+  public searchSiteListLoaded = new Subject<void>();
   public search:any
   public usrpermission:any
   resourcePlannerSub: Subject<any> = new Subject()
+  vacancyPlannerSub: Subject<any> = new Subject()
   constructor(
     private deviceService: DeviceDetectorService,
     public route:Router,
@@ -113,6 +118,7 @@ export class CommonService {
     this.endUserService.siteNameList({siteType:[0,1]}).subscribe((result:any)=>{
       if (result.status == '200' ){
         this.searchSiteList = result.data
+        this.searchSiteListLoaded.next();
       }else{
         this.ApiErrAlert(result)
       }

@@ -1,4 +1,3 @@
-
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
@@ -295,4 +294,98 @@ text-transform: capitalize;
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* ------------------------------------------------------------------
+   Vacancy Planner - Role / Plant autocomplete panel
+   mat-autocomplete renders its panel in a CDK overlay outside the
+   component, so these rules have to be global (the component's own scoped
+   SCSS, even with ::ng-deep, never reaches the overlay). Applied via
+   panelClass="entity-select-panel" on the mat-autocomplete.
+   ------------------------------------------------------------------ */
+.entity-select-panel {
+
+  /* mat-option sizes its text wrapper to the content by default, so it needs
+     an explicit full width for the row (name left, icons right) to spread. */
+  .mat-mdc-option .mdc-list-item__primary-text {
+    width: 100%;
+  }
+
+  .entity-option-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .entity-option-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .entity-option-actions {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 10px;
+  }
+
+  .entity-option-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    color: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+/* Vacancy Planner - resource column header (label + manage gear).
+   Global because FullCalendar renders its header outside the component. */
+
+/* FullCalendar's header cushion shrink-wraps its content, so without this the
+   header div never spans the cell and the gear can't be pushed to the right. */
+.fc .fc-datagrid-cell-cushion {
+  width: 100%;
+}
+
+.resource-area-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .manage-entities-icon {
+    /* Pushes the gear to the far right of the header cell. */
+    margin-left: auto;
+    font-size: 18px;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.5);
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+
+/* Vacancy Planner - plan description under the role/plant name.
+   Clamped to 3 lines with an ellipsis; the element's title attribute holds the
+   full text so the remainder shows on hover. Global because FullCalendar
+   renders the resource column outside the component. */
+.resource-description {
+  font-size: 10px;
+  color: #777;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
 }

@@ -45,6 +45,29 @@
                 </span>
                 <span class="text" >Planner</span>
         </mat-list-item>
+        <mat-list-item *ngIf="commonService?.usrpermission?.usrPlannerAccess != 0" (click)="toggleVacancyPlanner()" class="list_item vacancy_parent_item" [ngClass]="{'activeLink': isVacancyPlannerRoute()}">
+                <span>
+                    <img src="assets/images/calendars.png" />
+                </span>
+                <span class="text" >Vacancy Planner</span>
+                <mat-icon class="vacancyMenuArrow" [class.open]="vacancyPlannerExpanded">expand_more</mat-icon>
+        </mat-list-item>
+        <ng-container *ngIf="vacancyPlannerExpanded && commonService?.usrpermission?.usrPlannerAccess != 0">
+            <div class="vacancy_sub_panel">
+                <mat-list-item [routerLink]="['/vacancy-planner/people']" (click)="hideNav()" class="list_item vacancy_sub_item" routerLinkActive="activeSubLink">
+                        <span>
+                            <mat-icon class="vacancySubIcon">group</mat-icon>
+                        </span>
+                        <span class="text" >People Vacancy Planner</span>
+                </mat-list-item>
+                <mat-list-item [routerLink]="['/vacancy-planner/plant']" (click)="hideNav()" class="list_item vacancy_sub_item" routerLinkActive="activeSubLink" >
+                        <span>
+                            <mat-icon class="vacancySubIcon">forklift</mat-icon>
+                        </span>
+                        <span class="text" >Plant Vacancy Planner</span>
+                </mat-list-item>
+            </div>
+        </ng-container>
         <mat-list-item *ngIf="commonService.usrpermission?.usrType == 1 || commonService.usrpermission?.usrType == 2" [routerLink]="['/setting']" (click)="hideNav()" class="list_item" routerLinkActive="activeLink">
             <span>
                 <img src="assets/images/settings-black.png" />

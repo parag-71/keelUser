@@ -17,6 +17,7 @@ export class LeftSiteMenuComponent {
   public currentRouteName:any
   baseUrl = Global.environment.BASE_URL
   imageAvailable: boolean | null = null;
+  public vacancyPlannerExpanded: boolean = false;
   private routerSubscription!: Subscription;
   constructor(
     public authService:AuthService,
@@ -36,7 +37,14 @@ export class LeftSiteMenuComponent {
         (this.currentRouteName != 'login' && this.currentRouteName != 'forgot-password' && this.currentRouteName != 'reset-password') && (this.currentRouteName == 'dashboard' || !this.commonService.requestCount) ? this.commonService.siteNameList(this.commonService.loginUserDetail['usrId']) : ''
       });
   }
+  toggleVacancyPlanner(){
+    this.vacancyPlannerExpanded = !this.vacancyPlannerExpanded
+  }
+  isVacancyPlannerRoute(){
+    return this.router.url.includes('/vacancy-planner')
+  }
   ngOnInit(): void {
+    this.vacancyPlannerExpanded = this.isVacancyPlannerRoute()
     // const url = this.baseUrl + this.commonService.loginUserDetail.compImageUrl
     const url = `${this.baseUrl}/${this.commonService.loginUserDetail.compImageUrl}`
     this.imageCheckService.isImageAvailable(url).then((isAvailable) =>{

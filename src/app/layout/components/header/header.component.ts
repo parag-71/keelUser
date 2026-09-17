@@ -141,6 +141,12 @@ export class HeaderComponent {
       case "planner":
       this.commonService.resourcePlannerSub.next(this.commonService.search)                                                     
       return ''
+      // Child routes of /vacancy-planner - currentRouteName holds the second
+      // url segment, i.e. 'people' or 'plant'.
+      case "people":
+      case "plant":
+      this.commonService.vacancyPlannerSub.next(this.commonService.search)
+      return ''
       default:
 				return '';
     }

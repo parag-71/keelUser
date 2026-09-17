@@ -56,6 +56,8 @@ export class PlantResourceService {
     paginationModal.search = pagination && pagination.search ? pagination.search : this.commonService.search = ''
     paginationModal.index = pagination && pagination.index ? pagination.index : '0'
     paginationModal.limit = pagination && pagination.limit ? pagination.limit : '25'
+    // pltType 1 = Master plant resources. Planner-only plants (pltType 2) are kept out of this list.
+    paginationModal.pltType = 1
     this.endUserService.plantList(paginationModal).subscribe((result:any)=>{
       if(result.status == '200'){
         this.plantList = result.data

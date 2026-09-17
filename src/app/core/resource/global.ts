@@ -85,6 +85,20 @@ export const resourceList = environment.API_ENDPOINT + "resourceList"
 export const resourcePlannerList = environment.API_ENDPOINT + "resourcePlannerList"
 export const deleteResourcePlan = environment.API_ENDPOINT + "deleteResourcePlan"
 
+//resource (people) vacancy planner
+export const addOrUpdateResourceVacantPlanner = environment.API_ENDPOINT + "addOrUpdateResourceVacantPlanner"
+export const resourceRoleList = environment.API_ENDPOINT + "resourceRoleList"
+export const resourceVacantPlannerList = environment.API_ENDPOINT + "resourceVacantPlannerList"
+export const deleteResourceVacantPlan = environment.API_ENDPOINT + "deleteResourceVacantPlan"
+
+//plant vacancy planner
+export const addOrUpdatePlantVacantPlanner = environment.API_ENDPOINT + "addOrUpdatePlantVacantPlanner"
+export const plantListForVacantPlanner = environment.API_ENDPOINT + "plantListForVacantPlanner"
+export const plantVacantPlannerList = environment.API_ENDPOINT + "plantVacantPlannerList"
+export const deletePlantVacantPlan = environment.API_ENDPOINT + "deletePlantVacantPlan"
+// API #79 — add/update a planner-only plant resource (params: pltId [when update], pltTitle)
+export const addOrUpdatePlannerPlant = environment.API_ENDPOINT + "addOrUpdatePlannerPlant"
+
 //add Dummy resource
 export const addOrUpdateDummyUser = environment.API_ENDPOINT + "addOrUpdateDummyUser"
 export const DummyUserList = environment.API_ENDPOINT + "DummyUserList"
@@ -119,6 +133,3 @@ export const deleteCompanyPlantLicences = environment.API_ENDPOINT + "deleteComp
 
 export const companyTagList = environment.API_ENDPOINT + "companyTagList"
 export const addOrUpdateCompanyTag = environment.API_ENDPOINT + "addOrUpdateCompanyTag"
-
-
-

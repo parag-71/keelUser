@@ -1,0 +1,28 @@
+<div class="popupParent">
+    <h4 mat-dialog-title class="modal-header text-center">
+        <span class="header_text">
+            {{ isEdit ? 'Edit Role' : 'Add Role' }}
+        </span>
+        <mat-icon class="close" matTooltip="close" (click)="closeDialog()" matDialogClose>close</mat-icon>
+    </h4>
+    <div class="container">
+        <form [formGroup]="addRoleGrp" (ngSubmit)="addRoleGrp.valid ? addRole(addRoleGrp.getRawValue()) : commonService.markFormGroupTouched(addRoleGrp)" class="row inpu_field_box">
+            <div class="col-12">
+                <mat-form-field appearance="outline">
+                    <mat-label>Role Name</mat-label>
+                    <input matInput formControlName="roleName" [matAutocomplete]="roleAuto" (input)="onRoleNameInput()">
+                    <mat-autocomplete #roleAuto="matAutocomplete">
+                        <mat-option *ngFor="let role of matchingRoles | async" [value]="role.entityName" (onSelectionChange)="$event.isUserInput && selectExistingRole(role)">
+                            {{ role.entityName }}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <mat-error *ngIf="(addRoleGrp.get('roleName').invalid && addRoleGrp.get('roleName').touched)">{{getErrorMessage()}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-12 add_btn_box">
+                <button type="button" class="cancel_btn" (click)="closeDialog()">Cancel</button>
+                <button type="submit" class="add_btn">{{ isEdit ? 'Update' : 'Add New' }}</button>
+            </div>
+        </form>
+    </div>
+</div>

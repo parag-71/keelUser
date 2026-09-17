@@ -1,0 +1,40 @@
+<div class="popupParent">
+    <h4 mat-dialog-title class="modal-header text-center">
+        <span class="header_text">Manage {{ data.entityLabel }}s</span>
+        <mat-icon class="close" matTooltip="close" (click)="closeDialog()">close</mat-icon>
+    </h4>
+    <div class="container manage_list">
+
+        <!-- Added from the planner: editable and deletable here. -->
+        <div class="group_label" *ngIf="plannerEntities.length">Planner {{ data.entityLabel }}s</div>
+        <div class="entity_row" *ngFor="let entity of plannerEntities"
+             [class.selected_row]="isSelected(entity)"
+             (click)="selectEntity(entity)">
+            <span class="entity_name">{{ entity.entityName }}</span>
+            <span class="entity_actions">
+                <!-- stopPropagation so editing or deleting isn't also read as picking the row. -->
+                <mat-icon matTooltip="Edit" (click)="$event.stopPropagation(); openAddEdit(entity)">edit</mat-icon>
+                <mat-icon class="delete_icon" matTooltip="Delete" (click)="$event.stopPropagation(); deleteEntity(entity)">delete</mat-icon>
+            </span>
+        </div>
+
+        <!-- Master records owned by Settings / Plant Resources. Listed so the
+             person can see what already exists, but read-only from here. -->
+        <div class="group_label" *ngIf="masterEntities.length">{{ data.masterLabel }}</div>
+        <div class="entity_row master_row" *ngFor="let entity of masterEntities"
+             [class.selected_row]="isSelected(entity)"
+             (click)="selectEntity(entity)">
+            <span class="entity_name">{{ entity.entityName }}</span>
+        </div>
+
+        <div class="empty_msg" *ngIf="!plannerEntities.length && !masterEntities.length">
+            No {{ data.entityLabel | lowercase }} found.
+        </div>
+    </div>
+
+    <!-- Outside .manage_list so it stays put while the list scrolls. -->
+    <div class="manage_footer">
+        <button type="button" class="cancel_btn footer_btn" (click)="openAddEdit()">Add New {{ data.entityLabel }}</button>
+        <button type="button" class="add_btn footer_btn" (click)="addToPlanner()">Add to Planner</button>
+    </div>
+</div>

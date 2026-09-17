@@ -35,7 +35,26 @@ export class SearchFilterComponent {
     this.currentRouteName[1] == 'dashboard' ? this.searchType = '1' : this.searchType = '2'
   }
   ngOnInit() {
+    // Each list-fetch (getRoleList, getLicencesList, etc.) overwrites the array
+    // with fresh objects from the API that carry no UI state, so a previously
+    // checked box would show as unchecked the next time this tab is opened even
+    // though the filter is still applied (filterItem still holds the value).
+    // Re-mark `selected` from filterItem every time a fresh fetch completes.
+    // Subscribed BEFORE the first changeFilter() call below so that fetch's own
+    // loaded event isn't missed.
+    this.resourceService.roleListLoaded.subscribe(() =>
+      this.markSelectedFromFilter(this.resourceService.roleList, 'roleName', this.dashboradService.filterItem[1].roleName));
+    this.resourceService.licencesListLoaded.subscribe(() =>
+      this.markSelectedFromFilter(this.resourceService.licencesList, 'licName', this.dashboradService.filterItem[2].licName));
+    this.resourceService.trainingListLoaded.subscribe(() =>
+      this.markSelectedFromFilter(this.resourceService.trainingList, 'trName', this.dashboradService.filterItem[3].trName));
+    this.resourceService.competenciesListLoaded.subscribe(() =>
+      this.markSelectedFromFilter(this.resourceService.competenciesList, 'comptName', this.dashboradService.filterItem[4].comptName));
+    this.commonService.searchSiteListLoaded.subscribe(() =>
+      this.markSelectedFromFilter(this.commonService.searchSiteList, 'siteName', this.dashboradService.filterItem[0].siteName));
+
     this.changeFilter(this.searchType)
+
     this.dashboradService.removeFilterLabel.subscribe((val: any) => {
       this.removeFilterValue = ''
       switch (val.index) {
@@ -265,6 +284,20 @@ export class SearchFilterComponent {
         data.selected = false
       }
     })
+  }
+
+  /**
+   * Restores the popup's checkbox state after a fresh list fetch. `list` is the
+   * newly-fetched array (brand new objects, no `selected` flag set); `filterValues`
+   * is the corresponding filterItem entry (e.g. filterItem[1].roleName) that
+   * still holds whatever is currently applied. Marks each item selected/
+   * unselected to match, so a re-opened tab reflects the filter that's actually
+   * in effect instead of always showing everything unchecked.
+   */
+  markSelectedFromFilter(list: any, keyName: string, filterValues: any[]) {
+    (list || []).forEach((item: any) => {
+      item.selected = (filterValues || []).includes(item[keyName]);
+    });
   }
 
   changeFilter(type: any) {

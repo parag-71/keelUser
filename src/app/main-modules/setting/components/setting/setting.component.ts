@@ -45,10 +45,17 @@ export class SettingComponent {
     }
   }
   deleteRole(deleteId:any){
+    // Deleting a role also removes every planner entry that uses it, so the
+    // Role case gets the extra warning. The other setting types on this screen
+    // (Training Record, Licences, Competencies) aren't used by the planner and
+    // keep the plain confirmation.
+    const isRole = this.selectedItem == 'Role'
     Swal.fire({
       icon: "warning",
       title:'Are you sure?',
-      text: `You want to delete this ${this.selectedItem}?`,
+      text: isRole
+        ? 'Deleting this role will also delete all the entries related to it in the planner'
+        : `You want to delete this ${this.selectedItem}?`,
       width: '27rem',
       confirmButtonText:'Yes',
       cancelButtonText:'No',

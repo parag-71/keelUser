@@ -1,0 +1,216 @@
+@import "../../../../shared/scss/default_variables.scss";
+.inpu_field_box {
+    padding:25px 0px 0px 0;
+    mat-form-field{
+      width: 100%;
+      ::ng-deep{
+        .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above{
+          --mat-mdc-form-field-label-transform:translateY( -22.75px) scale(var(--mat-mdc-form-field-floating-label-scale, 0.75));
+          color:$primary-color;
+        }
+        .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input{
+          position: absolute;
+          top: 11px !important;
+          font-size: 14px;
+        }
+        .mat-mdc-form-field-error-wrapper{
+          top: -3px;
+          left: 3px;
+          padding: 0;
+        }
+        .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label{
+          top: 15px !important;
+          font-size: 13px !important;
+        }
+        .mat-mdc-text-field-wrapper{
+          height: 40px !important;
+        }
+        .mat-mdc-input-element{
+          top: -10px !important;
+          position: relative;
+        }
+        .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__leading,
+        .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__notch,
+        .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__trailing{
+          border-color: $secondary-color;
+          border-width: 1px;
+        }
+        .mat-mdc-form-field-subscript-wrapper{
+          height: 5px !important;
+        }
+        .mat-mdc-select-value{
+          position: relative;
+          top: -9px;
+        }
+        .mat-mdc-select-arrow{
+          top: -9px;
+        }
+        .mdc-list-item__primary-text{
+          font-size: 13px !important;
+        }
+        .mat-mdc-form-field-icon-suffix{
+          align-self: flex-start;
+        }
+      }
+    }
+    
+  }
+  .del_btn{
+      border-radius: 0.375rem;
+      border:1px #E61044 solid;
+      background: $white-color;
+      color: #E61044;
+      text-align: center;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      width: 5.5625rem;
+      height: 30px;
+      float: right;
+      margin-right: 12px;
+  }
+  .mat-mdc-form-field-subscript-wrapper {
+    position: relative; /* Ensure the wrapper doesn't interfere with layout */
+    height: auto; /* Allow the wrapper to adjust its height */
+    margin-top: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+  }
+  
+  .select-site-link {
+    position: absolute; 
+    right: 0; 
+    bottom: 0; 
+    padding-right: 16px; 
+    span {
+      color: $primary-color;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 12px; 
+    }
+  }
+
+  /* Multi-line description field.
+     The shared rules above set `.mdc-text-field__input { position: absolute }`
+     and a fixed 40px wrapper — fine for single-line inputs, but it takes the
+     textarea out of normal flow, so the wrapper can't grow with it and the text
+     spilled out over the buttons. Everything here puts the textarea back into
+     flow and lets the box size to it. */
+  .inpu_field_box .textarea-field {
+    &.mat-mdc-form-field {
+      ::ng-deep .mat-mdc-text-field-wrapper {
+        height: auto !important;
+        min-height: 0 !important;
+      }
+
+      ::ng-deep .mat-mdc-form-field-flex {
+        align-items: flex-start;
+      }
+
+      ::ng-deep .mat-mdc-form-field-infix {
+        padding-top: 14px !important;
+        padding-bottom: 10px !important;
+        min-height: auto !important;
+      }
+
+      /* Back into normal flow — this is what actually fixes the overflow. */
+      ::ng-deep .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input,
+      ::ng-deep textarea.mat-mdc-input-element,
+      ::ng-deep .mat-mdc-input-element {
+        position: relative !important;
+        top: 0 !important;
+        font-size: 14px;
+        line-height: 18px;
+        resize: none;
+        box-sizing: border-box;
+      }
+
+      /* NOTE: the floating label's `top` is deliberately left at the shared
+         15px. The float transform is translateY(-22.75px), measured from that
+         value — overriding top here lands the floated label on the border
+         instead of in the notch. */
+
+      /* The shared rule clamps this to 5px, which cut off the 256 counter. */
+      ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+        height: auto !important;
+        margin-top: 2px;
+      }
+
+      ::ng-deep .mat-mdc-form-field-hint {
+        font-size: 10px;
+        color: rgba(0, 0, 0, 0.5);
+      }
+    }
+  }
+
+
+  /* Role / Plant field + its "Add Role" / "Add Plant" link. */
+  .entity-select-field {
+    padding-bottom: 0;
+    margin-bottom: 18px;
+
+    /* Sits in normal flow directly under the field (same row as the validation
+       message) instead of absolutely positioned at the bottom of a padded
+       wrapper, which pushed it down until it looked attached to Select Site. */
+    .add-entity-link {
+      text-align: right;
+      margin-top: -22px;
+      padding-right: 4px;
+      line-height: 1;
+      position: relative;
+      z-index: 2;
+
+      span {
+        color: $primary-color;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 12px;
+      }
+    }
+  }
+
+  /* Edit / delete controls on the right of a planner-added Role/Plant option.
+     mat-option's own content wrapper sizes to its content by default, so it needs
+     an explicit full-width override for the flex row (text left, icons right)
+     to actually spread across the option instead of hugging the text. */
+  ::ng-deep .mat-mdc-option .mdc-list-item__primary-text {
+    width: 100%;
+  }
+
+  .entity-option-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .entity-option-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .entity-option-actions {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 10px;
+  }
+
+  .entity-option-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    color: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+  
+  
